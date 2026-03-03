@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: "Requirements Traceability for Scriptless GUI Testing"
+message: "If you use this repository, please cite the associated Master's thesis."
+type: software
+
+authors:
+  - family-names: "van de Wetering"
+    given-names: "R. J. H."
+    affiliation: "Open University"
+
+repository-code: "https://github.com/BBoyRomano/testar-requirements-traceability"
+license: "MIT"
+
+keywords:
+  - requirements traceability
+  - scriptless testing
+  - GUI state models
+  - TESTAR
