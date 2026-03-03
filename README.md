@@ -12,8 +12,7 @@ This study develops and evaluates a method for tracing user stories to TESTAR-ge
 - [`data/`](data/) — User stories and exported GUI State Models (JSON)
 - [`prototype/`](prototype/) — Research prototype implementation
 - [`evaluation/`](evaluation/) — Reference set, metrics, and evaluation results
-- [`thesis/`](thesis/) — Master's thesis source (LaTeX)
-- [`proposal/`](proposal/) — Research proposal source (LaTeX)
+- [`papers/`](papers/) — Research documents (LaTeX)
 
 ## Reproducibility
 
