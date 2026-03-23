@@ -1,0 +1,462 @@
+#################################################################
+# TESTAR mode
+#
+# Set the mode you want TESTAR to start in: Spy, Generate, Replay
+#################################################################
+
+Mode = Spy
+
+#################################################################
+# Connect to the System Under Test (SUT)
+#
+# Indicate how you want to connect to the SUT:
+#
+# SUTCONNECTOR = COMMAND_LINE, SUTConnectorValue property must be a command line that
+# starts the SUT.
+# It should work from a Command Prompt terminal window (e.g. java - jar SUTs/calc.jar ).
+# For web applications, follow the next format: web_browser_path SUT_URL.
+#
+# SUTCONNECTOR = SUT_WINDOW_TITLE, then SUTConnectorValue property must be the title displayed
+# in the SUT main window. The SUT must be manually started and closed.
+#
+# SUTCONNECTOR = SUT_PROCESS_NAME: SUTConnectorValue property must be the process name of the SUT.
+# The SUT must be manually started and closed.
+#################################################################
+
+SUTConnector = WEB_DRIVER
+SUTConnectorValue = "https://projects.kiv.zcu.cz/uis/login"
+
+#################################################################
+# Regular expressions that indicates which processes conform the SUT
+#
+# This regex expression can be used to attach TESTAR to a multi-processes SUT
+#################################################################
+
+SUTProcesses =
+
+#################################################################
+# Java Swing applications & Access Bridge Enabled
+#
+# Activate the Java Access Bridge in your Windows System:
+#		(Control Panel / Ease of Access / Ease of Access Center / Make the computer easier to see)
+#
+# Enable the variable Access Bridge Enabled in TESTAR as true
+#################################################################
+
+AccessBridgeEnabled = false
+
+#################################################################
+# Sequences
+#
+# Number of sequences and the length of these sequences
+#################################################################
+
+Sequences = 10
+SequenceLength = 40
+
+#################################################################
+# SUT Protocol
+#
+# ProtocolClass: Indicate the location of the protocol class for your specific SUT
+# AlwaysCompile: Compile the protocol before launching the selected TESTAR mode
+#################################################################
+
+ProtocolClass = webdriver_tbuis_student/Protocol_webdriver_tbuis_student
+AlwaysCompile = true
+
+#################################################################
+# Actionfilter
+#
+# Regular expression and Tags to apply them.
+# More filters can be added in Spy mode,
+# these will be added to the protocol_filter.xml file.
+#################################################################
+
+ClickFilter = .*logout.*|.*sign out.*|.*odhlasit.*|.*odhl[aá]si?.*
+TagsToFilter = Title;WebName;WebTagName;WebHref;WebTextContent;WebInnerText
+
+#################################################################
+# Processfilter
+#
+# Regular expression. Kill the processes that your SUT can start up
+# but that you do not want to test.
+#################################################################
+
+ProcessesToKillDuringTest =
+
+#################################################################
+# Ignore reporting duplicated verdicts for this protocol
+#################################################################
+
+IgnoreDuplicatedVerdicts = false
+
+#################################################################
+# Oracles based on suspicious tag values
+#
+# Regular expression and Tags to apply them
+#################################################################
+
+SuspiciousTags = .*[eE]rror.*|.*[eE]xcepti[o?]n.*|.*[fF]ailed.*
+TagsForSuspiciousOracle = Title;WebTextContent;WebInnerText
+
+#################################################################
+# Oracles based on Suspicious Outputs detected by Process Listeners
+#
+# Requires ProcessListenerEnabled
+# (Only available for desktop applications through COMMAND_LINE)
+#
+# Regular expression SuspiciousProcessOutput contains the specification
+# of what is considered to be suspicious output.
+#################################################################
+
+ProcessListenerEnabled = false
+SuspiciousProcessOutput = .*[eE]rror.*|.*[eE]xcep[ct]i[o?]n.*
+
+#################################################################
+# Process Logs
+#
+# Required ProcessListenerEnabled
+# (Only available for desktop applications through COMMAND_LINE)
+#
+# Allow TESTAR to store execution logs coming from the processes.
+# You can use the regular expression ProcessLogs below to filter
+# the logs. Use .*.* if you want to store all the outputs of the
+# process.
+#################################################################
+
+ProcessLogs = .*.*
+
+#################################################################
+# Oracles based on suspicious titles in SUT output files
+#################################################################
+
+LogOracleEnabled = false
+LogOracleRegex = .*([Ee]xception|[Ee]rror).*
+LogOracleCommands =
+LogOracleFiles =
+
+#################################################################
+# Time configurations
+#
+# ActionDuration: Sets the speed, in seconds, at which a GUI action is performed
+# TimeToWaitAfterAction: Sets the delay, in seconds, between UI actions during a test
+# StartupTime: Sets how many seconds to wait for the SUT to be ready for testing
+# MaxTime: Sets a time, in seconds, after which the test run is finished (e.g. stop after an hour)
+#################################################################
+
+ActionDuration = 0.1
+TimeToWaitAfterAction = 1.0
+StartupTime = 5.0
+MaxTime = 3.1536E7
+
+#################################################################
+# System Under Test (SUT) identification
+#
+# ApplicationName: Name to identify the SUT.
+# ApplicationVersion: Version to identify the SUT.
+#################################################################
+
+ApplicationName = tbuis_student
+ApplicationVersion = 1
+
+#################################################################
+# State model inference settings
+#
+# StateModelEnabled: Enable or disable the State Model feature
+# DataStore: The graph database we use to store the State Model: OrientDB
+# DataStoreType: The mode we use to connect to the database: remote or plocal
+# DataStoreServer: IP address to connect if we desired to use remote mode
+# DataStoreDirectory: Path of the directory on which local OrientDB exists, if we use plocal mode
+# DataStoreDB: The name of the desired database on which we want to store the State Model.
+# DataStoreUser: User credential to authenticate TESTAR in OrientDB
+# DataStorePassword: Password credential to authenticate TESTAR in OrientDB
+# DataStoreMode: Indicate how TESTAR should store the model objects in the database: instant, delayed, hybrid, none
+# ActionSelectionAlgorithm: State Model Action Selection mechanism to explore the SUT: random or unvisited
+# StateModelStoreWidgets: Save all widget tree information in the State Model every time TESTAR discovers a new Concrete State
+# ResetDataStore: WARNING: Delete all existing State Models from the selected database before creating a new one
+#################################################################
+
+StateModelEnabled = true
+DataStore = OrientDB
+DataStoreType = plocal
+DataStoreServer =
+DataStoreDirectory = C:\\Users\\Testar\\Desktop\\orientdb_3.2.38_testar_db\\databases
+DataStoreDB = testar
+DataStoreUser = testar
+DataStorePassword = testar
+DataStoreMode = instant
+ActionSelectionAlgorithm = unvisited
+StateModelStoreWidgets = true
+ResetDataStore = false
+
+#################################################################
+# State identifier attributes
+#
+# Specify the widget attributes that you wish to use in constructing
+# the widget and state hash strings. Use a comma separated list.
+#################################################################
+
+AbstractStateAttributes = WebWidgetHref,WebWidgetTextContent,WebWidgetInnerText,WebWidgetTitle,WebWidgetId,WebWidgetName
+
+#################################################################
+# LLM agents settings
+#
+# Specify the settings to connect with an LLM server and
+# the prompt configurations to guide the LLM agent in accomplishing a test goal.
+#################################################################
+
+LlmPlatform = OpenAI
+LlmModel =
+LlmReasoning = default
+LlmHostUrl =
+LlmAuthorizationHeader =
+LlmActionFewshotFile =
+LlmOracleFewshotFile =
+LlmAbstractionFewshotFile =
+LlmTemperature = 0.2
+LlmHistorySize = 5
+LlmStateless = true
+LlmTestGoals =
+
+#################################################################
+# WebDriver features
+#
+# ClickableClasses: Indicate which web CSS classes need to be considered clickable
+# TypeableClasses: Indicate which web CSS classes need to be considered typeable
+# DeniedExtensions: Indicate which web URL extensions need to be ignored when testing
+# WebDomainsAllowed: Indicate which web URL domains are allowed to explore when testing
+# WebPathsAllowed: Regular expressions to indicate which web URL paths are allowed to explore when testing
+# FollowLinks: Indicate if allowing to follow links opened in new tabs
+# BrowserFullScreen: Indicate if perform the web testing with the browser in full screen
+# SwitchNewTabs: Indicate if switch to a new web tab if opened
+#################################################################
+
+ClickableClasses =
+TypeableClasses =
+DeniedExtensions = pdf;jpg;png;pfx;xml
+WebDomainsAllowed = projects.kiv.zcu.cz
+WebPathsAllowed = null
+FollowLinks = false
+BrowserFullScreen = true
+SwitchNewTabs = false
+
+#################################################################
+# WebDriver advanced state fetcher configuration
+#
+# WebIgnoredTags: List of HTML tags that TESTAR should ignore when obtaining the web state
+# WebIgnoredAttributes: List of web attributes that TESTAR should ignore when obtaining the web state (e.g., to reduce state high-performance workloads)
+#################################################################
+
+WebIgnoredTags = script;noscript;head;meta;style;link;svg;canvas
+WebIgnoredAttributes = xpath
+
+#################################################################
+# WebDriver Browser Console Oracles
+#
+# WebConsoleErrorOracle: Enable or Disable applying ORACLES to the browser error console
+# WebConsoleErrorPattern: Regular expressions ORACLE to find suspicious messages in the browser error console
+# WebConsoleWarningOracle: Enable or Disable applying ORACLES to the browser warning console
+# WebConsoleWarningPattern: Regular expressions ORACLE to find suspicious messages in the browser warning console
+#################################################################
+
+WebConsoleErrorOracle = false
+WebConsoleErrorPattern = .*.*
+WebConsoleWarningOracle = false
+WebConsoleWarningPattern = .*.*
+
+#################################################################
+# Override display scale
+#
+# Overrides the displayscale obtained from the system.
+# Can solve problems when the mouse clicks are not aligned with
+# the elements on the screen. This can easily be detected when
+# running the spy mode. For example hover over a text element and
+# the popup window should appear with information about the
+# element, if the popup window is not shown or when the mouse is
+# located somewhere else you can try to override the displayscale
+# Values should be provided as doubles (1.5).
+#################################################################
+
+OverrideWebDriverDisplayScale =
+
+#################################################################
+# Settings (string) that can be used for user specified protocols
+#################################################################
+
+ProtocolSpecificSetting_1 =
+ProtocolSpecificSetting_2 =
+ProtocolSpecificSetting_3 =
+ProtocolSpecificSetting_4 =
+ProtocolSpecificSetting_5 =
+
+#################################################################
+# Extended settings file
+#
+# Relative path to extended settings file.
+#################################################################
+
+ExtendedSettingsFile = C:\\Users\\Testar\\Desktop\\testar_autolink_v2.8.5\\bin\\settings\\webdriver_tbuis_student\\ExtendedSettings.xml
+
+#################################################################
+# Set the types of reports to create
+#################################################################
+
+ReportInHTML = true
+ReportInPlainText = false
+
+#################################################################
+# Set the configurations for the Listening mode
+#################################################################
+
+ListeningScript = ./settings/script.txt
+
+#################################################################
+# Extended test oracles
+#################################################################
+
+ExtendedOracles =
+
+#################################################################
+# Settings to configure code coverage features
+#################################################################
+
+JacocoCoverage = false
+JacocoCoverageIpAddress = localhost
+JacocoCoveragePort = 5000
+JacocoCoverageClasses = path/to/SUT/classes
+JacocoCoverageAccumulate = false
+
+#################################################################
+# Replay mode features
+# GenerateReplayableSequence: Sets whether TESTAR must create a replayable testar file during Generate mode (this consumes more memory during execution)
+# PathToReplaySequence: The sequence to REPLAY is the one indicated in this parameter
+# ReplayRetryTime: Inside the replay mode, establishes the time window in seconds for trying to replay a UI action of a replayed test sequence
+# UseRecordedActionDurationAndWaitTimeDuringReplay: Inside the replay mode sets whether to use the action duration (ActionDuration and TimeToWaitAfterAction) as specified in the generated test sequence
+#################################################################
+
+GenerateReplayableSequence = false
+PathToReplaySequence = ./output/temp
+ReplayRetryTime = 30.0
+UseRecordedActionDurationAndWaitTimeDuringReplay = false
+
+#################################################################
+# Sets whether to display TESTAR dialog. If false is used, then TESTAR will run in the mode of the Mode property
+#################################################################
+
+ShowVisualSettingsDialogOnStartup = true
+
+#################################################################
+# Sets whether to keep the SUTs GUI active in the screen (e.g. when its minimised or when a process is started and its UI is in front, etc.)
+#################################################################
+
+ForceForeground = true
+
+#################################################################
+# Specify the widget attributes that you wish to visualize during Spy Mode. Use a semicolon separated list.
+#################################################################
+
+SpyTagAttributes = AbstractID;Blocked;ConcreteID;Desc;Enabled;Path;Role;Shape;Title;WebHref;WebId;WebInnerText;WebName;WebTagName;WebTextContent;WebTitle;WebType;WebValue;WebXPath
+
+#################################################################
+# Sets whether to display overlay information, inside the SPY mode, for all the UI actions derived from the test set up
+#################################################################
+
+VisualizeActions = false
+
+#################################################################
+# Enables or disables a specific web action that populate data in web forms
+#################################################################
+
+FormFillingAction = false
+
+#################################################################
+# Sets the logging level to critical messages (0), information messages (1) or debug messages (2)
+#################################################################
+
+LogLevel = 1
+
+#################################################################
+# Sets whether to save test sequences without failures
+#################################################################
+
+OnlySaveFaultySequences = false
+
+#################################################################
+# Sets whether to finish a test in the presence of a fail (e.g. Suspicious Tag detected)
+#################################################################
+
+StopGenerationOnFault = false
+
+#################################################################
+# Sets the time window, in seconds, for which to wait for a not responding SUT. After that, the test will finish with a fail
+#################################################################
+
+TimeToFreeze = 30.0
+
+#################################################################
+# ANDROID: Indicate if add system calls
+#################################################################
+
+UseSystemActions =
+
+#################################################################
+# Time in milliseconds that indicates the frequency of refreshing the screen in SPY mode
+#################################################################
+
+RefreshSpyCanvas = 1.0
+
+#################################################################
+# Sets whether to draw a feedback message in the top-left corner of the screen
+#################################################################
+
+FlashFeedback = true
+
+#################################################################
+# MaxReward value for the QLearningActionSelector
+#################################################################
+
+MaxReward = 9999999.0
+
+#################################################################
+# Discount value for the QLearningActionSelector
+#################################################################
+
+Discount = 0.95
+
+#################################################################
+# Sets whether create a JSON file with information about widgets and their location on the screenshot
+#################################################################
+
+CreateWidgetInfoJsonFile = false
+
+#################################################################
+# The relative path that contains the TESTAR protocols
+#################################################################
+
+MyClassPath = ./settings
+
+#################################################################
+# The relative path on which compile the TESTAR protocols and create the class files
+#################################################################
+
+ProtocolCompileDirectory = ./settings
+
+#################################################################
+# The relative path to save TESTAR output results
+#################################################################
+
+OutputDir = ./output
+
+#################################################################
+# The relative path to temporarily  save TESTAR files
+#################################################################
+
+TempDir = ./output/temp
+
+#################################################################
+# Other settings
+#################################################################
+Delete =
+KeyBoardListener = true
+CopyFromTo =
+FaultThreshold = 1.0E-9

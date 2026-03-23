@@ -1,0 +1,473 @@
+timeout 10.0
+external 'extern'
+
+def Left_Click_at_a_application_constraints_to_Constraints()
+  receive 'click', constraint: %(css == "[href='\/uis\/constraints\.jsp']" && text == "a_application_constraints")
+  send 'page_title', constraint: %(_title == "Constraints")
+end
+
+def Left_Click_at_a_application_use_cases_to_Use_cases()
+  receive 'click', constraint: %(css == "[href='\/uis\/use-cases\.jsp']" && text == "a_application_use-cases")
+  send 'page_title', constraint: %(_title == "Use-cases")
+end
+
+def Left_Click_at_a_export_import_db_to_Import_Export_DB()
+  receive 'click', constraint: %(css == "#header\.link\.exportImport" && text == "a_export/import_db")
+  send 'page_title', constraint: %(_title == "Import-Export DB")
+end
+
+def Left_Click_at_a_university_information_system_to_University_information_system()
+  receive 'click', constraint: %(css == "#header\.title\.logoTitle" && text == "a_university_information_system")
+  send 'page_title', constraint: %(_title == "University information system")
+end
+
+def Bring_the_system_to_the_foreground_to_Use_cases()
+  receive 'click', constraint: %(css == "body" && text == "")
+  send 'page_title', constraint: %(_title == "Use-cases")
+end
+
+def Left_Click_at_a_uc_17_to_Use_cases()
+  receive 'click', constraint: %(css == "[href='https\:\/\/projects\.kiv\.zcu\.cz\/tbuis\/web\/files\/uis\/uc\/en\/html\/use-case-17\.html']" && text == "a_uc.17")
+  send 'page_title', constraint: %(_title == "Use-cases")
+end
+
+def Left_Click_at_a_login_to_Login_Page()
+  receive 'click', constraint: %(css == "#header\.link\.login" && text == "a_login")
+  send 'page_title', constraint: %(_title == "Login Page")
+end
+
+def Left_Click_at_a_uc_21_to_Use_cases()
+  receive 'click', constraint: %(css == "[href='https\:\/\/projects\.kiv\.zcu\.cz\/tbuis\/web\/files\/uis\/uc\/en\/html\/use-case-21\.html']" && text == "a_uc.21")
+  send 'page_title', constraint: %(_title == "Use-cases")
+end
+
+def Left_Click_at_a_uc_01_to_Use_cases()
+  receive 'click', constraint: %(css == "[href='https\:\/\/projects\.kiv\.zcu\.cz\/tbuis\/web\/files\/uis\/uc\/en\/html\/use-case-01\.html']" && text == "a_uc.01")
+  send 'page_title', constraint: %(_title == "Use-cases")
+end
+
+def Left_Click_at_a_uc_02_to_Use_cases()
+  receive 'click', constraint: %(css == "[href='https\:\/\/projects\.kiv\.zcu\.cz\/tbuis\/web\/files\/uis\/uc\/en\/html\/use-case-02\.html']" && text == "a_uc.02")
+  send 'page_title', constraint: %(_title == "Use-cases")
+end
+
+def Left_Click_at_a_restore_db_to_University_information_system()
+  receive 'click', constraint: %(css == "#header\.link\.restoreDB" && text == "a_restore_db")
+  send 'page_title', constraint: %(_title == "University information system")
+end
+
+def Left_Click_at_a_uc_08_to_Use_cases()
+  receive 'click', constraint: %(css == "[href='https\:\/\/projects\.kiv\.zcu\.cz\/tbuis\/web\/files\/uis\/uc\/en\/html\/use-case-08\.html']" && text == "a_uc.08")
+  send 'page_title', constraint: %(_title == "Use-cases")
+end
+
+def Left_Click_at_a_uc_03_to_Use_cases()
+  receive 'click', constraint: %(css == "[href='https\:\/\/projects\.kiv\.zcu\.cz\/tbuis\/web\/files\/uis\/uc\/en\/html\/use-case-03\.html']" && text == "a_uc.03")
+  send 'page_title', constraint: %(_title == "Use-cases")
+end
+
+def Left_Click_at_a_home_current_to_University_information_system()
+  receive 'click', constraint: %(css == "#header\.link\.home" && text == "a_home_current")
+  send 'page_title', constraint: %(_title == "University information system")
+end
+
+def Left_Click_at_a_uc_09_to_Use_cases()
+  receive 'click', constraint: %(css == "[href='https\:\/\/projects\.kiv\.zcu\.cz\/tbuis\/web\/files\/uis\/uc\/en\/html\/use-case-09\.html']" && text == "a_uc.09")
+  send 'page_title', constraint: %(_title == "Use-cases")
+end
+
+def Left_Click_at_a_database_content_to_DB_content()
+  receive 'click', constraint: %(css == "[href='\/uis\/db-content\.jsp']" && text == "a_database_content")
+  send 'page_title', constraint: %(_title == "DB content")
+end
+
+def Type_EINlADuXTV_into_input_enter_password_to_Login_Page()
+  receive 'fill_in', constraint: %(selector == "#loginPage\.passwordInput" && value == "EINlADuXTV")
+  send 'page_title', constraint: %(_title == "Login Page")
+end
+
+def Type_1st_January_into_input_enter_username_to_Login_Page()
+  receive 'fill_in', constraint: %(selector == "#loginPage\.userNameInput" && value == "1st January")
+  send 'page_title', constraint: %(_title == "Login Page")
+end
+
+def Left_Click_at_button_login_to_Login_Page()
+  receive 'click', constraint: %(css == "#loginPage\.loginFormSubmit" && text == "button_login")
+  send 'page_title', constraint: %(_title == "Login Page")
+end
+
+def Left_Click_at_input_data_will_be_exported_in_json_format_to_Import_Export_DB()
+  receive 'click', constraint: %(css == "#importExportPage\.export\.jsonOption" && text == "input_data_will_be_exported_in_json_format")
+  send 'page_title', constraint: %(_title == "Import-Export DB")
+end
+
+def Left_Click_at_input_data_will_be_exported_in_xml_format_to_Import_Export_DB()
+  receive 'click', constraint: %(css == "#importExportPage\.export\.xmlOption" && text == "input_data_will_be_exported_in_xml_format")
+  send 'page_title', constraint: %(_title == "Import-Export DB")
+end
+
+def Left_Click_at_button_export_to_Import_Export_DB()
+  receive 'click', constraint: %(css == "#importExportPage\.export\.submitButton" && text == "button_export")
+  send 'page_title', constraint: %(_title == "Import-Export DB")
+end
+
+def Left_Click_at_button_import_to_Import_Export_DB()
+  receive 'click', constraint: %(css == "#importExportPage\.import\.submitButton" && text == "button_import")
+  send 'page_title', constraint: %(_title == "Import-Export DB")
+end
+
+def Drag_1912_0_44_0_To_1912_0_912_0_to_DB_content()
+  receive 'click', constraint: %(css == "body" && text == "")
+  send 'page_title', constraint: %(_title == "DB content")
+end
+
+process('testar') {
+
+  channel('extern') {
+    stimulus 'visit', '_url' => :string
+    stimulus 'click', 'css' => :string, 'text' => :string
+    stimulus 'fill_in', 'selector' => :string, 'value' => :string
+    response 'page_title', '_title' => :string, '_url' => :string
+  }
+
+  behavior('launch') {
+    receive 'visit',
+    constraint: "_url == initial_url"
+    send 'page_title',
+    constraint: %(_title == "University information system")
+  }
+
+  behavior('University information system - SAh7dgm93671966293677', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+    }
+  }
+
+  behavior('University information system - SAsfo2ed3674226321709', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+    }
+  }
+
+  behavior('University information system - SAfdhqel33d728768114', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAfdhqel33d728768114' }
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+    }
+  }
+
+  behavior('University information system - SA16ve6333673977330803', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+    }
+  }
+
+  behavior('University information system - SAeikomd366911859762', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+    }
+  }
+
+  behavior('University information system - SA18p67m2367114380174', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+    }
+  }
+
+  behavior('University information system - SA1ngshkn33d3655997443', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_database_content_to_DB_content(); behave_as 'DB content - SA2h51au2dfa3988951806' }
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA1ngshkn33d3655997443' }
+    }
+  }
+
+  behavior('University information system - SAph8sb03403731534480', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_database_content_to_DB_content(); behave_as 'DB content - SA2h51au2dfa3988951806' }
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAph8sb03403731534480' }
+    }
+  }
+
+  behavior('DB content - SA2h51au2dfa3988951806', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAarux1f3691502939844' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAa9of7a3681550168021' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA1v3emtb33c1814930362' }
+      o { Drag_1912_0_44_0_To_1912_0_912_0_to_DB_content(); behave_as 'DB content - SA2h51au2dfa3988951806' }
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA1nwsz2u36a2656667715' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAensqul33e967502146' }
+    }
+  }
+
+  behavior('University information system - SAarux1f3691502939844', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_database_content_to_DB_content(); behave_as 'DB content - SA2h51au2dfa3988951806' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAarux1f3691502939844' }
+    }
+  }
+
+  behavior('Import-Export DB - SA3vftox2ae2638926141', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAtvzxtk33d1998718679' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA18p67m2367114380174' }
+      o { Left_Click_at_input_data_will_be_exported_in_json_format_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAdh0usr3661643442065' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAwp0oc333e1826282144' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA1hr582g33f2531408127' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA1hr582g33f2531408127' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAph8sb03403731534480' }
+      o { Left_Click_at_input_data_will_be_exported_in_xml_format_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAph8sb03403731534480' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAsops3k33c2688885013' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAsops3k33c2688885013' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA2imwt93683196164222' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA1ngshkn33d3655997443' }
+      o { Left_Click_at_button_export_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_button_import_to_Import_Export_DB(); behave_as 'Import-Export DB - SA1dp4nmx2d53920599699' }
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA12r1rgs33e2524982574' }
+    }
+  }
+
+  behavior('University information system - SAensqul33e967502146', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAensqul33e967502146' }
+      o { Left_Click_at_a_database_content_to_DB_content(); behave_as 'DB content - SA2h51au2dfa3988951806' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAensqul33e967502146' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAa9of7a3681550168021' }
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+    }
+  }
+
+  behavior('University information system - SAsops3k33c2688885013', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_database_content_to_DB_content(); behave_as 'DB content - SA2h51au2dfa3988951806' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAsops3k33c2688885013' }
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAsops3k33c2688885013' }
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+    }
+  }
+
+  behavior('University information system - SA12r1rgs33e2524982574', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA12r1rgs33e2524982574' }
+    }
+  }
+
+  behavior('Login Page - SA1g6w3v12162625599351', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Type_EINlADuXTV_into_input_enter_password_to_Login_Page(); behave_as 'Login Page - SA1g6w3v12162625599351' }
+      o { Type_1st_January_into_input_enter_username_to_Login_Page(); behave_as 'Login Page - SA1g6w3v12162625599351' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SA1g6w3v12162625599351' }
+      o { Left_Click_at_button_login_to_Login_Page(); behave_as 'Login Page - SA1g6w3v12162625599351' }
+    }
+  }
+
+  behavior('University information system - SA1cpl1se36a2687405895', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+    }
+  }
+
+  behavior('University information system - SA18l1cs43674024402540', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA10awr42368441140965' }
+    }
+  }
+
+  behavior('University information system - SA1nwsz2u36a2656667715', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA1nwsz2u36a2656667715' }
+    }
+  }
+
+  behavior('University information system - SAtvzxtk33d1998718679', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA16ve6333673977330803' }
+      o { Left_Click_at_a_database_content_to_DB_content(); behave_as 'DB content - SA2h51au2dfa3988951806' }
+    }
+  }
+
+  behavior('University information system - SA1kjsdch3682537327754', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA1kjsdch3682537327754' }
+    }
+  }
+
+  behavior('University information system - SAwp0oc333e1826282144', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SA1g6w3v12162625599351' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAwp0oc333e1826282144' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAwp0oc333e1826282144' }
+    }
+  }
+
+  behavior('University information system - SAa9of7a3681550168021', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAensqul33e967502146' }
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAensqul33e967502146' }
+    }
+  }
+
+  behavior('University information system - SA1hr582g33f2531408127', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA1hr582g33f2531408127' }
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+    }
+  }
+
+  behavior('University information system - SA1v3emtb33c1814930362', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA1v3emtb33c1814930362' }
+      o { Left_Click_at_a_database_content_to_DB_content(); behave_as 'DB content - SA2h51au2dfa3988951806' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAdh0usr3661643442065' }
+    }
+  }
+
+  behavior('University information system - SA1650ide3401809704587', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA1cpl1se36a2687405895' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA1650ide3401809704587' }
+    }
+  }
+
+  behavior('University information system - SA13hrhl333d845255985', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_constraints_to_Constraints(); behave_as 'Constraints - SA1naz1at5e22874490314' }
+    }
+  }
+
+  behavior('Import-Export DB - SA1dp4nmx2d53920599699', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA1v3emtb33c1814930362' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA1hr582g33f2531408127' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAeikomd366911859762' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+      o { Left_Click_at_input_data_will_be_exported_in_json_format_to_Import_Export_DB(); behave_as 'Import-Export DB - SA1dp4nmx2d53920599699' }
+      o { Left_Click_at_button_import_to_Import_Export_DB(); behave_as 'Import-Export DB - SA1dp4nmx2d53920599699' }
+    }
+  }
+
+  behavior('Use-cases - SAewc8osd3a1415421791', :non_terminating) {
+    repeat {
+      o { Bring_the_system_to_the_foreground_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_uc_17_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+      o { Left_Click_at_a_uc_21_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA1sk5gj633d3994359492' }
+      o { Left_Click_at_a_uc_01_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_uc_02_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA18l1cs43674024402540' }
+      o { Left_Click_at_a_uc_08_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_uc_03_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAh7dgm93671966293677' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAfdhqel33d728768114' }
+      o { Left_Click_at_a_uc_09_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+    }
+  }
+
+  behavior('Constraints - SA1naz1at5e22874490314', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA1kjsdch3682537327754' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA13hrhl333d845255985' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA1v3emtb33c1814930362' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAph8sb03403731534480' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAph8sb03403731534480' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAsops3k33c2688885013' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAeikomd366911859762' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA1650ide3401809704587' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAfdhqel33d728768114' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAa9of7a3681550168021' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA1ngshkn33d3655997443' }
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+    }
+  }
+
+  behavior('University information system - SAdh0usr3661643442065', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+    }
+  }
+
+  behavior('University information system - SA2imwt93683196164222', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAfdhqel33d728768114' }
+    }
+  }
+
+  behavior('University information system - SA10awr42368441140965', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA10awr42368441140965' }
+    }
+  }
+
+  behavior('University information system - SA1sk5gj633d3994359492', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAarux1f3691502939844' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA1sk5gj633d3994359492' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA1sk5gj633d3994359492' }
+      o { Left_Click_at_a_application_use_cases_to_Use_cases(); behave_as 'Use-cases - SAewc8osd3a1415421791' }
+    }
+  }
+
+  behavior('Login Page - SAsum30c1eb903084722', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+      o { Left_Click_at_a_export_import_db_to_Import_Export_DB(); behave_as 'Import-Export DB - SA3vftox2ae2638926141' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SA1650ide3401809704587' }
+      o { Type_EINlADuXTV_into_input_enter_password_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA1cpl1se36a2687405895' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA1ngshkn33d3655997443' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA16ve6333673977330803' }
+      o { Type_1st_January_into_input_enter_username_to_Login_Page(); behave_as 'Login Page - SAsum30c1eb903084722' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SA1v3emtb33c1814930362' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAsops3k33c2688885013' }
+      o { Left_Click_at_a_home_current_to_University_information_system(); behave_as 'University information system - SAsops3k33c2688885013' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SA2imwt93683196164222' }
+      o { Left_Click_at_a_university_information_system_to_University_information_system(); behave_as 'University information system - SAensqul33e967502146' }
+      o { Left_Click_at_button_login_to_Login_Page(); behave_as 'Login Page - SA1g6w3v12162625599351' }
+      o { Left_Click_at_a_restore_db_to_University_information_system(); behave_as 'University information system - SAsfo2ed3674226321709' }
+    }
+  }
+
+  var 'initial_url', :string, "https://projects.kiv.zcu.cz/uis/"
+
+  call 'launch'
+
+  behave_as 'University information system - SA1hr582g33f2531408127'
+
+}

@@ -1,0 +1,30 @@
+{
+    "states": [
+        {
+            "id": "S1",
+            "title": "Overview",
+            "url": "/overview",
+            "observations": [
+                {
+                    "kind": "title",
+                    "value": "Overview"
+                },
+                {
+                    "kind": "field_label",
+                    "value": "First name"
+                },
+                {
+                    "kind": "field_label",
+                    "value": "Last name"
+                },
+                {
+                    "kind": "action_label",
+                    "value": "Update"
+                }
+            ],
+            "metadata": {}
+        }
+    ],
+    "transitions": [],
+    "metadata": {}
+}

@@ -1,38 +1,56 @@
-# TESTAR Requirements Traceability
+# ReqTrace
 
-Research repository accompanying the Master's thesis:
+Repository accompanying the Master's thesis **Requirements Traceability for Scriptless GUI Testing**.
 
-**Requirements Traceability for Scriptless GUI Testing**
+ReqTrace is a thesis prototype for analyzing whether requirements appear to have been exercised in TESTAR-generated GUI state models and for reporting evidence-based coverage results.
 
-This study develops and evaluates a method for tracing user stories to TESTAR-generated GUI State Models to assess user story execution completeness and enable requirements coverage analysis in scriptless GUI testing.
+## Repository layout
 
-## Repository Structure
+- `src/` contains the ReqTrace prototype
+- `tests/` contains automated tests and test fixtures
+- `suts/` contains system-under-test assets, requirements, protocols, and run outputs
+- `docs/` contains project documentation
+- `papers/` contains proposal, thesis, bibliography, and figures
 
-- [`docs/`](docs/) — Method documentation and experimental configurations
-- [`data/`](data/) — User stories and exported GUI State Models (JSON)
-- [`prototype/`](prototype/) — Research prototype implementation
-- [`evaluation/`](evaluation/) — Reference set, metrics, and evaluation results
-- [`papers/`](papers/) — Research documents (LaTeX)
+## Run
 
-## Reproducibility
+```bash
+reqtrace analyze tests/fixtures/canonical/case_001_found/state.json tests/fixtures/canonical/case_001_found/requirements.json
+```
 
-The primary System Under Test (SUT) used in this study is Parabank (https://para.testar.org/).
+## Select analyzer
 
-GUI State Models were generated using TESTAR and exported to JSON using the built-in export functionality.
+```bash
+reqtrace analyze tests/fixtures/state_models/testar_v1_minimal.json tests/fixtures/canonical/case_001_found/requirements.json --analyzer keyword_v1
+```
 
-The configurations used for each experimental run are documented in [`docs/experiment-configs/`](docs/experiment-configs/), and the resulting exported GUI State Models are available in [`data/models/`](data/models/).
+```bash
+reqtrace analyze suts/tbuis/testing/testar/runs/2026-03-22-webdriver-tbuis-public/model.json suts/tbuis/requirements/use-cases.json --analyzer evidence_v1
+```
 
-## Related Project
+## Export JSON
 
-This study builds upon TESTAR, an open-source tool for scriptless GUI testing:
+```bash
+reqtrace analyze tests/fixtures/canonical/case_001_found/state.json tests/fixtures/canonical/case_001_found/requirements.json -o report.json
+```
 
-- Source code: https://github.com/TESTARtool
-- Website: https://testar.org/
+## Run UI
+
+```bash
+reqtrace ui tests/fixtures/canonical/case_001_found/state.json tests/fixtures/canonical/case_001_found/requirements.json
+```
+
+## Related project
+
+This study uses TESTAR for scriptless GUI testing.
+
+- Source code: [github.com/TESTARtool](https://github.com/TESTARtool)
+- Website: [testar.org](https://testar.org/)
 
 ## Citation
 
-If you use this repository or its artifacts, please cite the associated Master's thesis. See [`CITATION.cff`](CITATION.cff) for citation details.
+See [`CITATION.cff`](CITATION.cff).
 
 ## License
 
-MIT License — see [LICENSE](LICENSE).
+See [LICENSE](LICENSE).

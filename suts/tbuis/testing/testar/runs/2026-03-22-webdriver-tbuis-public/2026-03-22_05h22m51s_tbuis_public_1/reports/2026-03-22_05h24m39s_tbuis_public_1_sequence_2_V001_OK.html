@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+// Feature to reverse state and action div nodes
+function reverse(){
+let direction = document.getElementById('main').style.flexDirection;
+if(direction === 'column') document.getElementById('main').style.flexDirection = 'column-reverse';
+else document.getElementById('main').style.flexDirection = 'column';}
+
+// Feature to enable derived action nodes to be shown or hidden
+function toggleCollapsible(){
+document.querySelectorAll('.collapsible').forEach(btn => {
+btn.addEventListener('click', function() {
+this.classList.toggle('active');
+let content = this.nextElementSibling;
+if (content.style.maxHeight) {
+content.style.maxHeight = null;
+} else {
+content.style.maxHeight = content.scrollHeight + 'px';
+}
+}); }); }
+document.addEventListener('DOMContentLoaded', toggleCollapsible);
+
+// Feature to highlight the visualizer of the verdict widget
+document.addEventListener('DOMContentLoaded', function () {
+const visualizerText = document.getElementById('visualizer-rect')?.innerText;
+if (!visualizerText) return;
+const rectPattern = /Rect\s*\[x:(\d+\.\d+)\s*y:(\d+\.\d+)\s*w:(\d+\.\d+)\s*h:(\d+\.\d+)\]/g;
+const matches = [...visualizerText.matchAll(rectPattern)];
+if (matches.length === 0) return;
+const visualizerElement = document.getElementById('visualizer-rect');
+let stateBlock = visualizerElement.closest('.stateBlock');
+if (!stateBlock) {
+let sibling = visualizerElement.parentElement?.previousElementSibling;
+while (sibling && !sibling.classList.contains('stateBlock')) {
+sibling = sibling.previousElementSibling;
+}
+stateBlock = sibling;
+}
+const imgContainer = stateBlock.querySelector('.background');
+const img = imgContainer?.querySelector('img');
+if (!img) return;
+function updateRectangles() {
+const imgRect = img.getBoundingClientRect();
+const containerRect = imgContainer.getBoundingClientRect();
+const offsetX = imgRect.left - containerRect.left;
+const offsetY = imgRect.top - containerRect.top;
+const scaleX = imgRect.width / img.naturalWidth;
+const scaleY = imgRect.height / img.naturalHeight;
+// Clear all existing rectangles
+const existingRectangles = imgContainer.querySelectorAll('.rectangle');
+existingRectangles.forEach(rect => rect.remove());
+// Loop through all matches to create rectangle elements
+matches.forEach(match => {
+const [x, y, width, height] = match.slice(1, 5).map(parseFloat);
+// Prevent to highlight elements outside screen boundaries
+if (x > img.naturalWidth || y > img.naturalHeight || (x + width) < 0 || (y + height) < 0) return;
+if (width === 0 && height === 0) return;
+const rectangleDiv = document.createElement('div');
+rectangleDiv.classList.add('rectangle');
+Object.assign(rectangleDiv.style, {
+position: 'absolute',
+left: (x * scaleX + offsetX) - 3 + 'px',
+top: (y * scaleY + offsetY) - 3 + 'px',
+width: (width * scaleX) - 6 + 'px',
+height: (height * scaleY) - 6 + 'px',
+border: '2px solid red'
+});
+imgContainer.appendChild(rectangleDiv);
+});
+}
+img.onload = updateRectangles;
+window.addEventListener('resize', updateRectangles);
+});
+</script>
+<style>
+div {
+border: 1px solid black;
+margin: 2px;
+padding: 2px;
+}
+.background {
+padding: 15px;
+width: 100%;
+border: none;
+text-align: left;
+outline: none;
+border-radius: 4px;
+position: relative;
+}
+.background img {
+max-width: 98%;
+max-height: 98%;
+object-fit: contain;
+}
+.collapsible {
+color: black;
+font-weight: bold;
+cursor: pointer;
+padding: 15px;
+width: 100%;
+border: none;
+text-align: left;
+outline: none;
+font-size: 18px;
+border-radius: 4px;
+}
+.active, .collapsible:hover {}
+.collapsible:after {
+content: '\25B6';
+color: black;
+font-weight: bold;
+float: left;
+margin-left: 2px;
+margin-right: 10px;
+}
+.collapsible.active:after {
+content: '\25BC';
+}
+.collapsibleContent {
+padding: 0 15px;
+max-height: 0;
+overflow: hidden;
+border-radius: 4px;
+transition: max-height 0.3s ease-out;
+}
+</style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>TESTAR execution sequence report</title>
+</head>
+<body>
+<h1>TESTAR execution sequence report for sequence 2</h1>
+<button id='reverseButton' onclick='reverse()'>Reverse order</button>
+<div id='main' style='display:flex;flex-direction:column'>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 0</h2>
+<h4>AbstractID=SA1ngshkn33d3655997443 || ConcreteID=SCshsrwv37f1280453818</h4>
+<h4>TimeStamp: 2026-03-22T02:24:44.716Z || Epoch: 1774146284716</h4>
+<h4>State Render Time: 692.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/' target='_blank'>https://projects.kiv.zcu.cz/uis/</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCshsrwv37f1280453818.png" alt="screenshot: state=0, ConcreteID=SCshsrwv37f1280453818, AbstractID=SA1ngshkn33d3655997443"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACder3mc9f423367275 || AbstractID=AA18tflh3361353719564
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACdch95y9e2652028930 || AbstractID=AAo2y6ig351265713999
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1eo8j8c9e3706224326 || AbstractID=AAycj2if352967102784
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC15i2pmua02745204752 || AbstractID=AA1d2l776351701681727
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC38lnpua03307800128 || AbstractID=AA1qytsbm341103866390
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1peup679f2669333572 || AbstractID=AA1anpcbo35290381372
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC12fk1gv9f3720384618 || AbstractID=AA1fgdqvn362108732931
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1qhsmoq9f2545972512 || AbstractID=AAuitc95351480552901
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 1 leading to State 1</h2>
+<h4>AbstractID=AA1qytsbm341103866390 || ConcreteID=AC38lnpua03307800128 || Left Click at 'a_database_content'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCshsrwv37f1280453818_AC38lnpua03307800128.png" alt="screenshot: action, ConcreteID=AC38lnpua03307800128"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 1</h2>
+<h4>AbstractID=SA2h51au2dfa3988951806 || ConcreteID=SC1qvhkps3ed4284490317</h4>
+<h4>TimeStamp: 2026-03-22T02:24:50.734Z || Epoch: 1774146290734</h4>
+<h4>State Render Time: 436.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/db-content.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/db-content.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1qvhkps3ed4284490317.png" alt="screenshot: state=1, ConcreteID=SC1qvhkps3ed4284490317, AbstractID=SA2h51au2dfa3988951806"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACozrxera01741207202 || AbstractID=AA1jjcy94351345090931
+</li>
+<li>
+<b>Drag (1912.0, 44.0) To (1912.0, 476.5)</b> || Compound Action =
+Move mouse to (1912.0, 44.0).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 476.5).
+Release Mouse Button BUTTON1 || ConcreteID=AC18m8665be4031575100 || AbstractID=AAc7dxaz343806003613
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACxjc6wa0768103400 || AbstractID=AA19l134k361606071230
+</li>
+<li>
+<b>Drag (1912.0, 44.0) To (1912.0, 912.0)</b> || Compound Action =
+Move mouse to (1912.0, 44.0).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 912.0).
+Release Mouse Button BUTTON1 || ConcreteID=ACftctxbbe1848340355 || AbstractID=AAc7dxaz343806003613
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC2yzaf19f2571241106 || AbstractID=AA1d3hsif351130514425
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1axugbha03912552937 || AbstractID=AA12y2xq0361924799153
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC14aqkhf9f3686316118 || AbstractID=AA1nd2oie353100205558
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 2 leading to State 2</h2>
+<h4>AbstractID=AAc7dxaz343806003613 || ConcreteID=AC18m8665be4031575100 || Drag (1912.0, 44.0) To (1912.0, 476.5)</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1qvhkps3ed4284490317_AC18m8665be4031575100.png" alt="screenshot: action, ConcreteID=AC18m8665be4031575100"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 2</h2>
+<h4>AbstractID=SA2h51au2dfa3988951806 || ConcreteID=SC57m0te3ea63377084917</h4>
+<h4>TimeStamp: 2026-03-22T02:24:58.449Z || Epoch: 1774146298449</h4>
+<h4>State Render Time: 436.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/db-content.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/db-content.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC57m0te3ea63377084917.png" alt="screenshot: state=2, ConcreteID=SC57m0te3ea63377084917, AbstractID=SA2h51au2dfa3988951806"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACzryd1ma03983093170 || AbstractID=AA19l134k361606071230
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACar5f73a0697675699 || AbstractID=AA12y2xq0361924799153
+</li>
+<li>
+<b>Drag (1912.0, 641.2857142857142) To (1912.0, 912.0)</b> || Compound Action =
+Move mouse to (1912.0, 641.2857142857142).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 912.0).
+Release Mouse Button BUTTON1 || ConcreteID=ACsdn1dqcb1668457800 || AbstractID=AAc7dxaz343806003613
+</li>
+<li>
+<b>Drag (1912.0, 641.2857142857142) To (1912.0, 36.0)</b> || Compound Action =
+Move mouse to (1912.0, 641.2857142857142).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 36.0).
+Release Mouse Button BUTTON1 || ConcreteID=AC1mtqvu9ca128340665 || AbstractID=AAc7dxaz343806003613
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1nu6y9ha02808727800 || AbstractID=AA1jjcy94351345090931
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACg7u9cx9f3232386857 || AbstractID=AA1nd2oie353100205558
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1dx719n9f2186342893 || AbstractID=AA1d3hsif351130514425
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 3 leading to State 3</h2>
+<h4>AbstractID=AA1d3hsif351130514425 || ConcreteID=AC1dx719n9f2186342893 || Left Click at 'a_restore_db'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC57m0te3ea63377084917_AC1dx719n9f2186342893.png" alt="screenshot: action, ConcreteID=AC1dx719n9f2186342893"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 3</h2>
+<h4>AbstractID=SAa9of7a3681550168021 || ConcreteID=SC1mc5ws3aa1557591037</h4>
+<h4>TimeStamp: 2026-03-22T02:25:14.077Z || Epoch: 1774146314077</h4>
+<h4>State Render Time: 9412.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21' target='_blank'>https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1mc5ws3aa1557591037.png" alt="screenshot: state=3, ConcreteID=SC1mc5ws3aa1557591037, AbstractID=SAa9of7a3681550168021"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1ecy1np9e2077029489 || AbstractID=AA1w3y8ta34370081509
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC2dc8e39f1579781010 || AbstractID=AA3ipckv3488132719
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 419.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC9gtjcs9f523698291 || AbstractID=AAdz8bwc331449984748
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 395.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1y5b2qz9f3501282126 || AbstractID=AAm2h7iw34940713877
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 443.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC17sceoza0476501779 || AbstractID=AAjnlcne341278305174
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACgnl9qz9e959859381 || AbstractID=AA7cf2u5343987069162
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1dc7p5c9f338259672 || AbstractID=AA1uqaood351273922376
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACoberat9f3503680729 || AbstractID=AA1o3cj9t351726884423
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 4 leading to State 4</h2>
+<h4>AbstractID=AA1uqaood351273922376 || ConcreteID=AC1dc7p5c9f338259672 || Left Click at 'a_university_information_system'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1mc5ws3aa1557591037_AC1dc7p5c9f338259672.png" alt="screenshot: action, ConcreteID=AC1dc7p5c9f338259672"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 4</h2>
+<h4>AbstractID=SAensqul33e967502146 || ConcreteID=SCfoyz9b37d2790690620</h4>
+<h4>TimeStamp: 2026-03-22T02:25:17.349Z || Epoch: 1774146317349</h4>
+<h4>State Render Time: 316.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/index.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/index.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620.png" alt="screenshot: state=4, ConcreteID=SCfoyz9b37d2790690620, AbstractID=SAensqul33e967502146"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1q7tyl3a087438630 || AbstractID=AAspxj9s321258569736
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACm05bre9f2023709461 || AbstractID=AAralji9343912140917
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1nb3xr59e2308336353 || AbstractID=AA125g3k9331256167369
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1a2dwz99f849329759 || AbstractID=AAybqdaz332721743692
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACtg6yiza01673507702 || AbstractID=AA1gvi890332674419894
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AClzcnor9e3412907045 || AbstractID=AArvv7ka332977214918
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC18zfzgq9f977602363 || AbstractID=AA1egmddi333947572405
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1w0gfvz9f3160660244 || AbstractID=AAknne3p343291357562
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 5 leading to State 5</h2>
+<h4>AbstractID=AA1egmddi333947572405 || ConcreteID=AC18zfzgq9f977602363 || Left Click at 'a_application_constraints'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620_AC18zfzgq9f977602363.png" alt="screenshot: action, ConcreteID=AC18zfzgq9f977602363"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 5</h2>
+<h4>AbstractID=SA1naz1at5e22874490314 || ConcreteID=SCt0q5rc668406304023</h4>
+<h4>TimeStamp: 2026-03-22T02:25:20.285Z || Epoch: 1774146320285</h4>
+<h4>State Render Time: 456.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/constraints.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/constraints.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCt0q5rc668406304023.png" alt="screenshot: state=5, ConcreteID=SCt0q5rc668406304023, AbstractID=SA1naz1at5e22874490314"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACvi3dmv9e197394222 || AbstractID=AAar1jkk361288083474
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACg2vkzo9d153408102 || AbstractID=AAyfoly352826607598
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1ds8cwe9d1272868002 || AbstractID=AA1ppyul3351406254561
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1jkbyuq9e1103305316 || AbstractID=AA1w5u0bs351084198763
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC6hafsc9e3477044527 || AbstractID=AA443e60361640378653
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 6 leading to State 6</h2>
+<h4>AbstractID=AA443e60361640378653 || ConcreteID=AC6hafsc9e3477044527 || Left Click at 'a_login'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCt0q5rc668406304023_AC6hafsc9e3477044527.png" alt="screenshot: action, ConcreteID=AC6hafsc9e3477044527"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 6</h2>
+<h4>AbstractID=SAsum30c1eb903084722 || ConcreteID=SC16kput22182127985928</h4>
+<h4>TimeStamp: 2026-03-22T02:25:22.698Z || Epoch: 1774146322698</h4>
+<h4>State Render Time: 424.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/login' target='_blank'>https://projects.kiv.zcu.cz/uis/login</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC16kput22182127985928.png" alt="screenshot: state=6, ConcreteID=SC16kput22182127985928, AbstractID=SAsum30c1eb903084722"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACxt28gu9f3106962550 || AbstractID=AA1ri41j9333228636014
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC8et07wa01316193778 || AbstractID=AA1nckdl634475139842
+</li>
+<li>
+<b>Left Click at 'button_login'</b> || Compound Action =
+Move mouse to (437.5, 327.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC286dg1a02679579994 || AbstractID=AAxn9jaq344099049045
+</li>
+<li>
+<b>Type 'DMowXTDtiV' into 'input_enter_password</b> || Compound Action =
+Compound Action =
+Move mouse to (960.0, 273.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1
+Press Key VK_CONTROL
+Press Key VK_A
+Release Key VK_A
+Release Key VK_CONTROL
+Type text 'DMowXTDtiV' || ConcreteID=ACe0k76711d3327224448 || AbstractID=AAvg8i3w362647060210
+</li>
+<li>
+<b>Type 'iJyAyUiVLK' into 'input_enter_username</b> || Compound Action =
+Compound Action =
+Move mouse to (960.0, 187.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1
+Press Key VK_CONTROL
+Press Key VK_A
+Release Key VK_A
+Release Key VK_CONTROL
+Type text 'iJyAyUiVLK' || ConcreteID=ACzpe0wq11e378312359 || AbstractID=AAp2pvpg36231157954
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1lhujaaa03230655161 || AbstractID=AA1xxz79y333544130020
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC3pgk49f4224369330 || AbstractID=AA2qkvk4331004156257
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACxfly2fa02324629491 || AbstractID=AA1tziizq34827500045
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 7 leading to State 7</h2>
+<h4>AbstractID=AA1tziizq34827500045 || ConcreteID=ACxfly2fa02324629491 || Left Click at 'a_university_information_system'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC16kput22182127985928_ACxfly2fa02324629491.png" alt="screenshot: action, ConcreteID=ACxfly2fa02324629491"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 7</h2>
+<h4>AbstractID=SAensqul33e967502146 || ConcreteID=SCfoyz9b37d2790690620</h4>
+<h4>TimeStamp: 2026-03-22T02:25:25.006Z || Epoch: 1774146325006</h4>
+<h4>State Render Time: 312.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/index.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/index.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620.png" alt="screenshot: state=7, ConcreteID=SCfoyz9b37d2790690620, AbstractID=SAensqul33e967502146"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1a2dwz99f849329759 || AbstractID=AAybqdaz332721743692
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC18zfzgq9f977602363 || AbstractID=AA1egmddi333947572405
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AClzcnor9e3412907045 || AbstractID=AArvv7ka332977214918
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1w0gfvz9f3160660244 || AbstractID=AAknne3p343291357562
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1q7tyl3a087438630 || AbstractID=AAspxj9s321258569736
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1nb3xr59e2308336353 || AbstractID=AA125g3k9331256167369
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACtg6yiza01673507702 || AbstractID=AA1gvi890332674419894
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACm05bre9f2023709461 || AbstractID=AAralji9343912140917
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 8 leading to State 8</h2>
+<h4>AbstractID=AArvv7ka332977214918 || ConcreteID=AClzcnor9e3412907045 || Left Click at 'a_restore_db'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620_AClzcnor9e3412907045.png" alt="screenshot: action, ConcreteID=AClzcnor9e3412907045"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 8</h2>
+<h4>AbstractID=SAa9of7a3681550168021 || ConcreteID=SC1mc5ws3aa1557591037</h4>
+<h4>TimeStamp: 2026-03-22T02:25:36.143Z || Epoch: 1774146336143</h4>
+<h4>State Render Time: 9916.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21' target='_blank'>https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1mc5ws3aa1557591037.png" alt="screenshot: state=8, ConcreteID=SC1mc5ws3aa1557591037, AbstractID=SAa9of7a3681550168021"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 419.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC9gtjcs9f523698291 || AbstractID=AAdz8bwc331449984748
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 443.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC17sceoza0476501779 || AbstractID=AAjnlcne341278305174
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1dc7p5c9f338259672 || AbstractID=AA1uqaood351273922376
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACgnl9qz9e959859381 || AbstractID=AA7cf2u5343987069162
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1ecy1np9e2077029489 || AbstractID=AA1w3y8ta34370081509
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACoberat9f3503680729 || AbstractID=AA1o3cj9t351726884423
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC2dc8e39f1579781010 || AbstractID=AA3ipckv3488132719
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 395.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1y5b2qz9f3501282126 || AbstractID=AAm2h7iw34940713877
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 9 leading to State 9</h2>
+<h4>AbstractID=AAjnlcne341278305174 || ConcreteID=AC17sceoza0476501779 || Left Click at 'a_application_constraints'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1mc5ws3aa1557591037_AC17sceoza0476501779.png" alt="screenshot: action, ConcreteID=AC17sceoza0476501779"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 9</h2>
+<h4>AbstractID=SA1naz1at5e22874490314 || ConcreteID=SCt0q5rc668406304023</h4>
+<h4>TimeStamp: 2026-03-22T02:25:38.419Z || Epoch: 1774146338419</h4>
+<h4>State Render Time: 292.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/constraints.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/constraints.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCt0q5rc668406304023.png" alt="screenshot: state=9, ConcreteID=SCt0q5rc668406304023, AbstractID=SA1naz1at5e22874490314"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC6hafsc9e3477044527 || AbstractID=AA443e60361640378653
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1jkbyuq9e1103305316 || AbstractID=AA1w5u0bs351084198763
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1ds8cwe9d1272868002 || AbstractID=AA1ppyul3351406254561
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACg2vkzo9d153408102 || AbstractID=AAyfoly352826607598
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACvi3dmv9e197394222 || AbstractID=AAar1jkk361288083474
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 10 leading to State 10</h2>
+<h4>AbstractID=AA1ppyul3351406254561 || ConcreteID=AC1ds8cwe9d1272868002 || Left Click at 'a_restore_db'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCt0q5rc668406304023_AC1ds8cwe9d1272868002.png" alt="screenshot: action, ConcreteID=AC1ds8cwe9d1272868002"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 10</h2>
+<h4>AbstractID=SAa9of7a3681550168021 || ConcreteID=SC1mc5ws3aa1557591037</h4>
+<h4>TimeStamp: 2026-03-22T02:25:47.718Z || Epoch: 1774146347718</h4>
+<h4>State Render Time: 8048.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21' target='_blank'>https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1mc5ws3aa1557591037.png" alt="screenshot: state=10, ConcreteID=SC1mc5ws3aa1557591037, AbstractID=SAa9of7a3681550168021"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACgnl9qz9e959859381 || AbstractID=AA7cf2u5343987069162
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 395.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1y5b2qz9f3501282126 || AbstractID=AAm2h7iw34940713877
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1dc7p5c9f338259672 || AbstractID=AA1uqaood351273922376
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1ecy1np9e2077029489 || AbstractID=AA1w3y8ta34370081509
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACoberat9f3503680729 || AbstractID=AA1o3cj9t351726884423
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 419.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC9gtjcs9f523698291 || AbstractID=AAdz8bwc331449984748
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 443.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC17sceoza0476501779 || AbstractID=AAjnlcne341278305174
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC2dc8e39f1579781010 || AbstractID=AA3ipckv3488132719
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 11 leading to State 11</h2>
+<h4>AbstractID=AA7cf2u5343987069162 || ConcreteID=ACgnl9qz9e959859381 || Left Click at 'a_home_current'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1mc5ws3aa1557591037_ACgnl9qz9e959859381.png" alt="screenshot: action, ConcreteID=ACgnl9qz9e959859381"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 11</h2>
+<h4>AbstractID=SAensqul33e967502146 || ConcreteID=SCfoyz9b37d2790690620</h4>
+<h4>TimeStamp: 2026-03-22T02:25:50.098Z || Epoch: 1774146350098</h4>
+<h4>State Render Time: 512.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/index.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/index.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620.png" alt="screenshot: state=11, ConcreteID=SCfoyz9b37d2790690620, AbstractID=SAensqul33e967502146"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AClzcnor9e3412907045 || AbstractID=AArvv7ka332977214918
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1w0gfvz9f3160660244 || AbstractID=AAknne3p343291357562
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1nb3xr59e2308336353 || AbstractID=AA125g3k9331256167369
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1q7tyl3a087438630 || AbstractID=AAspxj9s321258569736
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC18zfzgq9f977602363 || AbstractID=AA1egmddi333947572405
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACtg6yiza01673507702 || AbstractID=AA1gvi890332674419894
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACm05bre9f2023709461 || AbstractID=AAralji9343912140917
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1a2dwz99f849329759 || AbstractID=AAybqdaz332721743692
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 12 leading to State 12</h2>
+<h4>AbstractID=AA125g3k9331256167369 || ConcreteID=AC1nb3xr59e2308336353 || Left Click at 'a_home_current'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620_AC1nb3xr59e2308336353.png" alt="screenshot: action, ConcreteID=AC1nb3xr59e2308336353"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 12</h2>
+<h4>AbstractID=SAensqul33e967502146 || ConcreteID=SCfoyz9b37d2790690620</h4>
+<h4>TimeStamp: 2026-03-22T02:25:52.149Z || Epoch: 1774146352149</h4>
+<h4>State Render Time: 320.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/index.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/index.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620.png" alt="screenshot: state=12, ConcreteID=SCfoyz9b37d2790690620, AbstractID=SAensqul33e967502146"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1q7tyl3a087438630 || AbstractID=AAspxj9s321258569736
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1w0gfvz9f3160660244 || AbstractID=AAknne3p343291357562
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1nb3xr59e2308336353 || AbstractID=AA125g3k9331256167369
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACtg6yiza01673507702 || AbstractID=AA1gvi890332674419894
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACm05bre9f2023709461 || AbstractID=AAralji9343912140917
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1a2dwz99f849329759 || AbstractID=AAybqdaz332721743692
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AClzcnor9e3412907045 || AbstractID=AArvv7ka332977214918
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC18zfzgq9f977602363 || AbstractID=AA1egmddi333947572405
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 13 leading to State 13</h2>
+<h4>AbstractID=AAspxj9s321258569736 || ConcreteID=AC1q7tyl3a087438630 || Left Click at 'a_database_content'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620_AC1q7tyl3a087438630.png" alt="screenshot: action, ConcreteID=AC1q7tyl3a087438630"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 13</h2>
+<h4>AbstractID=SA2h51au2dfa3988951806 || ConcreteID=SC1qvhkps3ed4284490317</h4>
+<h4>TimeStamp: 2026-03-22T02:25:56.647Z || Epoch: 1774146356647</h4>
+<h4>State Render Time: 352.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/db-content.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/db-content.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1qvhkps3ed4284490317.png" alt="screenshot: state=13, ConcreteID=SC1qvhkps3ed4284490317, AbstractID=SA2h51au2dfa3988951806"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACozrxera01741207202 || AbstractID=AA1jjcy94351345090931
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1axugbha03912552937 || AbstractID=AA12y2xq0361924799153
+</li>
+<li>
+<b>Drag (1912.0, 44.0) To (1912.0, 476.5)</b> || Compound Action =
+Move mouse to (1912.0, 44.0).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 476.5).
+Release Mouse Button BUTTON1 || ConcreteID=AC18m8665be4031575100 || AbstractID=AAc7dxaz343806003613
+</li>
+<li>
+<b>Drag (1912.0, 44.0) To (1912.0, 912.0)</b> || Compound Action =
+Move mouse to (1912.0, 44.0).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 912.0).
+Release Mouse Button BUTTON1 || ConcreteID=ACftctxbbe1848340355 || AbstractID=AAc7dxaz343806003613
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC14aqkhf9f3686316118 || AbstractID=AA1nd2oie353100205558
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC2yzaf19f2571241106 || AbstractID=AA1d3hsif351130514425
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACxjc6wa0768103400 || AbstractID=AA19l134k361606071230
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 14 leading to State 14</h2>
+<h4>AbstractID=AA1nd2oie353100205558 || ConcreteID=AC14aqkhf9f3686316118 || Left Click at 'a_home_current'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1qvhkps3ed4284490317_AC14aqkhf9f3686316118.png" alt="screenshot: action, ConcreteID=AC14aqkhf9f3686316118"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 14</h2>
+<h4>AbstractID=SAensqul33e967502146 || ConcreteID=SCfoyz9b37d2790690620</h4>
+<h4>TimeStamp: 2026-03-22T02:26:00.613Z || Epoch: 1774146360613</h4>
+<h4>State Render Time: 652.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/index.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/index.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620.png" alt="screenshot: state=14, ConcreteID=SCfoyz9b37d2790690620, AbstractID=SAensqul33e967502146"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1nb3xr59e2308336353 || AbstractID=AA125g3k9331256167369
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACtg6yiza01673507702 || AbstractID=AA1gvi890332674419894
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AClzcnor9e3412907045 || AbstractID=AArvv7ka332977214918
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC18zfzgq9f977602363 || AbstractID=AA1egmddi333947572405
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1a2dwz99f849329759 || AbstractID=AAybqdaz332721743692
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1q7tyl3a087438630 || AbstractID=AAspxj9s321258569736
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACm05bre9f2023709461 || AbstractID=AAralji9343912140917
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1w0gfvz9f3160660244 || AbstractID=AAknne3p343291357562
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 15 leading to State 15</h2>
+<h4>AbstractID=AAralji9343912140917 || ConcreteID=ACm05bre9f2023709461 || Left Click at 'a_university_information_system'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620_ACm05bre9f2023709461.png" alt="screenshot: action, ConcreteID=ACm05bre9f2023709461"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 15</h2>
+<h4>AbstractID=SAensqul33e967502146 || ConcreteID=SCfoyz9b37d2790690620</h4>
+<h4>TimeStamp: 2026-03-22T02:26:03.911Z || Epoch: 1774146363911</h4>
+<h4>State Render Time: 288.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/index.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/index.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620.png" alt="screenshot: state=15, ConcreteID=SCfoyz9b37d2790690620, AbstractID=SAensqul33e967502146"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AClzcnor9e3412907045 || AbstractID=AArvv7ka332977214918
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC18zfzgq9f977602363 || AbstractID=AA1egmddi333947572405
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACtg6yiza01673507702 || AbstractID=AA1gvi890332674419894
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACm05bre9f2023709461 || AbstractID=AAralji9343912140917
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1a2dwz99f849329759 || AbstractID=AAybqdaz332721743692
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1nb3xr59e2308336353 || AbstractID=AA125g3k9331256167369
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1q7tyl3a087438630 || AbstractID=AAspxj9s321258569736
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1w0gfvz9f3160660244 || AbstractID=AAknne3p343291357562
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 16 leading to State 16</h2>
+<h4>AbstractID=AAybqdaz332721743692 || ConcreteID=AC1a2dwz99f849329759 || Left Click at 'a_export/import_db'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCfoyz9b37d2790690620_AC1a2dwz99f849329759.png" alt="screenshot: action, ConcreteID=AC1a2dwz99f849329759"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 16</h2>
+<h4>AbstractID=SA3vftox2ae2638926141 || ConcreteID=SC16af2722e72293100128</h4>
+<h4>TimeStamp: 2026-03-22T02:26:06.185Z || Epoch: 1774146366185</h4>
+<h4>State Render Time: 312.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/import-export' target='_blank'>https://projects.kiv.zcu.cz/uis/import-export</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC16af2722e72293100128.png" alt="screenshot: state=16, ConcreteID=SC16af2722e72293100128, AbstractID=SA3vftox2ae2638926141"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACc4vmt69f3262297336 || AbstractID=AA1s850bj341337960468
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACoy6doma03404992086 || AbstractID=AA1yo0628341559337630
+</li>
+<li>
+<b>Left Click at 'button_export'</b> || Compound Action =
+Move mouse to (440.5, 204.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AChwbqzha02153878191 || AbstractID=AA19i4ywr351139518510
+</li>
+<li>
+<b>Left Click at 'button_import'</b> || Compound Action =
+Move mouse to (1011.5, 218.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC134finwa22827125726 || AbstractID=AAogx63m343936335002
+</li>
+<li>
+<b>Left Click at 'input_data_will_be_exported_in_json_format'</b> || Compound Action =
+Move mouse to (411.5, 156.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACv1r6lm9f4037418931 || AbstractID=AAsyifr833588483170
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1dgmwvk9f2156399164 || AbstractID=AA3gluce343021245979
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACvxsgra02163534620 || AbstractID=AAhd8fd8352165174420
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1aw8wlca01141401885 || AbstractID=AAaqa9yo352886556059
+</li>
+<li>
+<b>Left Click at 'input_data_will_be_exported_in_xml_format'</b> || Compound Action =
+Move mouse to (411.5, 132.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACcmxt0qa12324843275 || AbstractID=AA1wdjeb3343196365601
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 17 leading to State 17</h2>
+<h4>AbstractID=AA1s850bj341337960468 || ConcreteID=ACc4vmt69f3262297336 || Left Click at 'a_restore_db'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC16af2722e72293100128_ACc4vmt69f3262297336.png" alt="screenshot: action, ConcreteID=ACc4vmt69f3262297336"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 17</h2>
+<h4>AbstractID=SA2imwt93683196164222 || ConcreteID=SCtce0ce3aa2823890048</h4>
+<h4>TimeStamp: 2026-03-22T02:26:17.081Z || Epoch: 1774146377081</h4>
+<h4>State Render Time: 9612.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21' target='_blank'>https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCtce0ce3aa2823890048.png" alt="screenshot: state=17, ConcreteID=SCtce0ce3aa2823890048, AbstractID=SA2imwt93683196164222"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1vmyumg9f1393363977 || AbstractID=AA12an95l341894931945
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 443.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC76jylya02075572568 || AbstractID=AA1ifj98434964948496
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 419.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC3pc3m19f303269864 || AbstractID=AA120hp76332388596782
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC17kq9el9f420342083 || AbstractID=AA8aouwz351329600460
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACfhgxa9e1893461823 || AbstractID=AA164czev342551662956
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACijxbk29f3723586370 || AbstractID=AA1nqpif351648410307
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACy4u8u09e841044475 || AbstractID=AAvus3ew341673293667
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 395.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1sdtn089f3717584085 || AbstractID=AA1kuf43m341302378003
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 18 leading to State 18</h2>
+<h4>AbstractID=AA164czev342551662956 || ConcreteID=ACfhgxa9e1893461823 || Left Click at 'a_home_current'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCtce0ce3aa2823890048_ACfhgxa9e1893461823.png" alt="screenshot: action, ConcreteID=ACfhgxa9e1893461823"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 18</h2>
+<h4>AbstractID=SAfdhqel33d728768114 || ConcreteID=SCqzgst737e3532716687</h4>
+<h4>TimeStamp: 2026-03-22T02:26:19.682Z || Epoch: 1774146379682</h4>
+<h4>State Render Time: 288.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/index.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/index.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCqzgst737e3532716687.png" alt="screenshot: state=18, ConcreteID=SCqzgst737e3532716687, AbstractID=SAfdhqel33d728768114"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AChvylgi9f396394586 || AbstractID=AA1f6f1bs341064105031
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1z0xypwa02499386088 || AbstractID=AA11eecpv323690238274
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1e5h9lk9e3641230090 || AbstractID=AActwcif33669903257
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1uz04iw9f2573002513 || AbstractID=AAj9ri9433883153683
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACgg4hou9e2616360398 || AbstractID=AAn3h8ie333695628182
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC16wrjb19f3546022491 || AbstractID=AA1ltd6qc34309091656
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC129aynsa04067433656 || AbstractID=AA11tjd7533166801641
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1tw270d9f2441502325 || AbstractID=AAzenibn332110944490
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 19 leading to State 19</h2>
+<h4>AbstractID=AA1f6f1bs341064105031 || ConcreteID=AChvylgi9f396394586 || Left Click at 'a_login'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCqzgst737e3532716687_AChvylgi9f396394586.png" alt="screenshot: action, ConcreteID=AChvylgi9f396394586"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 19</h2>
+<h4>AbstractID=SAsum30c1eb903084722 || ConcreteID=SC16kput22182127985928</h4>
+<h4>TimeStamp: 2026-03-22T02:26:22.193Z || Epoch: 1774146382193</h4>
+<h4>State Render Time: 304.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/login' target='_blank'>https://projects.kiv.zcu.cz/uis/login</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC16kput22182127985928.png" alt="screenshot: state=19, ConcreteID=SC16kput22182127985928, AbstractID=SAsum30c1eb903084722"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'button_login'</b> || Compound Action =
+Move mouse to (437.5, 327.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC286dg1a02679579994 || AbstractID=AAxn9jaq344099049045
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC3pgk49f4224369330 || AbstractID=AA2qkvk4331004156257
+</li>
+<li>
+<b>Type '2017-22-03' into 'input_enter_password</b> || Compound Action =
+Compound Action =
+Move mouse to (960.0, 273.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1
+Press Key VK_CONTROL
+Press Key VK_A
+Release Key VK_A
+Release Key VK_CONTROL
+Type text '2017-22-03' || ConcreteID=AC4a6c2a11d2616289344 || AbstractID=AAvg8i3w362647060210
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1lhujaaa03230655161 || AbstractID=AA1xxz79y333544130020
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACxfly2fa02324629491 || AbstractID=AA1tziizq34827500045
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC8et07wa01316193778 || AbstractID=AA1nckdl634475139842
+</li>
+<li>
+<b>Type '00-00-1900' into 'input_enter_username</b> || Compound Action =
+Compound Action =
+Move mouse to (960.0, 187.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1
+Press Key VK_CONTROL
+Press Key VK_A
+Release Key VK_A
+Release Key VK_CONTROL
+Type text '00-00-1900' || ConcreteID=ACil55wj11e2008288371 || AbstractID=AAp2pvpg36231157954
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACxt28gu9f3106962550 || AbstractID=AA1ri41j9333228636014
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 20 leading to State 20</h2>
+<h4>AbstractID=AA1ri41j9333228636014 || ConcreteID=ACxt28gu9f3106962550 || Left Click at 'a_restore_db'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC16kput22182127985928_ACxt28gu9f3106962550.png" alt="screenshot: action, ConcreteID=ACxt28gu9f3106962550"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 20</h2>
+<h4>AbstractID=SA2imwt93683196164222 || ConcreteID=SCtce0ce3aa2823890048</h4>
+<h4>TimeStamp: 2026-03-22T02:26:32.242Z || Epoch: 1774146392242</h4>
+<h4>State Render Time: 8908.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21' target='_blank'>https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCtce0ce3aa2823890048.png" alt="screenshot: state=20, ConcreteID=SCtce0ce3aa2823890048, AbstractID=SA2imwt93683196164222"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC17kq9el9f420342083 || AbstractID=AA8aouwz351329600460
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACijxbk29f3723586370 || AbstractID=AA1nqpif351648410307
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1vmyumg9f1393363977 || AbstractID=AA12an95l341894931945
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACy4u8u09e841044475 || AbstractID=AAvus3ew341673293667
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 443.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC76jylya02075572568 || AbstractID=AA1ifj98434964948496
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 395.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1sdtn089f3717584085 || AbstractID=AA1kuf43m341302378003
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 419.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC3pc3m19f303269864 || AbstractID=AA120hp76332388596782
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACfhgxa9e1893461823 || AbstractID=AA164czev342551662956
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 21 leading to State 21</h2>
+<h4>AbstractID=AA1kuf43m341302378003 || ConcreteID=AC1sdtn089f3717584085 || Left Click at 'a_application_use-cases'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCtce0ce3aa2823890048_AC1sdtn089f3717584085.png" alt="screenshot: action, ConcreteID=AC1sdtn089f3717584085"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 21</h2>
+<h4>AbstractID=SAewc8osd3a1415421791 || ConcreteID=SC1hjuqzye0e373838769</h4>
+<h4>TimeStamp: 2026-03-22T02:26:34.365Z || Epoch: 1774146394365</h4>
+<h4>State Render Time: 408.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/use-cases.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/use-cases.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1hjuqzye0e373838769.png" alt="screenshot: state=21, ConcreteID=SC1hjuqzye0e373838769, AbstractID=SAewc8osd3a1415421791"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Drag (1912.0, 44.0) To (1912.0, 623.3333333333334)</b> || Compound Action =
+Move mouse to (1912.0, 44.0).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 623.3333333333334).
+Release Mouse Button BUTTON1 || ConcreteID=AC1ah4w78c82856595905 || AbstractID=AArrpta3324188591190
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACf64ycx9e4096655623 || AbstractID=AAnpjia2342894014726
+</li>
+<li>
+<b>Left Click at 'a_uc.05'</b> || Compound Action =
+Move mouse to (429.5, 685.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1rdk62fa02691044771 || AbstractID=AAv5qkp435572204544
+</li>
+<li>
+<b>Left Click at 'a_uc.07'</b> || Compound Action =
+Move mouse to (429.5, 783.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1qvh1py9f3731441653 || AbstractID=AAajdvbh344067362643
+</li>
+<li>
+<b>Left Click at 'a_uc.09'</b> || Compound Action =
+Move mouse to (429.5, 881.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACs6nrxha01217461432 || AbstractID=AA13ki99f311801317901
+</li>
+<li>
+<b>Left Click at 'a_uc.01'</b> || Compound Action =
+Move mouse to (429.5, 245.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACaq1lt89f3067025685 || AbstractID=AA9g7l5t341765649450
+</li>
+<li>
+<b>Left Click at 'a_uc.08'</b> || Compound Action =
+Move mouse to (429.5, 832.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC19ba2e89f310857568 || AbstractID=AA36i1w8352603441242
+</li>
+<li>
+<b>Drag (1912.0, 44.0) To (1912.0, 912.0)</b> || Compound Action =
+Move mouse to (1912.0, 44.0).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 912.0).
+Release Mouse Button BUTTON1 || ConcreteID=ACzgvk0zbc643537995 || AbstractID=AArrpta3324188591190
+</li>
+<li>
+<b>Drag (1912.0, 44.0) To (1912.0, 329.6666666666667)</b> || Compound Action =
+Move mouse to (1912.0, 44.0).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 329.6666666666667).
+Release Mouse Button BUTTON1 || ConcreteID=ACuzw5e2c81091699778 || AbstractID=AArrpta3324188591190
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1dbh0679f4118226482 || AbstractID=AA1y6dg5g353474153189
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACrdeh9h9f2072723833 || AbstractID=AAjvts0s341150958979
+</li>
+<li>
+<b>Left Click at 'a_uc.06'</b> || Compound Action =
+Move mouse to (429.5, 734.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1su53wa9e4043726789 || AbstractID=AA1nzq3q0342202450497
+</li>
+<li>
+<b>Left Click at 'a_uc.03'</b> || Compound Action =
+Move mouse to (429.5, 465.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC24wvj7a01789464112 || AbstractID=AAyfop59352210889313
+</li>
+<li>
+<b>Left Click at 'a_uc.04'</b> || Compound Action =
+Move mouse to (429.5, 612.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1j7ql4f9f614228985 || AbstractID=AAeipzhs34636790589
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1cvhq9n9e3067396035 || AbstractID=AAdfyma3341473515273
+</li>
+<li>
+<b>Left Click at 'a_uc.02'</b> || Compound Action =
+Move mouse to (429.5, 416.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC8zok3qa0629972261 || AbstractID=AA5l6ms9353261531890
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC3b5w1m9f831235123 || AbstractID=AA5s7jkw353792959466
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 22 leading to State 22</h2>
+<h4>AbstractID=AAnpjia2342894014726 || ConcreteID=ACf64ycx9e4096655623 || Left Click at 'a_home_current'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1hjuqzye0e373838769_ACf64ycx9e4096655623.png" alt="screenshot: action, ConcreteID=ACf64ycx9e4096655623"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 22</h2>
+<h4>AbstractID=SAfdhqel33d728768114 || ConcreteID=SCqzgst737e3532716687</h4>
+<h4>TimeStamp: 2026-03-22T02:26:37.266Z || Epoch: 1774146397266</h4>
+<h4>State Render Time: 308.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/index.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/index.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCqzgst737e3532716687.png" alt="screenshot: state=22, ConcreteID=SCqzgst737e3532716687, AbstractID=SAfdhqel33d728768114"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AChvylgi9f396394586 || AbstractID=AA1f6f1bs341064105031
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1e5h9lk9e3641230090 || AbstractID=AActwcif33669903257
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC129aynsa04067433656 || AbstractID=AA11tjd7533166801641
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1z0xypwa02499386088 || AbstractID=AA11eecpv323690238274
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACgg4hou9e2616360398 || AbstractID=AAn3h8ie333695628182
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1tw270d9f2441502325 || AbstractID=AAzenibn332110944490
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC16wrjb19f3546022491 || AbstractID=AA1ltd6qc34309091656
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1uz04iw9f2573002513 || AbstractID=AAj9ri9433883153683
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 23 leading to State 23</h2>
+<h4>AbstractID=AAzenibn332110944490 || ConcreteID=AC1tw270d9f2441502325 || Left Click at 'a_application_constraints'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCqzgst737e3532716687_AC1tw270d9f2441502325.png" alt="screenshot: action, ConcreteID=AC1tw270d9f2441502325"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 23</h2>
+<h4>AbstractID=SA1naz1at5e22874490314 || ConcreteID=SCt0q5rc668406304023</h4>
+<h4>TimeStamp: 2026-03-22T02:26:39.796Z || Epoch: 1774146399796</h4>
+<h4>State Render Time: 388.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/constraints.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/constraints.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCt0q5rc668406304023.png" alt="screenshot: state=23, ConcreteID=SCt0q5rc668406304023, AbstractID=SA1naz1at5e22874490314"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACg2vkzo9d153408102 || AbstractID=AAyfoly352826607598
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACvi3dmv9e197394222 || AbstractID=AAar1jkk361288083474
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1jkbyuq9e1103305316 || AbstractID=AA1w5u0bs351084198763
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC6hafsc9e3477044527 || AbstractID=AA443e60361640378653
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1ds8cwe9d1272868002 || AbstractID=AA1ppyul3351406254561
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 24 leading to State 24</h2>
+<h4>AbstractID=AAar1jkk361288083474 || ConcreteID=ACvi3dmv9e197394222 || Left Click at 'a_university_information_system'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCt0q5rc668406304023_ACvi3dmv9e197394222.png" alt="screenshot: action, ConcreteID=ACvi3dmv9e197394222"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 24</h2>
+<h4>AbstractID=SAfdhqel33d728768114 || ConcreteID=SCqzgst737e3532716687</h4>
+<h4>TimeStamp: 2026-03-22T02:26:41.864Z || Epoch: 1774146401864</h4>
+<h4>State Render Time: 288.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/index.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/index.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCqzgst737e3532716687.png" alt="screenshot: state=24, ConcreteID=SCqzgst737e3532716687, AbstractID=SAfdhqel33d728768114"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1z0xypwa02499386088 || AbstractID=AA11eecpv323690238274
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC129aynsa04067433656 || AbstractID=AA11tjd7533166801641
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1e5h9lk9e3641230090 || AbstractID=AActwcif33669903257
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1uz04iw9f2573002513 || AbstractID=AAj9ri9433883153683
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1tw270d9f2441502325 || AbstractID=AAzenibn332110944490
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC16wrjb19f3546022491 || AbstractID=AA1ltd6qc34309091656
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACgg4hou9e2616360398 || AbstractID=AAn3h8ie333695628182
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AChvylgi9f396394586 || AbstractID=AA1f6f1bs341064105031
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 25 leading to State 25</h2>
+<h4>AbstractID=AAn3h8ie333695628182 || ConcreteID=ACgg4hou9e2616360398 || Left Click at 'a_home_current'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCqzgst737e3532716687_ACgg4hou9e2616360398.png" alt="screenshot: action, ConcreteID=ACgg4hou9e2616360398"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 25</h2>
+<h4>AbstractID=SAfdhqel33d728768114 || ConcreteID=SCqzgst737e3532716687</h4>
+<h4>TimeStamp: 2026-03-22T02:26:44.104Z || Epoch: 1774146404104</h4>
+<h4>State Render Time: 416.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/index.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/index.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCqzgst737e3532716687.png" alt="screenshot: state=25, ConcreteID=SCqzgst737e3532716687, AbstractID=SAfdhqel33d728768114"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1uz04iw9f2573002513 || AbstractID=AAj9ri9433883153683
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 353.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1z0xypwa02499386088 || AbstractID=AA11eecpv323690238274
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1e5h9lk9e3641230090 || AbstractID=AActwcif33669903257
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACgg4hou9e2616360398 || AbstractID=AAn3h8ie333695628182
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC16wrjb19f3546022491 || AbstractID=AA1ltd6qc34309091656
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 329.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC129aynsa04067433656 || AbstractID=AA11tjd7533166801641
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 377.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1tw270d9f2441502325 || AbstractID=AAzenibn332110944490
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AChvylgi9f396394586 || AbstractID=AA1f6f1bs341064105031
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 26 leading to State 26</h2>
+<h4>AbstractID=AA11tjd7533166801641 || ConcreteID=AC129aynsa04067433656 || Left Click at 'a_application_use-cases'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCqzgst737e3532716687_AC129aynsa04067433656.png" alt="screenshot: action, ConcreteID=AC129aynsa04067433656"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 26</h2>
+<h4>AbstractID=SAewc8osd3a1415421791 || ConcreteID=SC1hjuqzye0e373838769</h4>
+<h4>TimeStamp: 2026-03-22T02:26:46.432Z || Epoch: 1774146406432</h4>
+<h4>State Render Time: 336.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/use-cases.jsp' target='_blank'>https://projects.kiv.zcu.cz/uis/use-cases.jsp</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1hjuqzye0e373838769.png" alt="screenshot: state=26, ConcreteID=SC1hjuqzye0e373838769, AbstractID=SAewc8osd3a1415421791"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACf64ycx9e4096655623 || AbstractID=AAnpjia2342894014726
+</li>
+<li>
+<b>Left Click at 'a_uc.04'</b> || Compound Action =
+Move mouse to (429.5, 612.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1j7ql4f9f614228985 || AbstractID=AAeipzhs34636790589
+</li>
+<li>
+<b>Drag (1912.0, 44.0) To (1912.0, 623.3333333333334)</b> || Compound Action =
+Move mouse to (1912.0, 44.0).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 623.3333333333334).
+Release Mouse Button BUTTON1 || ConcreteID=AC1ah4w78c82856595905 || AbstractID=AArrpta3324188591190
+</li>
+<li>
+<b>Left Click at 'a_uc.03'</b> || Compound Action =
+Move mouse to (429.5, 465.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC24wvj7a01789464112 || AbstractID=AAyfop59352210889313
+</li>
+<li>
+<b>Left Click at 'a_uc.08'</b> || Compound Action =
+Move mouse to (429.5, 832.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC19ba2e89f310857568 || AbstractID=AA36i1w8352603441242
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC3b5w1m9f831235123 || AbstractID=AA5s7jkw353792959466
+</li>
+<li>
+<b>Left Click at 'a_uc.02'</b> || Compound Action =
+Move mouse to (429.5, 416.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC8zok3qa0629972261 || AbstractID=AA5l6ms9353261531890
+</li>
+<li>
+<b>Drag (1912.0, 44.0) To (1912.0, 912.0)</b> || Compound Action =
+Move mouse to (1912.0, 44.0).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 912.0).
+Release Mouse Button BUTTON1 || ConcreteID=ACzgvk0zbc643537995 || AbstractID=AArrpta3324188591190
+</li>
+<li>
+<b>Left Click at 'a_uc.05'</b> || Compound Action =
+Move mouse to (429.5, 685.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1rdk62fa02691044771 || AbstractID=AAv5qkp435572204544
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACrdeh9h9f2072723833 || AbstractID=AAjvts0s341150958979
+</li>
+<li>
+<b>Left Click at 'a_uc.06'</b> || Compound Action =
+Move mouse to (429.5, 734.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1su53wa9e4043726789 || AbstractID=AA1nzq3q0342202450497
+</li>
+<li>
+<b>Drag (1912.0, 44.0) To (1912.0, 329.6666666666667)</b> || Compound Action =
+Move mouse to (1912.0, 44.0).
+Press Mouse Button BUTTON1
+Move mouse to (1912.0, 329.6666666666667).
+Release Mouse Button BUTTON1 || ConcreteID=ACuzw5e2c81091699778 || AbstractID=AArrpta3324188591190
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1dbh0679f4118226482 || AbstractID=AA1y6dg5g353474153189
+</li>
+<li>
+<b>Left Click at 'a_uc.07'</b> || Compound Action =
+Move mouse to (429.5, 783.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1qvh1py9f3731441653 || AbstractID=AAajdvbh344067362643
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1cvhq9n9e3067396035 || AbstractID=AAdfyma3341473515273
+</li>
+<li>
+<b>Left Click at 'a_uc.01'</b> || Compound Action =
+Move mouse to (429.5, 245.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACaq1lt89f3067025685 || AbstractID=AA9g7l5t341765649450
+</li>
+<li>
+<b>Left Click at 'a_uc.09'</b> || Compound Action =
+Move mouse to (429.5, 881.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACs6nrxha01217461432 || AbstractID=AA13ki99f311801317901
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 27 leading to State 27</h2>
+<h4>AbstractID=AA1y6dg5g353474153189 || ConcreteID=AC1dbh0679f4118226482 || Left Click at 'a_login'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1hjuqzye0e373838769_AC1dbh0679f4118226482.png" alt="screenshot: action, ConcreteID=AC1dbh0679f4118226482"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 27</h2>
+<h4>AbstractID=SAsum30c1eb903084722 || ConcreteID=SC16kput22182127985928</h4>
+<h4>TimeStamp: 2026-03-22T02:26:49.463Z || Epoch: 1774146409463</h4>
+<h4>State Render Time: 760.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/login' target='_blank'>https://projects.kiv.zcu.cz/uis/login</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC16kput22182127985928.png" alt="screenshot: state=27, ConcreteID=SC16kput22182127985928, AbstractID=SAsum30c1eb903084722"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Type 'dbTYrGFjRm' into 'input_enter_username</b> || Compound Action =
+Compound Action =
+Move mouse to (960.0, 187.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1
+Press Key VK_CONTROL
+Press Key VK_A
+Release Key VK_A
+Release Key VK_CONTROL
+Type text 'dbTYrGFjRm' || ConcreteID=ACidpl2s11e1029820950 || AbstractID=AAp2pvpg36231157954
+</li>
+<li>
+<b>Left Click at 'button_login'</b> || Compound Action =
+Move mouse to (437.5, 327.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC286dg1a02679579994 || AbstractID=AAxn9jaq344099049045
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACxt28gu9f3106962550 || AbstractID=AA1ri41j9333228636014
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC8et07wa01316193778 || AbstractID=AA1nckdl634475139842
+</li>
+<li>
+<b>Type '1112131332' into 'input_enter_password</b> || Compound Action =
+Compound Action =
+Move mouse to (960.0, 273.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1
+Press Key VK_CONTROL
+Press Key VK_A
+Release Key VK_A
+Release Key VK_CONTROL
+Type text '1112131332' || ConcreteID=ACgu7tat11d573086560 || AbstractID=AAvg8i3w362647060210
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC3pgk49f4224369330 || AbstractID=AA2qkvk4331004156257
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1lhujaaa03230655161 || AbstractID=AA1xxz79y333544130020
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACxfly2fa02324629491 || AbstractID=AA1tziizq34827500045
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 28 leading to State 28</h2>
+<h4>AbstractID=AAvg8i3w362647060210 || ConcreteID=ACgu7tat11d573086560 || Type '1112131332' into 'input_enter_password</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC16kput22182127985928_ACgu7tat11d573086560.png" alt="screenshot: action, ConcreteID=ACgu7tat11d573086560"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 28</h2>
+<h4>AbstractID=SAsum30c1eb903084722 || ConcreteID=SCdhol45218691254870</h4>
+<h4>TimeStamp: 2026-03-22T02:26:52.032Z || Epoch: 1774146412032</h4>
+<h4>State Render Time: 760.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/login' target='_blank'>https://projects.kiv.zcu.cz/uis/login</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCdhol45218691254870.png" alt="screenshot: state=28, ConcreteID=SCdhol45218691254870, AbstractID=SAsum30c1eb903084722"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACcjdj169d1232542775 || AbstractID=AA2qkvk4331004156257
+</li>
+<li>
+<b>Left Click at 'button_login'</b> || Compound Action =
+Move mouse to (437.5, 327.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACwkc8979e47705899 || AbstractID=AAxn9jaq344099049045
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACgswc4c9e1575954632 || AbstractID=AA1xxz79y333544130020
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1rrrsvl9e401591682 || AbstractID=AA1tziizq34827500045
+</li>
+<li>
+<b>Type '12-12-7357' into 'input_enter_password</b> || Compound Action =
+Compound Action =
+Move mouse to (960.0, 273.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1
+Press Key VK_CONTROL
+Press Key VK_A
+Release Key VK_A
+Release Key VK_CONTROL
+Type text '12-12-7357' || ConcreteID=ACbeik6o11b1586691698 || AbstractID=AAvg8i3w362647060210
+</li>
+<li>
+<b>Type 'fooboo@org.com' into 'input_enter_username</b> || Compound Action =
+Compound Action =
+Move mouse to (960.0, 187.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1
+Press Key VK_CONTROL
+Press Key VK_A
+Release Key VK_A
+Release Key VK_CONTROL
+Type text 'fooboo@org.com' || ConcreteID=ACy07rgy1201613388484 || AbstractID=AAp2pvpg36231157954
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1a8qaxw9d193831667 || AbstractID=AA1ri41j9333228636014
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC12qyv129e3541258115 || AbstractID=AA1nckdl634475139842
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 29 leading to State 29</h2>
+<h4>AbstractID=AAvg8i3w362647060210 || ConcreteID=ACbeik6o11b1586691698 || Type '12-12-7357' into 'input_enter_password</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SCdhol45218691254870_ACbeik6o11b1586691698.png" alt="screenshot: action, ConcreteID=ACbeik6o11b1586691698"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 29</h2>
+<h4>AbstractID=SAsum30c1eb903084722 || ConcreteID=SC19p41tg218421816723</h4>
+<h4>TimeStamp: 2026-03-22T02:26:54.504Z || Epoch: 1774146414504</h4>
+<h4>State Render Time: 760.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/login' target='_blank'>https://projects.kiv.zcu.cz/uis/login</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC19p41tg218421816723.png" alt="screenshot: state=29, ConcreteID=SC19p41tg218421816723, AbstractID=SAsum30c1eb903084722"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACr35sr09f641714902 || AbstractID=AA1nckdl634475139842
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC5539ua9f2831396253 || AbstractID=AA1xxz79y333544130020
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC188npno9e1781931616 || AbstractID=AA2qkvk4331004156257
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC6wwfla9e684499108 || AbstractID=AA1ri41j9333228636014
+</li>
+<li>
+<b>Left Click at 'button_login'</b> || Compound Action =
+Move mouse to (437.5, 327.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACkwj5z59f4160449150 || AbstractID=AAxn9jaq344099049045
+</li>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1g3yqlj9f3804448983 || AbstractID=AA1tziizq34827500045
+</li>
+<li>
+<b>Type 'SMjBFzHuIM' into 'input_enter_username</b> || Compound Action =
+Compound Action =
+Move mouse to (960.0, 187.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1
+Press Key VK_CONTROL
+Press Key VK_A
+Release Key VK_A
+Release Key VK_CONTROL
+Type text 'SMjBFzHuIM' || ConcreteID=AC1b8thc411d4086571933 || AbstractID=AAp2pvpg36231157954
+</li>
+<li>
+<b>Type '2017-03-22' into 'input_enter_password</b> || Compound Action =
+Compound Action =
+Move mouse to (960.0, 273.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1
+Press Key VK_CONTROL
+Press Key VK_A
+Release Key VK_A
+Release Key VK_CONTROL
+Type text '2017-03-22' || ConcreteID=ACj0w5vq11c728271797 || AbstractID=AAvg8i3w362647060210
+</li>
+</ul>
+</div>
+</div>
+<div class='selectedBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>Selected Action 30 leading to State 30</h2>
+<h4>AbstractID=AA1ri41j9333228636014 || ConcreteID=AC6wwfla9e684499108 || Left Click at 'a_restore_db'</h4>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC19p41tg218421816723_AC6wwfla9e684499108.png" alt="screenshot: action, ConcreteID=AC6wwfla9e684499108"></p>
+</div>
+</div>
+<div class='stateBlock' style='display:flex;flex-direction:column'>
+<div class='background'>
+<h2>State 30</h2>
+<h4>AbstractID=SA1cpl1se36a2687405895 || ConcreteID=SC1wc13c93ad1558264929</h4>
+<h4>TimeStamp: 2026-03-22T02:27:04.206Z || Epoch: 1774146424206</h4>
+<h4>State Render Time: 8356.0 ms</h4>
+<a href='https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21' target='_blank'>https://projects.kiv.zcu.cz/uis/?successMessage=Database+has+been+successfully+restored%21</a>
+<p><img src="../scrshots/2026-03-22_05h24m39s_tbuis_public_1_sequence_2/SC1wc13c93ad1558264929.png" alt="screenshot: state=30, ConcreteID=SC1wc13c93ad1558264929, AbstractID=SA1cpl1se36a2687405895"></p>
+</div>
+</div>
+<div class='derivedBlock' style='display:flex;flex-direction:column'>
+<button type='button' class='collapsible'>Click to view the set of derived actions:</button>
+<div class='collapsibleContent'>
+<ul>
+<li>
+<b>Left Click at 'a_university_information_system'</b> || Compound Action =
+Move mouse to (147.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1m9auvma0919965114 || AbstractID=AA106k43d363184238517
+</li>
+<li>
+<b>Left Click at 'a_export/import_db'</b> || Compound Action =
+Move mouse to (424.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACbafe4da02094360816 || AbstractID=AA1uovmzn352574936762
+</li>
+<li>
+<b>Left Click at 'a_home_current'</b> || Compound Action =
+Move mouse to (324.0, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC1qrp5eh9f3351482627 || AbstractID=AA1yild8x351906277951
+</li>
+<li>
+<b>Left Click at 'a_application_constraints'</b> || Compound Action =
+Move mouse to (517.5, 443.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC105m4f5a13220712324 || AbstractID=AAbsnl32353490432323
+</li>
+<li>
+<b>Left Click at 'a_application_use-cases'</b> || Compound Action =
+Move mouse to (513.0, 395.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=AC81a6i5a04065177644 || AbstractID=AAe7jfyk352754117952
+</li>
+<li>
+<b>Left Click at 'a_restore_db'</b> || Compound Action =
+Move mouse to (540.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACpfxvc39f2235117511 || AbstractID=AA1o90h8y352318686256
+</li>
+<li>
+<b>Left Click at 'a_database_content'</b> || Compound Action =
+Move mouse to (499.0, 419.5).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACidwp32a01036772113 || AbstractID=AA1c3f0co341707965992
+</li>
+<li>
+<b>Left Click at 'a_login'</b> || Compound Action =
+Move mouse to (615.5, 28.0).
+Press Mouse Button BUTTON1
+Release Mouse Button BUTTON1 || ConcreteID=ACx8hx13a04062777275 || AbstractID=AAtjlyot362429236922
+</li>
+</ul>
+</div>
+</div>
+<div class='verdictBlock' style='display:flex;flex-direction:column'>
+<h2>Test verdict for this sequence: No problem detected.</h2>
+<h4>Severity: 0.0</h4>
+<h4 id='visualizer-rect' style='display: none;'>Visualizer: [Rect [x:0.0 y:0.0 w:0.0 h:0.0]]</h4>
+</div>
+</div>
+</body>
+</html>

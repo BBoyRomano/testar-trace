@@ -1,0 +1,191 @@
+{
+    "requirements": [
+        {
+            "id": "UC.01",
+            "kind": "use_case",
+            "title": "Application login",
+            "summary": "Registered user logs into the application.",
+            "units": [
+                {
+                    "id": "UC.01.pre.1",
+                    "kind": "precondition",
+                    "text": "User is on the UIS homepage",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.01.trigger.1",
+                    "kind": "trigger",
+                    "text": "User selects the Login option",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.01.main.1",
+                    "kind": "main_step",
+                    "text": "Login page form appears",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.01.main.2",
+                    "kind": "main_step",
+                    "text": "User enters an existing login name",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.01.main.3",
+                    "kind": "main_step",
+                    "text": "User enters pass in the password field",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.01.main.4",
+                    "kind": "main_step",
+                    "text": "User presses the Login button",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.01.post.1",
+                    "kind": "postcondition",
+                    "text": "Logout option appears in the upper bar",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.01.post.2",
+                    "kind": "postcondition",
+                    "text": "Overview page appears",
+                    "critical": true,
+                    "metadata": {}
+                }
+            ],
+            "metadata": {
+                "source": "tbuis",
+                "source_id": "UC.01"
+            }
+        },
+        {
+            "id": "UC.02",
+            "kind": "use_case",
+            "title": "Application logout",
+            "summary": "Logged in user logs out of the application.",
+            "units": [
+                {
+                    "id": "UC.02.pre.1",
+                    "kind": "precondition",
+                    "text": "User is logged in",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.02.trigger.1",
+                    "kind": "trigger",
+                    "text": "User clicks the Logout option",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.02.main.1",
+                    "kind": "main_step",
+                    "text": "Background colour of the upper bar changes to black",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.02.main.2",
+                    "kind": "main_step",
+                    "text": "Login page appears",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.02.post.1",
+                    "kind": "postcondition",
+                    "text": "Login option appears in the right side of the upper bar",
+                    "critical": true,
+                    "metadata": {}
+                }
+            ],
+            "metadata": {
+                "source": "tbuis",
+                "source_id": "UC.02"
+            }
+        },
+        {
+            "id": "UC.03",
+            "kind": "use_case",
+            "title": "Change of user's personal data",
+            "summary": "Logged in user can change personal data.",
+            "units": [
+                {
+                    "id": "UC.03.pre.1",
+                    "kind": "precondition",
+                    "text": "User is already logged in to the UIS",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.03.pre.2",
+                    "kind": "precondition",
+                    "text": "User is located on the Overview page",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.03.main.1",
+                    "kind": "main_step",
+                    "text": "User changes data in the First name entry",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.03.main.2",
+                    "kind": "main_step",
+                    "text": "User changes data in the Last name entry",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.03.main.3",
+                    "kind": "main_step",
+                    "text": "User changes data in the Email entry",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.03.main.4",
+                    "kind": "main_step",
+                    "text": "User presses the Update button",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.03.post.1",
+                    "kind": "postcondition",
+                    "text": "User is still on the Overview page",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.03.post.2",
+                    "kind": "postcondition",
+                    "text": "Message confirming successful execution appears",
+                    "critical": true,
+                    "metadata": {}
+                }
+            ],
+            "metadata": {
+                "source": "tbuis",
+                "source_id": "UC.03"
+            }
+        }
+    ],
+    "metadata": {
+        "source": "tbuis",
+        "format": "reqtrace_requirements_json"
+    }
+}

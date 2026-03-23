@@ -1,0 +1,28 @@
+{
+    "requirements": [
+        {
+            "id": "UC.01",
+            "kind": "use_case",
+            "title": "Application login",
+            "summary": "User logs into the application",
+            "units": [
+                {
+                    "id": "UC.01.1",
+                    "kind": "main_step",
+                    "text": "Login form appears",
+                    "critical": true,
+                    "metadata": {}
+                },
+                {
+                    "id": "UC.01.2",
+                    "kind": "main_step",
+                    "text": "User enters password",
+                    "critical": true,
+                    "metadata": {}
+                }
+            ],
+            "metadata": {}
+        }
+    ],
+    "metadata": {}
+}

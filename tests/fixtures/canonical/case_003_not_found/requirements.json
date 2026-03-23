@@ -1,0 +1,21 @@
+{
+    "requirements": [
+        {
+            "id": "UC.19",
+            "kind": "use_case",
+            "title": "Restoration of the database",
+            "summary": "Unlogged user restores the database",
+            "units": [
+                {
+                    "id": "UC.19.1",
+                    "kind": "trigger",
+                    "text": "User clicks Restore DB",
+                    "critical": true,
+                    "metadata": {}
+                }
+            ],
+            "metadata": {}
+        }
+    ],
+    "metadata": {}
+}

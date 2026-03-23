@@ -1,8 +1,25 @@
-# OS / Editors
+# OS and editors
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Build artifacts
+build/
+dist/
+target/
 
 # LaTeX
 *.aux
@@ -11,33 +28,22 @@ Thumbs.db
 *.blg
 *.fdb_latexmk
 *.fls
+*.lof
+*.log
+*.lot
+*.nav
 *.out
 *.run.xml
-*.toc
-*.lof
-*.lot
+*.snm
 *.synctex.gz
+*.toc
+*.vrb
+*.xdv
 
 # Java
 *.class
-target/
-build/
 hs_err_pid*
 replay_pid*
 
-# Python (if used)
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-.pytest_cache/
-.mypy_cache/
-*.egg-info/
-
-# Generated outputs
-evaluation/results/
-
-# Local databases
-*.db
-*.sqlite
-*.odb
+# Local generated outputs
+report.json
