@@ -1,0 +1,73 @@
+\documentclass[english]{ou-report-vaf}
+\citestyle{agu}
+
+\usepackage{graphicx}
+\usepackage{pgfgantt}
+\usepackage{booktabs}
+\usepackage{microtype}
+
+\graphicspath{{papers/figures/}}
+
+\title[Research Proposal]{Requirements Traceability for Scriptless GUI Testing}
+\author{R.\ J.\ H.\ van de Wetering}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \begin{tikzpicture}[remember picture,overlay]
+            \node[anchor=south, inner sep=0pt] at (current page.south) {\includegraphics[scale=0.7]{logo.jpg}};
+        \end{tikzpicture}
+
+        \vspace*{2\bigskipamount}
+
+        {\makeatletter
+            \titlestyle\color{title}\Huge\@title
+        \makeatother}
+
+        {\makeatletter
+            \ifx\@subtitle\undefined\else
+                \bigskip
+                \titlefont\titleshape\LARGE\@subtitle
+            \fi
+        \makeatother}
+
+        \vspace{2\bigskipamount}
+        by
+        \vspace{2\bigskipamount}
+
+        {\makeatletter
+            \titlefont\Large\bfseries\@author
+        \makeatother}
+
+        \vspace{4\bigskipamount}
+
+        \begin{tabular}{lll}
+            Student number:     & 852337023 \\
+            Course code:        & \textsc{IM}9703 \\
+            Thesis committee:   & Prof.\ dr.\ T.\ E.\ J.\ Vos (chair),  & Open University \\
+                                & Dr.\ F.\ P.\ Ricós (supervisor),      & Polytechnic University of Valencia \\
+        \end{tabular}
+    \end{center}
+\end{titlepage}
+
+\pagestyle{plain}
+
+\input{sections/summary}
+\clearpage
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\clearpage
+
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/research_design}
+\input{sections/planning}
+\input{sections/risk_analysis}
+
+\clearpage
+\bibliographystyle{plainnat}
+\bibliography{papers/bibliography/references}
+
+\end{document}

@@ -1,0 +1,17 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Scriptless graphical user interface (GUI) testing explores a system through its GUI and can reveal failures such as crashes, hangs, and unexpected screens without requiring manually written test scripts or access to the source code. Compared with traditional scripted testing, scriptless testing offers two practical advantages. First, it reduces maintenance effort because it is less dependent on brittle, manually maintained test scripts that often break when the GUI changes. Second, it reduces the risk of missed failures because exploration is not limited to predefined scenarios.
+
+TESTAR is an open-source scriptless GUI testing tool that automatically explores a System Under Test (SUT) by detecting available widgets, executing actions, and traversing the interface~\citep{vos2021testar}. TESTAR supports multiple exploration strategies, including random exploration, reinforcement learning, genetic programming, and approaches guided by large language models (LLMs)~\citep{esparcia2016q,esparcia2018using,van2025llm}. In particular, LLM-guided exploration can steer interactions toward functional goals, which is relevant when stakeholders care about exercising specific user workflows. During exploration, TESTAR records observed behavior in a graph structure called the \emph{GUI State Model}, which captures states, actions, and transitions and supports offline analysis and comparison across software versions~\citep{de2019offline,ricos2025delta}.
+
+Although GUI State Models provide detailed execution evidence, they are difficult to use for requirements-oriented decision making. Product owners and development teams typically reason about the system in terms of functional requirements, user stories, and workflows. They want to know which user stories have been exercised, whether they were completed, and where evidence is still missing. However, the GUI State Model represents behavior at a lower level of abstraction and can become large and complex, making manual inspection impractical.
+
+This mismatch between requirements-level reasoning and execution-level GUI evidence creates a traceability gap between the requirements view used to plan and assess development and the execution view produced by scriptless testing. In this research, \emph{traceability} refers to linking user stories, including their essential steps or acceptance criteria, to corresponding execution evidence in the GUI State Model. Improving such traceability would make it possible to report scriptless testing results in requirements terms, such as \emph{requirements coverage} and evidence-backed progress. Bridging this gap is the core problem addressed in this research. Figure~\ref{fig:intro-illustration} illustrates this disconnect.
+
+\begin{figure}[h!tb]
+    \centering
+    \includegraphics[width=0.62\textwidth]{gap.png}
+    \caption{User stories and scriptless GUI testing operate at different abstraction levels. This research aims to link user stories to execution evidence in GUI State Models to support requirements-level coverage reporting.}
+    \label{fig:intro-illustration}
+\end{figure}
