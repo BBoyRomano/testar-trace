@@ -1,0 +1,38 @@
+{
+    "states": [
+        {
+            "id": "S1",
+            "title": "Login",
+            "url": "/login",
+            "observations": [
+                {
+                    "kind": "action_label",
+                    "value": "Login option"
+                },
+                {
+                    "kind": "title",
+                    "value": "Login form"
+                },
+                {
+                    "kind": "field_label",
+                    "value": "Password"
+                },
+                {
+                    "kind": "action_label",
+                    "value": "Login button"
+                },
+                {
+                    "kind": "title",
+                    "value": "Overview page"
+                },
+                {
+                    "kind": "action_label",
+                    "value": "Logout option"
+                }
+            ],
+            "metadata": {}
+        }
+    ],
+    "transitions": [],
+    "metadata": {}
+}

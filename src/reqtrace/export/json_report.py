@@ -7,6 +7,8 @@ from typing import Any
 from reqtrace.domain.coverage import (
     CoverageReport,
     MatchEvidence,
+    RequirementOccurrence,
+    RequirementOccurrenceStep,
     RequirementResult,
     RequirementUnitResult,
 )
@@ -32,6 +34,26 @@ def _requirement_unit_result_to_dict(result: RequirementUnitResult) -> dict[str,
     }
 
 
+def _occurrence_step_to_dict(step: RequirementOccurrenceStep) -> dict[str, Any]:
+    return {
+        "unit_id": step.unit_id,
+        "status": step.status.value,
+        "evidence": [_match_evidence_to_dict(item) for item in step.evidence],
+        "metadata": dict(step.metadata),
+    }
+
+
+def _occurrence_to_dict(occurrence: RequirementOccurrence) -> dict[str, Any]:
+    return {
+        "occurrence_id": occurrence.occurrence_id,
+        "status": occurrence.status.value,
+        "state_ids": list(occurrence.state_ids),
+        "transition_ids": list(occurrence.transition_ids),
+        "steps": [_occurrence_step_to_dict(item) for item in occurrence.steps],
+        "metadata": dict(occurrence.metadata),
+    }
+
+
 def _requirement_result_to_dict(result: RequirementResult) -> dict[str, Any]:
     return {
         "requirement_id": result.requirement_id,
@@ -39,6 +61,7 @@ def _requirement_result_to_dict(result: RequirementResult) -> dict[str, Any]:
         "unit_results": [
             _requirement_unit_result_to_dict(item) for item in result.unit_results
         ],
+        "occurrences": [_occurrence_to_dict(item) for item in result.occurrences],
         "metadata": dict(result.metadata),
     }
 

@@ -16,12 +16,12 @@ def load_canonical_json_requirement_catalog(data: dict) -> RequirementCatalog:
             kind=RequirementKind(item["kind"]),
             title=item["title"],
             summary=item.get("summary"),
+            actor=item.get("actor"),
             units=tuple(
                 RequirementUnit(
                     id=unit["id"],
                     kind=RequirementUnitKind(unit["kind"]),
                     text=unit["text"],
-                    critical=unit.get("critical", True),
                     metadata=unit.get("metadata", {}),
                 )
                 for unit in item.get("units", [])

@@ -28,6 +28,7 @@ def test_report_to_dict_contains_expected_sections() -> None:
     assert payload["summary"]["total_requirements"] == 1
     assert payload["summary"]["found"] == 1
     assert payload["metadata"]["analyzer"] == "keyword_v1"
+    assert "occurrences" in payload["results"][0]
 
 
 def test_write_json_report_writes_utf8_json_file(tmp_path: Path) -> None:
@@ -50,3 +51,24 @@ def test_write_json_report_writes_utf8_json_file(tmp_path: Path) -> None:
     assert payload["metadata"]["analyzer"] == "evidence_v1"
     assert payload["summary"]["total_requirements"] == 1
     assert payload["results"][0]["requirement_id"] == "UC.01"
+    assert "occurrences" in payload["results"][0]
+
+
+def test_report_to_dict_includes_occurrences_for_occurrence_v1() -> None:
+    use_case = AnalyzeCoverageUseCase()
+    report = use_case.execute(
+        AnalyzeCoverageRequest(
+            state_path=str(FIXTURES_DIR / "case_001_found" / "state.json"),
+            requirements_path=str(
+                FIXTURES_DIR / "case_001_found" / "requirements.json"),
+            analyzer_name="occurrence_v1",
+        )
+    )
+
+    payload = report_to_dict(report)
+
+    assert payload["metadata"]["analyzer"] == "occurrence_v1"
+    assert len(payload["results"]) == 1
+    assert len(payload["results"][0]["occurrences"]) >= 1
+    assert payload["results"][0]["occurrences"][0]["occurrence_id"] == "UC.01#1"
+    assert "steps" in payload["results"][0]["occurrences"][0]

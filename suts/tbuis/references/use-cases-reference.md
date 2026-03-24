@@ -2,85 +2,39 @@
 
 ## Purpose
 
-This document is a reference snapshot of the TbUIS use cases used during research and development.
-
-It is not the primary input format for ReqTrace.
+This document is a reference snapshot of the TbUIS use cases.
 
 ## Sources
 
-- Overview page: `https://projects.kiv.zcu.cz/tbuis/web/page/uis`
+- Primary overview page: `https://projects.kiv.zcu.cz/tbuis/web/page/uis#use-cases`
+- Secondary overview list: `https://projects.kiv.zcu.cz/uis/use-cases.jsp`
 - Detailed use case pages: `https://projects.kiv.zcu.cz/tbuis/web/files/uis/uc/en/html/use-case-XX.html`
+
+## Notes
+
+- The overview wording follows the primary overview page and was cross-checked against the secondary overview list.
+- Detailed use case text preserves the original source wording, including minor typos and inconsistencies.
+- This file is intended as a source-faithful documentation reference.
 
 ## Overview
 
 ### Actor: Unlogged user
 
-| ID | Name | Context of use |
+| ID | Name of UC | Context of Use |
 | --- | --- | --- |
 | UC.01 | Application login | Registered user will log into the application and based on the login name the user will be recognized either as a student or a teacher |
 
 ### Actor: General logged user — student or teacher
 
-| ID | Name | Context of use |
-| --- | --- | --- |
-| UC.02 | Application logout | Logged in user is logging out of the application |
-| UC.03 | Change of user's personal data | Logged in user can change his or her first name and or last name and or email |
-
-### Actor: Logged user — student
-
-| ID | Name | Context of use |
-| --- | --- | --- |
-| UC.04 | Cancelling the registration (enrollment) to a subject | Student cancels the registration to a subject previously enrolled |
-| UC.05 | Displays subjects with passed examination | Summarized information about all subjects with successful examination and their evaluations |
-| UC.06 | Subject enrollment | Student enrolls in one of the not yet enrolled subjects |
-| UC.07 | Cancellation of registered exam date | Student unregisters an exam date for the selected subject |
-| UC.08 | Registration of a new exam date | Student registers a new exam date for the selected subject |
-| UC.09 | Displays all examination participants — classmates | Summarized overview of all students registered for the examination date of a specific subject |
-
-### Actor: Logged user — teacher
-
-| ID | Name | Context of use |
-| --- | --- | --- |
-| UC.10 | Cancellation of registered subject | Teacher cancels a subject he or she teaches |
-| UC.11 | Displays students registered in the subject | Summarized list of all students attending the specific subject |
-| UC.12 | Cancellation of the exam date | Teacher cancels the exam date for a subject |
-| UC.13 | Displays all examination participants | Overview of all students registered for the examination date of a specific subject |
-| UC.14 | Announcement of a new exam date | Teacher announces a new exam date for a subject |
-| UC.15 | Enters the examination evaluation | Teacher enters the examination evaluation of the selected student for the selected exam date |
-| UC.16 | Enters or reenters the evaluation of the examination | Teacher enters or changes the evaluation of an examination |
-| UC.17 | Signs up to teach a subject | Teacher begins to teach a subject |
-| UC.18 | Displays the list of teachers and subjects they teach | Overview of teachers and subjects they teach |
-
-### Actor: Unlogged user — testing activity
-
-| ID | Name | Context of use |
-| --- | --- | --- |
-| UC.19 | Restoration of the database | Unlogged user restores the database to the default state |
-| UC.20 | Displays information about system abilities | Unlogged user gets information about use cases, database contents, and restrictions |
-| UC.21 | Export of the database | Unlogged user saves the current content of the database as an external XML or JSON file |
-| UC.22 | Import of the database | Unlogged user overwrites the current content of the database with an external XML or JSON file |
-
-## Detailed use cases
-
-## UC.01 — Application login
-
-### Actor: Unlogged user
-
 | ID | Name of UC | Context of Use |
-|---|---|---|
-| UC.01 | Application login | Registered user will log into the application and based on the login name the user will be recognized either as a student or a teacher |
-
-### Actor: General logged user — student or teacher
-
-| ID | Name of UC | Context of Use |
-|---|---|---|
+| --- | --- | --- |
 | UC.02 | Application logout | Logged in user is logging out of the Application |
 | UC.03 | Change of user's personal data | Logged in user can change his/her first name and/or last name and/or email |
 
 ### Actor: Logged users — Student
 
 | ID | Name of UC | Context of Use |
-|---|---|---|
+| --- | --- | --- |
 | UC.04 | Cancelling the registration (enrollment) to a subject | Student cancels the registration to a subject he/she previously enrolled |
 | UC.05 | Displays subjects with passed examination | Summarized information about all subjects with successful examination and their evaluations |
 | UC.06 | Subject enrollment | Student enrolls to one of the so far not enrolled subjects |
@@ -91,7 +45,7 @@ It is not the primary input format for ReqTrace.
 ### Actor: Logged user — Teacher
 
 | ID | Name of UC | Context of Use |
-|---|---|---|
+| --- | --- | --- |
 | UC.10 | Cancellation of registered subject | Teacher cancels a subject he/she teaches |
 | UC.11 | Displays students registered in the subject | Summarized list of all students attending the specific subject |
 | UC.12 | Cancellation of the exam date | Teacher cancels the exam date for his/her subject |
@@ -105,7 +59,7 @@ It is not the primary input format for ReqTrace.
 ### Actor: Unlogged user — a special activity for testing
 
 | ID | Name of UC | Context of Use |
-|---|---|---|
+| --- | --- | --- |
 | UC.19 | Restoration of the database | Unlogged user restores DB's into the default state, usually before proceeding to the tests |
 | UC.20 | Displays information about system's abilities | Unlogged user gets information about existing use-cases, contents of databes and restrictions in the UIS |
 | UC.21 | Export of the database | Unlogged user saves the current content of the database as an external XML/JSON file |
@@ -113,7 +67,7 @@ It is not the primary input format for ReqTrace.
 
 ---
 
-## Detailed Use Cases
+## Detailed use cases
 
 ## UC.01 — Application login
 

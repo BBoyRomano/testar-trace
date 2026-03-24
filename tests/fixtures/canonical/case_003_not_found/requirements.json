@@ -1,21 +1,21 @@
 {
+    "metadata": {
+        "format": "canonical_requirements_v1"
+    },
     "requirements": [
         {
-            "id": "UC.19",
+            "id": "UC.03",
             "kind": "use_case",
-            "title": "Restoration of the database",
-            "summary": "Unlogged user restores the database",
+            "title": "Nonexistent requirement",
+            "summary": "Requirement intentionally designed to be absent from the minimal canonical fixture.",
+            "actor": "Unknown actor",
             "units": [
                 {
-                    "id": "UC.19.1",
-                    "kind": "trigger",
-                    "text": "User clicks Restore DB",
-                    "critical": true,
-                    "metadata": {}
+                    "id": "UC.03.step.1",
+                    "kind": "step",
+                    "text": "Completely nonexistent interaction"
                 }
-            ],
-            "metadata": {}
+            ]
         }
-    ],
-    "metadata": {}
+    ]
 }

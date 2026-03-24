@@ -1,28 +1,26 @@
 {
+    "metadata": {
+        "format": "canonical_requirements_v1"
+    },
     "requirements": [
         {
             "id": "UC.03",
             "kind": "use_case",
             "title": "Change of user's personal data",
-            "summary": "Logged in user can change personal data",
+            "summary": "Requirement intentionally designed to be partially found in the minimal canonical fixture.",
+            "actor": "Logged in user",
             "units": [
                 {
-                    "id": "UC.03.1",
-                    "kind": "main_step",
-                    "text": "User changes first name",
-                    "critical": true,
-                    "metadata": {}
+                    "id": "UC.03.step.1",
+                    "kind": "step",
+                    "text": "Update"
                 },
                 {
-                    "id": "UC.03.2",
-                    "kind": "main_step",
-                    "text": "User changes email",
-                    "critical": true,
-                    "metadata": {}
+                    "id": "UC.03.step.2",
+                    "kind": "step",
+                    "text": "Completely nonexistent interaction"
                 }
-            ],
-            "metadata": {}
+            ]
         }
-    ],
-    "metadata": {}
+    ]
 }

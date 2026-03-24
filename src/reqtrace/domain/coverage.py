@@ -1,14 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Mapping
-
-
-class RequirementUnitStatus(str, Enum):
-    FOUND = "found"
-    PARTIALLY_FOUND = "partially_found"
-    NOT_FOUND = "not_found"
 
 
 class RequirementStatus(str, Enum):
@@ -17,13 +11,25 @@ class RequirementStatus(str, Enum):
     NOT_FOUND = "not_found"
 
 
+class RequirementUnitStatus(str, Enum):
+    FOUND = "found"
+    PARTIALLY_FOUND = "partially_found"
+    NOT_FOUND = "not_found"
+
+
+class OccurrenceStatus(str, Enum):
+    FOUND = "found"
+    PARTIALLY_FOUND = "partially_found"
+    NOT_FOUND = "not_found"
+
+
 @dataclass(frozen=True)
 class MatchEvidence:
-    state_ids: tuple[str, ...] = ()
-    transition_ids: tuple[str, ...] = ()
-    observations: tuple[str, ...] = ()
-    explanation: str | None = None
-    metadata: Mapping[str, object] = field(default_factory=dict)
+    state_ids: tuple[str, ...]
+    transition_ids: tuple[str, ...]
+    observations: tuple[str, ...]
+    explanation: str
+    metadata: Mapping[str, object]
 
 
 @dataclass(frozen=True)
@@ -31,16 +37,39 @@ class RequirementUnitResult:
     requirement_id: str
     unit_id: str
     status: RequirementUnitStatus
-    evidence: tuple[MatchEvidence, ...] = ()
-    metadata: Mapping[str, object] = field(default_factory=dict)
+    evidence: tuple[MatchEvidence, ...]
+    metadata: Mapping[str, object]
+
+
+@dataclass(frozen=True)
+class RequirementOccurrenceStep:
+    unit_id: str
+    status: RequirementUnitStatus
+    evidence: tuple[MatchEvidence, ...]
+    metadata: Mapping[str, object]
+
+
+@dataclass(frozen=True)
+class RequirementOccurrence:
+    occurrence_id: str
+    status: OccurrenceStatus
+    state_ids: tuple[str, ...]
+    transition_ids: tuple[str, ...]
+    steps: tuple[RequirementOccurrenceStep, ...]
+    metadata: Mapping[str, object]
 
 
 @dataclass(frozen=True)
 class RequirementResult:
     requirement_id: str
     status: RequirementStatus
-    unit_results: tuple[RequirementUnitResult, ...] = ()
-    metadata: Mapping[str, object] = field(default_factory=dict)
+    unit_results: tuple[RequirementUnitResult, ...]
+    occurrences: tuple[RequirementOccurrence, ...] = ()
+    metadata: Mapping[str, object] = None
+
+    def __post_init__(self) -> None:
+        if self.metadata is None:
+            object.__setattr__(self, "metadata", {})
 
 
 @dataclass(frozen=True)
@@ -55,4 +84,4 @@ class CoverageSummary:
 class CoverageReport:
     results: tuple[RequirementResult, ...]
     summary: CoverageSummary
-    metadata: Mapping[str, object] = field(default_factory=dict)
+    metadata: Mapping[str, object]
