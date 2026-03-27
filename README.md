@@ -1,48 +1,93 @@
 # ReqTrace
 
-Repository accompanying the Master's thesis **Requirements Traceability for Scriptless GUI Testing**.
+ReqTrace is a thesis prototype for requirements traceability over scriptless GUI testing evidence.
 
-ReqTrace is a thesis prototype for analyzing whether requirements appear to have been exercised in TESTAR-generated GUI state models and for reporting evidence-based coverage results.
+It ingests requirements and TESTAR-exported GUI state models, maps them into a canonical domain model, executes a selected traceability method, and exposes the results through a CLI, a lightweight GUI, and JSON exports.
+
+## Current supported inputs
+
+- **Requirements:** markdown use-case files (`--requirements-format markdown`)
+- **Evidence:** TESTAR exported model JSON (`--evidence-format testar`)
+- **Method:** `baseline` is the currently implemented end-to-end method
+
+The baseline method proves the full pipeline works on real data. It does **not** yet infer real trace links or coverage from evidence.
 
 ## Repository layout
 
-- `src/` contains the ReqTrace prototype
-- `tests/` contains automated tests and test fixtures
-- `suts/` contains system-under-test assets, requirements, protocols, and run outputs
-- `docs/` contains project documentation
-- `papers/` contains proposal, thesis, bibliography, and figures
+- `src/` – ReqTrace source code
+- `tests/` – automated tests and reusable test fixtures/builders
+- `suts/` – system-under-test materials, protocols, evidence, and exports
+- `docs/` – current architecture and project documentation
+- `papers/` – thesis-related materials
 
-## Run
+Archived material lives under `docs/archived-v0/` and is retained for thesis history only.
 
-```bash
-reqtrace analyze tests/fixtures/canonical/case_001_found/state.json tests/fixtures/canonical/case_001_found/requirements.json
-```
+## CLI
 
-## Select analyzer
+Install in editable mode:
 
 ```bash
-reqtrace analyze tests/fixtures/state_models/testar_v1_minimal.json tests/fixtures/canonical/case_001_found/requirements.json --analyzer keyword_v1
+python -m pip install -e .[dev]
 ```
+
+List available methods:
 
 ```bash
-reqtrace analyze suts/tbuis/testing/testar/runs/2026-03-22-webdriver-tbuis-public/model.json suts/tbuis/requirements/use-cases.json --analyzer evidence_v1
+reqtrace methods
 ```
 
-## Export JSON
+Run ReqTrace on one requirements file and one TESTAR model:
 
 ```bash
-reqtrace analyze tests/fixtures/canonical/case_001_found/state.json tests/fixtures/canonical/case_001_found/requirements.json -o report.json
+reqtrace run \
+  --requirements suts/tbuis/requirements/execution/uc-20-displays-information-about-system-s-abilities.md \
+  --requirements-format markdown \
+  --evidence suts/tbuis/evidence/runs/2026-03-22-webdriver-tbuis-public/model/model.json \
+  --evidence-format testar \
+  --method baseline
 ```
 
-## Run UI
+Write the result to a specific path:
 
 ```bash
-reqtrace ui tests/fixtures/canonical/case_001_found/state.json tests/fixtures/canonical/case_001_found/requirements.json
+reqtrace run \
+  --requirements suts/tbuis/requirements/execution/uc-20-displays-information-about-system-s-abilities.md \
+  --requirements-format markdown \
+  --evidence suts/tbuis/evidence/runs/2026-03-22-webdriver-tbuis-public/model/model.json \
+  --evidence-format testar \
+  --method baseline \
+  --output suts/tbuis/exports/uc-20-baseline-result.json
 ```
+
+If `--output` is omitted, ReqTrace auto-generates a timestamped export path.
+
+Render a previously exported result:
+
+```bash
+reqtrace show-result suts/tbuis/exports/tbuis-baseline-2026-03-27T01-46-58Z.json
+```
+
+Launch the lightweight desktop UI:
+
+```bash
+reqtrace ui
+```
+
+In headless environments such as devcontainers, the GUI may not be available. The CLI remains fully supported there.
+
+## Documentation
+
+Start with:
+
+- `docs/architecture/00-overview.md`
+- `docs/architecture/01-domain-model.md`
+- `docs/architecture/02-ingestion.md`
+- `docs/architecture/03-trace-analysis.md`
+- `docs/architecture/04-presentation.md`
 
 ## Related project
 
-This study uses TESTAR for scriptless GUI testing.
+ReqTrace uses TESTAR as the GUI testing tool.
 
 - Source code: [github.com/TESTARtool](https://github.com/TESTARtool)
 - Website: [testar.org](https://testar.org/)

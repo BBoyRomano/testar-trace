@@ -1,17 +1,17 @@
 # TbUIS
 
-This directory contains TbUIS assets used by ReqTrace research and evaluation.
+TbUIS is stored as a self-contained system-under-test bundle.
 
-## Layout
+## Structure
+- `app/`: packaged application binaries
+- `requirements/canonical/`: authoritative requirements dataset
+- `requirements/execution/`: current ReqTrace-ready requirement inputs
+- `requirements/source/`: provenance and reference material
+- `protocols/`: TESTAR protocols and settings
+- `evidence/`: TESTAR run outputs and models
+- `exports/`: ReqTrace-generated outputs for this SUT
 
-- `package/` contains the packaged application artifact
-- `references/` contains source reference material
-- `requirements/` contains structured ReqTrace input files
-- `testing/testar/protocols/` contains reusable TESTAR protocol setups
-- `testing/testar/runs/` contains saved TESTAR run outputs
-
-## Notes
-
-The reference Markdown file is source material only.
-
-The primary requirements input for ReqTrace is `requirements/use-cases.json`.
+## Requirements policy
+- Canonical truth lives in `requirements/canonical/`
+- Current markdown ingestion runs against `requirements/execution/`
+- Provenance and diagrams stay in `requirements/source/`

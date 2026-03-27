@@ -46,4 +46,4 @@ hs_err_pid*
 replay_pid*
 
 # Local generated outputs
-report.json
+exports/

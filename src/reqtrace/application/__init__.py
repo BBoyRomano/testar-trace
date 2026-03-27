@@ -1,1 +1,3 @@
-__all__ = []
+"""Application orchestration layer."""
+
+__all__: list[str] = []

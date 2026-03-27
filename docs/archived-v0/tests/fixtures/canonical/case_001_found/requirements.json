@@ -1,0 +1,21 @@
+{
+    "metadata": {
+        "format": "canonical_requirements_v1"
+    },
+    "requirements": [
+        {
+            "id": "UC.01",
+            "kind": "use_case",
+            "title": "Application login",
+            "summary": "Requirement intentionally designed to be fully found in the minimal canonical fixture.",
+            "actor": "Unlogged user",
+            "units": [
+                {
+                    "id": "UC.01.step.1",
+                    "kind": "step",
+                    "text": "Login form"
+                }
+            ]
+        }
+    ]
+}

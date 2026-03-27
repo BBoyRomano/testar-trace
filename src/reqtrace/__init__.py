@@ -1,1 +1,3 @@
-__all__ = []
+"""ReqTrace package."""
+
+__all__: list[str] = []

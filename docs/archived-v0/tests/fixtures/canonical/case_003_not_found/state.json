@@ -1,0 +1,26 @@
+{
+    "states": [
+        {
+            "id": "S1",
+            "title": "Accounts Overview",
+            "url": "/overview",
+            "observations": [
+                {
+                    "kind": "title",
+                    "value": "Accounts Overview"
+                },
+                {
+                    "kind": "link_text",
+                    "value": "Transfer Funds"
+                },
+                {
+                    "kind": "link_text",
+                    "value": "Request Loan"
+                }
+            ],
+            "metadata": {}
+        }
+    ],
+    "transitions": [],
+    "metadata": {}
+}

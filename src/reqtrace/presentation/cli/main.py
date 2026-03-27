@@ -1,83 +1,73 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import typer
+from rich.console import Console
 
-from reqtrace.application.analyze_coverage import (
-    AnalyzeCoverageRequest,
-    AnalyzeCoverageUseCase,
-)
-from reqtrace.export.json_report import write_json_report
-from reqtrace.presentation.ui.app import ReqTraceApp, UiInput
+from reqtrace.application.services.traceability_service import build_default_traceability_service
+from reqtrace.presentation.cli.rendering import render_result
+from reqtrace.presentation.gui.app import launch_gui
+from reqtrace.presentation.runtime import RunInput, default_export_path, execute_run, export_result_json, import_result_json
 
 app = typer.Typer(help="ReqTrace CLI.", no_args_is_help=True)
+console = Console()
 
 
-@app.callback()
-def callback() -> None:
-    """ReqTrace CLI."""
-    return None
+@app.command("methods")
+def list_methods() -> None:
+    """List available traceability methods."""
+    service = build_default_traceability_service()
+    for name in service.available_methods():
+        console.print(name)
 
 
-@app.command()
-def analyze(
-    state_path: Path = typer.Argument(..., exists=True, readable=True),
-    requirements_path: Path = typer.Argument(..., exists=True, readable=True),
-    output: Path | None = typer.Option(
-        None,
-        "--output",
-        "-o",
-        help="Write the full report as JSON.",
-    ),
-    analyzer: str = typer.Option(
-        "keyword_v1",
-        "--analyzer",
-        help="Analyzer to use.",
-    ),
+@app.command("run")
+def run_command(
+    requirements: Path = typer.Option(..., "--requirements", exists=True, readable=True),
+    evidence: Path = typer.Option(..., "--evidence", exists=True, readable=True),
+    requirements_format: str = typer.Option("markdown", "--requirements-format"),
+    evidence_format: str = typer.Option("testar", "--evidence-format"),
+    method: str = typer.Option("baseline", "--method"),
+    selected_requirement_ids: list[str] = typer.Option([], "--requirement-id"),
+    selected_evidence_run_ids: list[str] = typer.Option([], "--evidence-run-id"),
+    output: Path | None = typer.Option(None, "--output", "-o"),
 ) -> None:
-    use_case = AnalyzeCoverageUseCase()
-    report = use_case.execute(
-        AnalyzeCoverageRequest(
-            state_path=str(state_path),
-            requirements_path=str(requirements_path),
-            analyzer_name=analyzer,
-        )
+    """Execute a traceability run from source files."""
+    run_input = RunInput(
+        requirements_path=requirements,
+        evidence_path=evidence,
+        requirements_format=requirements_format,
+        evidence_format=evidence_format,
+        method_name=method,
+        selected_requirement_ids=selected_requirement_ids,
+        selected_evidence_run_ids=selected_evidence_run_ids,
     )
 
-    if output is not None:
-        write_json_report(report, output)
+    result = execute_run(run_input)
+    render_result(console, result)
 
-    typer.echo(
-        json.dumps(
-            {
-                "summary": {
-                    "total_requirements": report.summary.total_requirements,
-                    "found": report.summary.found,
-                    "partially_found": report.summary.partially_found,
-                    "not_found": report.summary.not_found,
-                },
-                "metadata": dict(report.metadata),
-            },
-            indent=2,
-        )
-    )
+    export_path = output or default_export_path(run_input, result)
+    export_result_json(result, export_path)
+    console.print(f"\nSaved result to {export_path}")
 
 
-@app.command()
-def ui(
-    state_path: Path = typer.Argument(..., exists=True, readable=True),
-    requirements_path: Path = typer.Argument(..., exists=True, readable=True),
-) -> None:
-    app_ui = ReqTraceApp(
-        UiInput(
-            state_path=str(state_path),
-            requirements_path=str(requirements_path),
-        )
-    )
-    app_ui.run()
+@app.command("show-result")
+def show_result(result_path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
+    """Open and render a previously exported JSON result."""
+    result = import_result_json(result_path)
+    render_result(console, result)
+
+
+@app.command("ui")
+def ui() -> None:
+    """Launch the lightweight desktop UI."""
+    raise typer.Exit(code=launch_gui())
 
 
 def main() -> None:
     app()
+
+
+if __name__ == "__main__":
+    main()

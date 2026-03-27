@@ -1,0 +1,2 @@
+id,title,story,acceptance_criteria
+US.01,Application login,"As a registered user, I want to log into the application so that I can access the overview page.","Overview page appears||Logout option appears in the upper bar on the right"

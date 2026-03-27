@@ -1,10 +1,14 @@
-# Systems under test
+# Systems under test (SUTs)
 
-This directory contains system-under-test assets used by ReqTrace research and evaluation.
+This folder stores per-SUT source material, executable inputs, protocols, evidence, and ReqTrace outputs.
 
-Each SUT directory may contain:
-- packaged application artifacts
-- reference material
-- structured requirements inputs
-- testing setup
-- testing outputs
+## Layout
+- `<sut>/requirements/canonical/`: authoritative, reviewable requirements dataset
+- `<sut>/requirements/execution/`: current tool-ready requirement inputs
+- `<sut>/requirements/source/`: provenance and reference material
+- `<sut>/protocols/`: TESTAR protocol sources and settings
+- `<sut>/evidence/`: raw and extracted TESTAR outputs
+- `<sut>/app/`: packaged application binaries, when stored in the repo
+- `<sut>/exports/`: ReqTrace-generated outputs for that SUT
+
+Naming uses lowercase kebab-case for folders and descriptive filenames.
