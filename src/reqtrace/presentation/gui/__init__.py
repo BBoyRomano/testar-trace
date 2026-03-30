@@ -1,1 +1,1 @@
-"""GUI entrypoints for ReqTrace."""
+"""Desktop user interface for ReqTrace."""

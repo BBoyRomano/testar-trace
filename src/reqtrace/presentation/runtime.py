@@ -19,8 +19,9 @@ from reqtrace.ingestion.common.registry import IngestionRegistry, build_default_
 
 @dataclass(slots=True)
 class RunInput:
-    requirements_path: Path
-    evidence_path: Path
+    requirements_path: Path | None = None
+    evidence_path: Path | None = None
+    requirements_paths: list[Path] = field(default_factory=list)
     requirements_format: str = "markdown"
     evidence_format: str = "testar"
     method_name: str = "baseline"
@@ -30,18 +31,54 @@ class RunInput:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
+def resolve_requirement_paths(run_input: RunInput) -> list[Path]:
+    raw_paths: list[Path] = []
+    if run_input.requirements_paths:
+        raw_paths.extend(run_input.requirements_paths)
+    elif run_input.requirements_path is not None:
+        raw_paths.append(run_input.requirements_path)
+
+    if not raw_paths:
+        raise ValueError("At least one requirements path must be provided.")
+
+    resolved: list[Path] = []
+    for raw_path in raw_paths:
+        path = Path(raw_path)
+        if path.is_dir():
+            resolved.extend(sorted(p for p in path.glob('*.md') if p.is_file()))
+        else:
+            resolved.append(path)
+
+    if not resolved:
+        raise ValueError("No requirement markdown files were found.")
+    return resolved
+
+
 def build_request(run_input: RunInput, *, registry: IngestionRegistry | None = None) -> TraceabilityRequest:
     registry = registry or build_default_registry()
 
-    requirements_batch = registry.ingest_requirements(run_input.requirements_format, run_input.requirements_path)
+    requirement_paths = resolve_requirement_paths(run_input)
+
+    combined_requirements_mapping = {
+        "requirements": [],
+        "fragments": [],
+        "flows": [],
+        "flow_edges": [],
+    }
+    for requirement_path in requirement_paths:
+        batch = registry.ingest_requirements(run_input.requirements_format, requirement_path)
+        mapping = map_requirements_batch_to_domain(batch)
+        for key in combined_requirements_mapping:
+            combined_requirements_mapping[key].extend(mapping[key])
+
     evidence_batch = registry.ingest_evidence(run_input.evidence_format, run_input.evidence_path)
 
-    requirements = RequirementSnapshot.from_mapping(map_requirements_batch_to_domain(requirements_batch))
+    requirements = RequirementSnapshot.from_mapping(combined_requirements_mapping)
     evidence = EvidenceSnapshot.from_mapping(map_evidence_batch_to_domain(evidence_batch))
 
     metadata = {
         "requirements_format": run_input.requirements_format,
-        "requirements_path": str(run_input.requirements_path),
+        "requirements_paths": [str(path) for path in requirement_paths],
         "evidence_format": run_input.evidence_format,
         "evidence_path": str(run_input.evidence_path),
         **run_input.metadata,
@@ -95,7 +132,8 @@ def default_export_path(run_input: RunInput, result: TraceabilityResult) -> Path
     Pattern: <sut>-<method>-<timestamp>.json
     Directory: suts/<sut>/exports if the inputs live under suts/, else ./exports
     """
-    sut = infer_sut_name(run_input.requirements_path, run_input.evidence_path)
+    requirement_paths = resolve_requirement_paths(run_input)
+    sut = infer_sut_name(*requirement_paths, run_input.evidence_path)
     ts = result.run.started_at.astimezone(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
     filename = f"{sut}-{run_input.method_name}-{ts}.json"
     if sut != "run":

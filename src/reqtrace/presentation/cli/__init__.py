@@ -1,1 +1,1 @@
-"""CLI entrypoints for ReqTrace."""
+"""Command-line interface for ReqTrace."""

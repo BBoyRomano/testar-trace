@@ -28,13 +28,18 @@ from reqtrace.application.results import (
 from reqtrace.domain.traceability.enums import CoverageStatus, CoverageSubjectType
 from reqtrace.domain.traceability.models import CoverageAssessment
 
+REQUIREMENT_ARTIFACT_SUBJECT_TYPE = "requirement_artifact"
+REQUIREMENT_FRAGMENT_SUBJECT_TYPE = "requirement_fragment"
+
 
 class BaselineMethod:
     name = "baseline"
 
     def run(self, request: TraceabilityRequest) -> TraceabilityResult:
-        selected_requirements = request.requirements.iter_requirements(request.selected_requirement_ids)
-        selected_evidence_run_ids_ignored = bool(request.selected_evidence_run_ids)
+        selected_requirements = request.requirements.iter_requirements(
+            request.selected_requirement_ids)
+        selected_evidence_run_ids_ignored = bool(
+            request.selected_evidence_run_ids)
 
         run = TraceabilityRun(
             method_name=self.name,

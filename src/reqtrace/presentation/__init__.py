@@ -1,1 +1,1 @@
-"""Presentation layer for CLI and GUI entrypoints."""
+"""Presentation layer: CLI, UI, and runtime helpers for running and viewing traceability analyses."""

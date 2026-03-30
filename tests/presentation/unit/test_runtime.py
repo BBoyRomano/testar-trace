@@ -26,3 +26,16 @@ def test_build_request_and_execute_roundtrip(tmp_path: Path) -> None:
     imported = import_result_json(export_path)
     assert imported.run.id == result.run.id
     assert imported.summary.requirement_count == 1
+
+
+def test_build_request_supports_requirements_directory(tmp_path: Path) -> None:
+    req_dir = tmp_path / "requirements"
+    req_dir.mkdir()
+    write_minimal_requirement_markdown(req_dir / "uc-01.md", title="UC 01")
+    write_minimal_requirement_markdown(req_dir / "uc-02.md", title="UC 02")
+
+    evidence_path = tmp_path / "testar.json"
+    write_minimal_testar_model_file(evidence_path)
+
+    request = build_request(RunInput(requirements_paths=[req_dir], evidence_path=evidence_path))
+    assert len(request.requirements.requirements) == 2

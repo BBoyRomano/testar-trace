@@ -1,3 +1,1 @@
-"""ReqTrace package."""
-
-__all__: list[str] = []
+"""ReqTrace: research prototype for requirements traceability in scriptless testing."""

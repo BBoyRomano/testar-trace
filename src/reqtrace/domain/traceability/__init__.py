@@ -1,3 +1,5 @@
+"""Domain models and enums for trace links, supporting evidence, and coverage assessment."""
+
 from .enums import (
     ConfidenceLabel,
     CoverageStatus,

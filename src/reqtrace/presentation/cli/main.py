@@ -24,18 +24,26 @@ def list_methods() -> None:
 
 @app.command("run")
 def run_command(
-    requirements: Path = typer.Option(..., "--requirements", exists=True, readable=True),
-    evidence: Path = typer.Option(..., "--evidence", exists=True, readable=True),
-    requirements_format: str = typer.Option("markdown", "--requirements-format"),
+    requirements: list[Path] = typer.Option(..., "--requirements", exists=True, readable=True,
+                                            help="Requirement markdown file(s) or directories. Repeat the option to provide multiple paths."),
+    evidence: Path = typer.Option(..., "--evidence",
+                                  exists=True, readable=True),
+    requirements_format: str = typer.Option(
+        "markdown", "--requirements-format"),
     evidence_format: str = typer.Option("testar", "--evidence-format"),
     method: str = typer.Option("baseline", "--method"),
     selected_requirement_ids: list[str] = typer.Option([], "--requirement-id"),
-    selected_evidence_run_ids: list[str] = typer.Option([], "--evidence-run-id"),
+    selected_evidence_run_ids: list[str] = typer.Option(
+        [], "--evidence-run-id"),
     output: Path | None = typer.Option(None, "--output", "-o"),
 ) -> None:
-    """Execute a traceability run from source files."""
+    """Execute a traceability run from source files.
+
+    You may pass one or more requirement markdown files, or a directory to load all
+    ``*.md`` use-case files from that directory.
+    """
     run_input = RunInput(
-        requirements_path=requirements,
+        requirements_paths=list(requirements),
         evidence_path=evidence,
         requirements_format=requirements_format,
         evidence_format=evidence_format,
@@ -49,7 +57,7 @@ def run_command(
 
     export_path = output or default_export_path(run_input, result)
     export_result_json(result, export_path)
-    console.print(f"\nSaved result to {export_path}")
+    console.print(f"Saved result to {export_path}")
 
 
 @app.command("show-result")

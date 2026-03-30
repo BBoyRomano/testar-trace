@@ -1,3 +1,1 @@
-"""Application orchestration layer."""
-
-__all__: list[str] = []
+"""Application layer: method execution, request/result contracts, and orchestration."""

@@ -1,3 +1,5 @@
+"""Domain models and enums for requirements, fragments, flows, and flow edges."""
+
 from .enums import (
     RequirementFlowEdgeKind,
     RequirementFlowKind,

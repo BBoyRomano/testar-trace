@@ -49,9 +49,12 @@ class ReqTraceGui:
         config = ttk.LabelFrame(outer, text="Run configuration", padding=8)
         config.pack(fill=tk.X)
 
-        ttk.Label(config, text="Requirements file").grid(row=0, column=0, sticky="w")
+        ttk.Label(config, text="Requirements path").grid(row=0, column=0, sticky="w")
         ttk.Entry(config, textvariable=self.requirements_path_var, width=80).grid(row=0, column=1, sticky="ew", padx=6)
-        ttk.Button(config, text="Browse", command=self._browse_requirements).grid(row=0, column=2)
+        browse_req = ttk.Frame(config)
+        browse_req.grid(row=0, column=2)
+        ttk.Button(browse_req, text="File", command=self._browse_requirements).pack(side=tk.LEFT)
+        ttk.Button(browse_req, text="Dir", command=self._browse_requirements_dir).pack(side=tk.LEFT, padx=(6, 0))
 
         ttk.Label(config, text="Evidence file").grid(row=1, column=0, sticky="w")
         ttk.Entry(config, textvariable=self.evidence_path_var, width=80).grid(row=1, column=1, sticky="ew", padx=6)
@@ -110,6 +113,11 @@ class ReqTraceGui:
         if selected:
             self.requirements_path_var.set(selected)
 
+    def _browse_requirements_dir(self) -> None:
+        selected = filedialog.askdirectory(title="Select requirements directory")
+        if selected:
+            self.requirements_path_var.set(selected)
+
     def _browse_evidence(self) -> None:
         selected = filedialog.askopenfilename(title="Select evidence file")
         if selected:
@@ -119,7 +127,7 @@ class ReqTraceGui:
         requirements_path = Path(self.requirements_path_var.get().strip())
         evidence_path = Path(self.evidence_path_var.get().strip())
         if not requirements_path.exists() or not evidence_path.exists():
-            messagebox.showerror("ReqTrace", "Select both a requirements file and an evidence file.")
+            messagebox.showerror("ReqTrace", "Select a requirements file or directory and an evidence file.")
             return
 
         record = UiRunRecord(label=f"{self.method_var.get()} :: {requirements_path.name} :: running", status="running")
@@ -130,7 +138,7 @@ class ReqTraceGui:
         def worker() -> None:
             try:
                 result = execute_run(
-                    RunInput(requirements_path=requirements_path, evidence_path=evidence_path, method_name=self.method_var.get()),
+                    RunInput(requirements_paths=[requirements_path], evidence_path=evidence_path, method_name=self.method_var.get()),
                     service=self._service,
                 )
                 self._queue.put(("run-complete", (run_index, result)))
