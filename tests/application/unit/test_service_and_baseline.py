@@ -82,11 +82,12 @@ def _build_evidence_snapshot() -> EvidenceSnapshot:
 
 def test_service_exposes_baseline_method() -> None:
     service = build_default_traceability_service()
-    assert service.available_methods() == ["baseline", "heuristic"]
+    assert service.available_methods(
+    ) == ["baseline", "candidate_match", "flow_match"]
 
 
-def test_heuristic_can_link_simple_login_step_to_evidence() -> None:
-    """Heuristic should produce at least one trace link for an obvious UI step."""
+def test_candidate_match_can_link_simple_login_step_to_evidence() -> None:
+    """Candidate matching should produce at least one trace link for an obvious UI step."""
     from reqtrace.domain.evidence.enums import ActionKind
     from reqtrace.domain.evidence.models import Action, ApplicationState, Transition, UIElement
 
@@ -163,7 +164,7 @@ def test_heuristic_can_link_simple_login_step_to_evidence() -> None:
     )
 
     result = build_default_traceability_service().execute(
-        TraceabilityRequest(method_name="heuristic",
+        TraceabilityRequest(method_name="candidate_match",
                             requirements=requirements, evidence=evidence)
     )
 
@@ -297,8 +298,9 @@ def test_baseline_handles_zero_requirements() -> None:
     assert result.requirement_results == []
     assert result.run.total_requirement_count == 0
 
-def test_heuristic_prefers_operational_evidence_over_generic_banner_text() -> None:
-    """Heuristic should prefer operational UI evidence over generic banner text."""
+
+def test_candidate_match_prefers_operational_evidence_over_generic_banner_text() -> None:
+    """Candidate matching should prefer operational UI evidence over generic banner text."""
     from reqtrace.domain.evidence.enums import ActionKind
     from reqtrace.domain.evidence.models import Action, ApplicationState, Transition, UIElement
 
@@ -328,11 +330,14 @@ def test_heuristic_prefers_operational_evidence_over_generic_banner_text() -> No
             "runs": [ExecutionRun(id="run-1", tool_name="TESTAR", status=ExecutionRunStatus.COMPLETED)],
             "states": [
                 ApplicationState(id="state-home", title="Home", url="/"),
-                ApplicationState(id="state-restore", title="Restore DB", url="/restore"),
+                ApplicationState(id="state-restore",
+                                 title="Restore DB", url="/restore"),
             ],
             "elements": [
-                UIElement(id="el-banner", state_id="state-home", tag_name="h1", text="University information system"),
-                UIElement(id="el-restore", state_id="state-home", tag_name="a", role="link", text="Restore DB", href="/restore"),
+                UIElement(id="el-banner", state_id="state-home",
+                          tag_name="h1", text="University information system"),
+                UIElement(id="el-restore", state_id="state-home", tag_name="a",
+                          role="link", text="Restore DB", href="/restore"),
             ],
             "actions": [
                 Action(
@@ -358,15 +363,18 @@ def test_heuristic_prefers_operational_evidence_over_generic_banner_text() -> No
     )
 
     result = build_default_traceability_service().execute(
-        TraceabilityRequest(method_name="heuristic", requirements=requirements, evidence=evidence)
+        TraceabilityRequest(method_name="candidate_match",
+                            requirements=requirements, evidence=evidence)
     )
 
     assert result.summary.trace_link_count >= 1
     assert any(
-        link.evidence_target_id in {"el-restore", "act-restore", "tr-restore", "state-restore"}
+        link.evidence_target_id in {
+            "el-restore", "act-restore", "tr-restore", "state-restore"}
         for link in result.requirement_results[0].trace_links
     )
     assert not any(
-        (ev.text_excerpt or "").lower().startswith("university information system")
+        (ev.text_excerpt or "").lower().startswith(
+            "university information system")
         for ev in result.requirement_results[0].trace_evidence
     )

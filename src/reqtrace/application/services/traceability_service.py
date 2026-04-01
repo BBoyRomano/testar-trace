@@ -10,7 +10,8 @@ from reqtrace.application.exceptions import (
     UnknownTraceabilityMethodError,
 )
 from reqtrace.application.methods.baseline import BaselineMethod
-from reqtrace.application.methods.heuristic import HeuristicMethod
+from reqtrace.application.methods.candidate_match import CandidateMatchMethod
+from reqtrace.application.methods.flow_match import FlowMatchMethod
 from reqtrace.application.protocols import TraceabilityMethod
 from reqtrace.application.results import TraceabilityRequest, TraceabilityResult
 
@@ -48,5 +49,6 @@ class TraceabilityService:
 def build_default_traceability_service() -> TraceabilityService:
     service = TraceabilityService()
     service.register_method(BaselineMethod())
-    service.register_method(HeuristicMethod())
+    service.register_method(CandidateMatchMethod())
+    service.register_method(FlowMatchMethod())
     return service

@@ -1,3 +1,0 @@
-id,title,story,acceptance_criteria
-US.01,Application login,"As a registered user, I want to log into the application so that I can access the overview page.","Overview page appears||Logout option appears in the upper bar on the right"
-US.03,Change of user's personal data,"As a logged in user, I want to change my personal data so that my profile information is updated.","User is still on the Overview page||Message confirming successful execution appears"

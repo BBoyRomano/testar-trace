@@ -1,101 +1,51 @@
 # Trace analysis
 
-## Purpose
+The application layer currently exposes two traceability methods:
 
-This document defines the application layer responsible for traceability execution.
+- `baseline`
+- `candidate_match`
 
-It describes the current method-execution boundary, request/result contracts, and the rules for keeping the application layer thin.
+## Baseline
 
-## Boundaries
+`baseline` is a control method. It executes the full application pipeline and returns valid result
+objects without attempting real traceability inference.
 
-Trace analysis belongs in the application layer.
+## Candidate match
 
-- `ingestion/` prepares canonical domain inputs.
-- `domain/` defines stable requirements, evidence, and traceability entities.
-- `application/` selects and executes traceability methods.
-- `presentation/` collects user input and renders results.
+`candidate_match` is the first real traceability method.
 
-## Current package structure
+Its purpose is to:
 
-```text
-src/
-  reqtrace/
-    application/
-      services/
-        traceability_service.py
-      methods/
-        baseline.py
-        heuristic.py
-      results.py
-      exceptions.py
-      protocols.py
-```
+1. take requirement fragments from the application request
+2. build searchable evidence candidates from canonical evidence objects
+3. score fragment-to-candidate matches
+4. keep the best-supported fragment matches
+5. aggregate fragment results to requirement-level coverage and confidence
 
-This lean structure is deliberate and should remain the default until real complexity forces further extraction.
+### What it includes
 
-## Responsibilities
+`candidate_match` includes all fragment kinds as candidate-matching inputs, including:
 
-The application layer is responsible for:
-- method selection
-- request/result contracts
-- execution orchestration
-- requirement-level result assembly
-- run-level summary assembly
+- preconditions
+- main steps
+- alternate steps
+- postconditions
 
-The application layer is not responsible for:
-- source parsing
-- source-specific validation
-- GUI threading
-- CLI rendering
-- domain-model definitions
+### What it does not prove
 
-## Method architecture
+`candidate_match` does **not** prove that the requirement is realized as a coherent ordered execution
+path through the state model.
 
-A method is the top-level selectable traceability approach exposed by the application.
+In particular, it does not yet prove:
 
-Each method should:
-- accept one stable `TraceabilityRequest`
-- return one stable `TraceabilityResult`
-- avoid depending on presentation concerns
-- stay deterministic and explainable unless a method explicitly introduces another approach
+- that all main steps are realized in order
+- that alternate flows are realized as complete alternate paths
+- that preconditions hold at the correct entry context
+- that postconditions hold at the correct resulting context
 
-A small protocol is enough. The application layer does not need a plugin framework, stage engine, or dependency injection container.
+Those concerns belong to a later flow/path-aware method.
 
-## Current runtime model
+## Planned next method
 
-The current application layer executes methods synchronously through `TraceabilityService`.
-
-That means:
-- there is no application-level run queue yet
-- there is no application-level cancellation contract yet
-- there is no separate progress-update model yet
-- GUI responsiveness is currently handled in the presentation layer with background threading
-
-This is acceptable for the current prototype and should not be inflated just to match an earlier, richer architectural idea.
-
-## Request and result models
-
-The application layer currently exposes stable runtime-facing models such as:
-- `TraceabilityRequest`
-- `TraceabilityRun`
-- `RequirementTraceabilityResult`
-- `TraceabilitySummary`
-- `TraceabilityResult`
-
-These are application contracts, not core domain entities.
-
-## Method growth policy
-
-Introduce a new application-layer module only when one of these is true:
-- logic is reused by two or more real methods or flows
-- a file becomes crowded enough to harm readability
-- a concern has a genuinely separate lifecycle
-
-Avoid introducing:
-- pipeline frameworks
-- event buses
-- DI containers
-- plugin discovery
-- mediator/handler frameworks
-
-unless real complexity justifies them.
+The next major method should be a flow/path-oriented method, for example `flow_match`, which uses
+the structured requirement flow and the state-model transitions to reason about ordered realization.

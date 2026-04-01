@@ -19,11 +19,12 @@ def _write_inputs(tmp_path: Path) -> tuple[Path, Path]:
     return requirements_path, evidence_path
 
 
-def test_methods_lists_baseline_and_heuristic() -> None:
+def test_methods_lists_expected_methods() -> None:
     result = runner.invoke(app, ["methods"])
     assert result.exit_code == 0
     assert "baseline" in result.stdout
-    assert "heuristic" in result.stdout
+    assert "candidate_match" in result.stdout
+    assert "flow_match" in result.stdout
 
 
 def test_run_command_executes_and_exports(tmp_path: Path) -> None:
@@ -92,7 +93,8 @@ def test_run_command_autogenerates_output_when_missing(tmp_path: Path) -> None:
         assert result.exit_code == 0
         assert "Saved result to" in result.stdout
 
-        saved_line = [line for line in result.stdout.splitlines() if line.startswith("Saved result to")][-1]
+        saved_line = [line for line in result.stdout.splitlines(
+        ) if line.startswith("Saved result to")][-1]
         saved_path = Path(saved_line.split("Saved result to", 1)[1].strip())
         assert (workdir / saved_path).exists()
 

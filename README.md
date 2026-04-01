@@ -46,6 +46,14 @@ The quotes around `".[dev]"` avoid shell expansion issues in shells such as `zsh
 | Requirements | Markdown | Requirement files. The CLI currently accepts one file, multiple files, or a directory of files. |
 | Evidence | TESTAR model export JSON | One evidence model JSON file per run. |
 
+## Current traceability methods
+
+- `baseline` — end-to-end control method that exercises the pipeline without performing real matching
+- `candidate_match` — fragment-level candidate retrieval and scoring against states, UI elements, actions, and transitions
+- `flow_match`
+
+`candidate_match` is intentionally a *candidate matching* method, not a path/flow realization method. It evaluates requirement fragments independently and aggregates the results at requirement level. Ordered step realization, transition chaining, and main/alternate flow alignment belong to a later `flow_match`-style method.
+
 ## Usage
 
 See the available commands and options:
@@ -64,35 +72,19 @@ reqtrace methods
 Run traceability for one requirement file:
 
 ```bash
-reqtrace run \
-  --requirements <path/to/requirement-file.md> \
-  --requirements-format markdown \
-  --evidence <path/to/model.json> \
-  --evidence-format testar \
-  --method heuristic
+reqtrace run   --requirements <path/to/requirement-file.md>   --requirements-format markdown   --evidence <path/to/model.json>   --evidence-format testar   --method candidate_match
 ```
 
 Run traceability for multiple requirement files:
 
 ```bash
-reqtrace run \
-  --requirements <path/to/requirement-a.md> \
-  --requirements <path/to/requirement-b.md> \
-  --requirements-format markdown \
-  --evidence <path/to/model.json> \
-  --evidence-format testar \
-  --method heuristic
+reqtrace run   --requirements <path/to/requirement-a.md>   --requirements <path/to/requirement-b.md>   --requirements-format markdown   --evidence <path/to/model.json>   --evidence-format testar   --method candidate_match
 ```
 
 Run traceability for a directory of requirement files:
 
 ```bash
-reqtrace run \
-  --requirements <path/to/requirements-directory> \
-  --requirements-format markdown \
-  --evidence <path/to/model.json> \
-  --evidence-format testar \
-  --method heuristic
+reqtrace run   --requirements <path/to/requirements-directory>   --requirements-format markdown   --evidence <path/to/model.json>   --evidence-format testar   --method candidate_match
 ```
 
 Show a saved result:
