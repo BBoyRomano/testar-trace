@@ -22,12 +22,15 @@ Actor: Sample actor
     loader = MarkdownRequirementsLoader()
     parsed = loader.load_text(text=text)
 
-    assert parsed.title == "Sample requirement"
-    assert parsed.external_id == "REQ-1"
-    assert parsed.actor == "Sample actor"
-    assert parsed.preconditions == ["A valid precondition exists"]
-    assert parsed.main_steps == ["The user performs the main action"]
-    assert parsed.postconditions == ["The operation is completed"]
+    assert parsed.document_title == "Sample requirement"
+    assert len(parsed.requirements) == 1
+    item = parsed.requirements[0]
+    assert item.title == "Sample requirement"
+    assert item.external_id == "REQ-1"
+    assert item.actor == "Sample actor"
+    assert item.preconditions == ["A valid precondition exists"]
+    assert item.main_steps == ["The user performs the main action"]
+    assert item.postconditions == ["The operation is completed"]
 
 
 def test_markdown_loader_rejects_empty_text() -> None:

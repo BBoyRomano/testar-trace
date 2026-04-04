@@ -1,16 +1,22 @@
+from reqtrace.domain.requirements.enums import RequirementFormat, RequirementNotation
 from reqtrace.ingestion.requirements.adapter import RequirementsAdapter
-from reqtrace.ingestion.requirements.models import ParsedRequirementsSource
+from reqtrace.ingestion.requirements.models import ParsedRequirementRecord, ParsedRequirementsSource
 
 
 def test_requirements_adapter_normalizes_parsed_requirements_source() -> None:
     parsed = ParsedRequirementsSource(
-        title="Sample requirement",
-        external_id="REQ-1",
-        actor="Sample actor",
-        preconditions=["A valid precondition exists"],
-        main_steps=["The user performs the main action"],
-        alternative_steps=["An alternative outcome is shown"],
-        postconditions=["The operation is completed"],
+        document_title="Sample requirement",
+        requirements=[
+            ParsedRequirementRecord(
+                title="Sample requirement",
+                external_id="REQ-1",
+                actor="Sample actor",
+                preconditions=["A valid precondition exists"],
+                main_steps=["The user performs the main action"],
+                alternative_steps=["An alternative outcome is shown"],
+                postconditions=["The operation is completed"],
+            )
+        ],
         source_name="markdown",
     )
 
@@ -18,8 +24,12 @@ def test_requirements_adapter_normalizes_parsed_requirements_source() -> None:
     batch = adapter.ingest(parsed)
 
     assert len(batch.requirements) == 1
+    assert len(batch.documents) == 1
+    assert batch.documents[0].id == batch.requirements[0].document_id
     assert batch.requirements[0].id == "req-1"
     assert batch.requirements[0].external_id == "REQ-1"
+    assert batch.requirements[0].notation == RequirementNotation.USE_CASE
+    assert batch.requirements[0].file_format == RequirementFormat.MARKDOWN
     assert len(batch.fragments) == 4
     assert len(batch.flows) == 4
 
@@ -31,14 +41,22 @@ def test_requirements_adapter_normalizes_parsed_requirements_source() -> None:
     assert flow_by_name["Alternative flow"].entry_fragment_id is not None
     assert flow_by_name["Postconditions"].entry_fragment_id is not None
 
-    assert fragment_by_id[flow_by_name["Main flow"].entry_fragment_id].text == "The user performs the main action"
+    assert (
+        fragment_by_id[flow_by_name["Main flow"].entry_fragment_id].text
+        == "The user performs the main action"
+    )
     assert fragment_by_id[flow_by_name["Alternative flow"].entry_fragment_id].branch_id == "alt-1"
 
 
 def test_requirements_adapter_preserves_linear_flow_edges() -> None:
     parsed = ParsedRequirementsSource(
-        title="Checkout",
-        main_steps=["Open cart", "Confirm order", "See receipt"],
+        document_title="Checkout",
+        requirements=[
+            ParsedRequirementRecord(
+                title="Checkout",
+                main_steps=["Open cart", "Confirm order", "See receipt"],
+            )
+        ],
         source_name="markdown",
     )
 

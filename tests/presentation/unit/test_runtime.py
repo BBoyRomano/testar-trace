@@ -1,7 +1,22 @@
 from pathlib import Path
 
-from reqtrace.presentation.runtime import RunInput, build_request, execute_run, export_result_json, import_result_json
-from tests._builders import write_minimal_requirement_markdown, write_minimal_testar_model_file
+import pytest
+from tests._builders import (
+    write_minimal_requirement_markdown,
+    write_minimal_testar_model_file,
+    write_minimal_use_case_json_file,
+)
+
+from reqtrace.presentation.exceptions import RunInputValidationError
+from reqtrace.presentation.runtime import (
+    RunInput,
+    build_request,
+    execute_run,
+    export_result_json,
+    import_result_json,
+    normalize_evidence_format,
+    normalize_requirements_format,
+)
 
 
 def test_build_request_and_execute_roundtrip(tmp_path: Path) -> None:
@@ -39,3 +54,89 @@ def test_build_request_supports_requirements_directory(tmp_path: Path) -> None:
 
     request = build_request(RunInput(requirements_paths=[req_dir], evidence_path=evidence_path))
     assert len(request.requirements.requirements) == 2
+
+
+def test_build_request_supports_json_requirements_directory(tmp_path: Path) -> None:
+    req_dir = tmp_path / "requirements-json"
+    req_dir.mkdir()
+    write_minimal_use_case_json_file(req_dir / "tbuis.json")
+
+    evidence_path = tmp_path / "testar.json"
+    write_minimal_testar_model_file(evidence_path)
+
+    request = build_request(
+        RunInput(
+            requirements_paths=[req_dir],
+            requirements_format="json",
+            evidence_path=evidence_path,
+        )
+    )
+    assert len(request.requirements.requirements) == 2
+
+
+def test_normalize_format_helpers_support_aliases_and_reject_unknowns() -> None:
+    assert normalize_requirements_format("md") == "markdown"
+    assert normalize_requirements_format("JSON") == "json"
+    assert normalize_evidence_format("TESTAR") == "testar"
+
+    with pytest.raises(RunInputValidationError):
+        normalize_requirements_format("xml")
+
+
+def test_build_request_requires_evidence_path(tmp_path: Path) -> None:
+    requirements_path = tmp_path / "requirements.md"
+    write_minimal_requirement_markdown(requirements_path)
+
+    with pytest.raises(RunInputValidationError):
+        build_request(RunInput(requirements_path=requirements_path, evidence_path=None))
+
+
+def test_build_request_rejects_missing_requirements_path(tmp_path: Path) -> None:
+    evidence_path = tmp_path / "testar.json"
+    write_minimal_testar_model_file(evidence_path)
+
+    with pytest.raises(RunInputValidationError):
+        build_request(RunInput(requirements_paths=[], evidence_path=evidence_path))
+
+
+def test_build_request_rejects_missing_evidence_file(tmp_path: Path) -> None:
+    requirements_path = tmp_path / "requirements.md"
+    write_minimal_requirement_markdown(requirements_path)
+
+    with pytest.raises(RunInputValidationError):
+        build_request(
+            RunInput(requirements_path=requirements_path, evidence_path=tmp_path / "missing.json")
+        )
+
+
+def test_build_request_rejects_requirements_directory_without_matching_files(
+    tmp_path: Path,
+) -> None:
+    req_dir = tmp_path / "requirements"
+    req_dir.mkdir()
+    (req_dir / "ignored.txt").write_text("nothing", encoding="utf-8")
+    evidence_path = tmp_path / "testar.json"
+    write_minimal_testar_model_file(evidence_path)
+
+    with pytest.raises(RunInputValidationError):
+        build_request(RunInput(requirements_paths=[req_dir], evidence_path=evidence_path))
+
+
+def test_build_request_deduplicates_repeated_requirement_paths(tmp_path: Path) -> None:
+    requirements_path = tmp_path / "requirements.md"
+    write_minimal_requirement_markdown(requirements_path)
+    evidence_path = tmp_path / "testar.json"
+    write_minimal_testar_model_file(evidence_path)
+
+    request = build_request(
+        RunInput(
+            requirements_paths=[requirements_path, requirements_path],
+            evidence_path=evidence_path,
+        )
+    )
+    assert len(request.requirements.requirements) == 1
+
+
+def test_normalize_evidence_format_rejects_unknown_value() -> None:
+    with pytest.raises(RunInputValidationError):
+        normalize_evidence_format("xml")

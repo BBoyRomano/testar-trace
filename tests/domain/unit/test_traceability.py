@@ -127,6 +127,17 @@ def test_trace_evidence_with_anchor_only_is_valid() -> None:
     assert evidence.transition_id == "tr-1"
 
 
+def test_trace_evidence_with_artifact_anchor_only_is_valid() -> None:
+    evidence = TraceEvidence(
+        id="tev-artifact",
+        trace_link_id="link-1",
+        evidence_kind=TraceEvidenceKind.OTHER,
+        artifact_id="artifact-1",
+    )
+
+    assert evidence.artifact_id == "artifact-1"
+
+
 def test_coverage_assessment_rejects_inconsistent_covered_ratio() -> None:
     with pytest.raises(ValueError):
         CoverageAssessment(
@@ -175,3 +186,16 @@ def test_supports_trace_link_is_valid() -> None:
     )
 
     assert link.link_type == LinkType.SUPPORTS
+
+
+def test_trace_link_can_target_evidence_artifact() -> None:
+    link = TraceLink(
+        id="link-artifact",
+        analysis_run_id="analysis-1",
+        requirement_fragment_id="frag-1",
+        evidence_target_type=EvidenceTargetType.EVIDENCE_ARTIFACT,
+        evidence_target_id="artifact-1",
+        link_type=LinkType.SUPPORTS,
+    )
+
+    assert link.evidence_target_type == EvidenceTargetType.EVIDENCE_ARTIFACT

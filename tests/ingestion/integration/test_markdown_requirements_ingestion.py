@@ -53,10 +53,14 @@ Actor: Sample actor
     assert alternative_fragments[0].branch_id == "alt-1"
 
     main_edges = [
-        edge for edge in batch.flow_edges if edge.id.startswith(f"{flow_by_name['Main flow'].id}-edge")
+        edge
+        for edge in batch.flow_edges
+        if edge.id.startswith(f"{flow_by_name['Main flow'].id}-edge")
     ]
     assert len(main_edges) == 1
-    assert fragment_by_id[main_edges[0].from_fragment_id].text == "The user performs the main action"
+    assert (
+        fragment_by_id[main_edges[0].from_fragment_id].text == "The user performs the main action"
+    )
     assert fragment_by_id[main_edges[0].to_fragment_id].text == "The system shows the next state"
 
 

@@ -5,13 +5,17 @@ import pytest
 from reqtrace.domain.evidence.enums import (
     ActionKind,
     AttachmentKind,
+    EvidenceArtifactKind,
+    EvidenceTool,
     ExecutionRunStatus,
     ObservationKind,
+    StateModelLayer,
 )
 from reqtrace.domain.evidence.models import (
     Action,
     ApplicationState,
     Attachment,
+    EvidenceArtifact,
     ExecutionRun,
     Observation,
     Transition,
@@ -23,7 +27,9 @@ def test_evidence_sequence_can_be_created() -> None:
     run = ExecutionRun(
         id="run-1",
         tool_name="sample-tool",
+        tool=EvidenceTool.OTHER,
         status=ExecutionRunStatus.COMPLETED,
+        state_model_layers=[StateModelLayer.SEQUENCE],
     )
     state_a = ApplicationState(
         id="state-a",
@@ -61,6 +67,8 @@ def test_evidence_sequence_can_be_created() -> None:
     assert transition.to_state_id == "state-b"
     assert observation.transition_id == transition.id
     assert action.target_element_id == element.id
+    assert run.tool == EvidenceTool.OTHER
+    assert run.state_model_layers == [StateModelLayer.SEQUENCE]
 
 
 def test_execution_run_rejects_end_before_start() -> None:
@@ -71,6 +79,17 @@ def test_execution_run_rejects_end_before_start() -> None:
             status=ExecutionRunStatus.FAILED,
             started_at=datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc),
             ended_at=datetime(2026, 1, 1, 11, 59, tzinfo=timezone.utc),
+        )
+
+
+def test_execution_run_rejects_duplicate_state_model_layers() -> None:
+    with pytest.raises(ValueError):
+        ExecutionRun(
+            id="run-1",
+            tool_name="TESTAR",
+            tool=EvidenceTool.TESTAR,
+            status=ExecutionRunStatus.COMPLETED,
+            state_model_layers=[StateModelLayer.CONCRETE, StateModelLayer.CONCRETE],
         )
 
 
@@ -143,3 +162,16 @@ def test_attachment_rejects_blank_path_or_uri() -> None:
             path_or_uri="   ",
             observation_id="obs-1",
         )
+
+
+def test_evidence_artifact_can_be_created() -> None:
+    artifact = EvidenceArtifact(
+        id="artifact-1",
+        kind=EvidenceArtifactKind.STATE_MODEL_JSON,
+        path_or_uri="evidence/runs/run-1/model/model.json",
+        run_id="run-1",
+        model_layer=StateModelLayer.CONCRETE,
+    )
+
+    assert artifact.kind == EvidenceArtifactKind.STATE_MODEL_JSON
+    assert artifact.model_layer == StateModelLayer.CONCRETE

@@ -4,7 +4,10 @@ from tests._builders import write_minimal_requirement_markdown, write_minimal_te
 
 from reqtrace.application.results import EvidenceSnapshot, RequirementSnapshot, TraceabilityRequest
 from reqtrace.application.services.traceability_service import build_default_traceability_service
-from reqtrace.ingestion.common.mapping import map_evidence_batch_to_domain, map_requirements_batch_to_domain
+from reqtrace.ingestion.common.mapping import (
+    map_evidence_batch_to_domain,
+    map_requirements_batch_to_domain,
+)
 from reqtrace.ingestion.common.registry import build_default_registry
 
 
@@ -20,7 +23,9 @@ def test_end_to_end_baseline_runs_from_ingestion(tmp_path: Path) -> None:
     evidence_batch = registry.ingest_evidence("testar", evidence_path)
 
     request = TraceabilityRequest(
-        requirements=RequirementSnapshot.from_mapping(map_requirements_batch_to_domain(requirements_batch)),
+        requirements=RequirementSnapshot.from_mapping(
+            map_requirements_batch_to_domain(requirements_batch)
+        ),
         evidence=EvidenceSnapshot.from_mapping(map_evidence_batch_to_domain(evidence_batch)),
     )
 

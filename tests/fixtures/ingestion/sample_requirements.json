@@ -1,0 +1,50 @@
+{
+  "format": "tbuis_use_cases_v1",
+  "use_cases": [
+    {
+      "id": "UC.10",
+      "title": "Checkout",
+      "context_of_use": "Shopper checks out cart",
+      "primary_actor": "Shopper",
+      "preconditions": [
+        "Shopper is logged in"
+      ],
+      "trigger": "Shopper clicks checkout",
+      "main_success_scenario": [
+        "Shopper confirms payment"
+      ],
+      "postconditions": [
+        "Order is stored"
+      ],
+      "alternative_flows": [
+        {
+          "id": "UC.10.alt.1",
+          "title": "Card rejected",
+          "steps": [
+            "Payment gateway rejects the card"
+          ],
+          "postconditions": [
+            "Error is displayed"
+          ]
+        }
+      ],
+      "constraints": [
+        "Card number is mandatory"
+      ],
+      "related_information": [
+        "Gateway can be sandboxed"
+      ]
+    },
+    {
+      "id": "UC.11",
+      "title": "Logout",
+      "primary_actor": "Shopper",
+      "main_success_scenario": [
+        "Shopper clicks logout"
+      ],
+      "postconditions": [
+        "Login screen is shown"
+      ]
+    }
+  ]
+}

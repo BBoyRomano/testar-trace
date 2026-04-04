@@ -88,8 +88,12 @@ def test_requirement_batch_validation_rejects_duplicate_fragment_ids() -> None:
 def test_evidence_batch_validation_rejects_duplicate_state_ids() -> None:
     batch = NormalizedEvidenceBatch(
         states=[
-            NormalizedEvidenceStateRecord(id="state-a", source_type=SourceType.FILE, source_name="sample"),
-            NormalizedEvidenceStateRecord(id="state-a", source_type=SourceType.FILE, source_name="sample"),
+            NormalizedEvidenceStateRecord(
+                id="state-a", source_type=SourceType.FILE, source_name="sample"
+            ),
+            NormalizedEvidenceStateRecord(
+                id="state-a", source_type=SourceType.FILE, source_name="sample"
+            ),
         ]
     )
 
@@ -100,7 +104,9 @@ def test_evidence_batch_validation_rejects_duplicate_state_ids() -> None:
 def test_evidence_batch_validation_rejects_unknown_target_element_id() -> None:
     batch = NormalizedEvidenceBatch(
         states=[
-            NormalizedEvidenceStateRecord(id="state-a", source_type=SourceType.FILE, source_name="sample")
+            NormalizedEvidenceStateRecord(
+                id="state-a", source_type=SourceType.FILE, source_name="sample"
+            )
         ],
         actions=[
             NormalizedActionRecord(
@@ -128,7 +134,9 @@ def test_evidence_batch_validation_rejects_unknown_target_element_id() -> None:
 def test_evidence_batch_validation_rejects_unknown_run_id() -> None:
     batch = NormalizedEvidenceBatch(
         states=[
-            NormalizedEvidenceStateRecord(id="state-a", source_type=SourceType.FILE, source_name="sample")
+            NormalizedEvidenceStateRecord(
+                id="state-a", source_type=SourceType.FILE, source_name="sample"
+            )
         ],
         elements=[NormalizedEvidenceElementRecord(id="el-1", state_id="state-a")],
         actions=[
@@ -153,18 +161,26 @@ def test_evidence_batch_validation_rejects_unknown_run_id() -> None:
         validate_evidence_batch(batch)
 
 
-def test_evidence_batch_validation_rejects_duplicate_action_transition_and_observation_ids() -> None:
+def test_evidence_batch_validation_rejects_duplicate_action_transition_and_observation_ids() -> (
+    None
+):
     batch = NormalizedEvidenceBatch(
         states=[
-            NormalizedEvidenceStateRecord(id="state-a", source_type=SourceType.FILE, source_name="sample")
+            NormalizedEvidenceStateRecord(
+                id="state-a", source_type=SourceType.FILE, source_name="sample"
+            )
         ],
         actions=[
             NormalizedActionRecord(id="action-1", kind=ActionKind.CLICK),
             NormalizedActionRecord(id="action-1", kind=ActionKind.CLICK),
         ],
         transitions=[
-            NormalizedTransitionRecord(id="transition-1", from_state_id="state-a", action_id="action-1"),
-            NormalizedTransitionRecord(id="transition-1", from_state_id="state-a", action_id="action-1"),
+            NormalizedTransitionRecord(
+                id="transition-1", from_state_id="state-a", action_id="action-1"
+            ),
+            NormalizedTransitionRecord(
+                id="transition-1", from_state_id="state-a", action_id="action-1"
+            ),
         ],
         runs=[
             NormalizedExecutionRunRecord(
@@ -193,7 +209,6 @@ def test_evidence_batch_validation_rejects_duplicate_action_transition_and_obser
 
     with pytest.raises(IngestionValidationError, match="Duplicate action ids"):
         validate_evidence_batch(batch)
-
 
 
 def test_requirement_batch_validation_rejects_flow_entry_fragment_from_other_requirement() -> None:

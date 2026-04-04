@@ -3,11 +3,14 @@ import pytest
 from reqtrace.domain.requirements.enums import (
     RequirementFlowEdgeKind,
     RequirementFlowKind,
+    RequirementFormat,
     RequirementFragmentKind,
     RequirementKind,
+    RequirementNotation,
 )
 from reqtrace.domain.requirements.models import (
     RequirementArtifact,
+    RequirementDocument,
     RequirementFlow,
     RequirementFlowEdge,
     RequirementFragment,
@@ -20,10 +23,16 @@ def test_requirement_artifact_can_be_created() -> None:
         kind=RequirementKind.USE_CASE,
         title="Sample requirement",
         external_id="REQ-1",
+        notation=RequirementNotation.USE_CASE,
+        file_format=RequirementFormat.MARKDOWN,
+        document_id="doc-1",
     )
 
     assert artifact.kind == RequirementKind.USE_CASE
     assert artifact.external_id == "REQ-1"
+    assert artifact.notation == RequirementNotation.USE_CASE
+    assert artifact.file_format == RequirementFormat.MARKDOWN
+    assert artifact.document_id == "doc-1"
 
 
 def test_requirement_structure_can_represent_branching_flow() -> None:
@@ -113,4 +122,15 @@ def test_requirement_artifact_rejects_blank_title() -> None:
             id="req-1",
             kind=RequirementKind.USE_CASE,
             title="   ",
+        )
+
+
+def test_requirement_document_rejects_duplicate_requirement_ids() -> None:
+    with pytest.raises(ValueError):
+        RequirementDocument(
+            id="doc-1",
+            title="TbUIS use cases",
+            notation=RequirementNotation.USE_CASE,
+            file_format=RequirementFormat.JSON,
+            requirement_ids=["req-1", "req-1"],
         )

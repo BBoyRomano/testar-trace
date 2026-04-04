@@ -1,4 +1,11 @@
-from reqtrace.domain.evidence.enums import ActionKind, ExecutionRunStatus, ObservationKind
+from reqtrace.domain.evidence.enums import (
+    ActionKind,
+    EvidenceArtifactKind,
+    EvidenceTool,
+    ExecutionRunStatus,
+    ObservationKind,
+    StateModelLayer,
+)
 from reqtrace.ingestion.evidence.adapter import EvidenceAdapter
 from reqtrace.ingestion.evidence.models import (
     ParsedEvidenceAction,
@@ -52,6 +59,7 @@ def test_evidence_adapter_normalizes_parsed_evidence_source() -> None:
             )
         ],
         source_name="testar",
+        path_or_uri="suts/tbuis/evidence/runs/demo/model/model.json",
     )
 
     adapter = EvidenceAdapter()
@@ -71,3 +79,7 @@ def test_evidence_adapter_normalizes_parsed_evidence_source() -> None:
     assert batch.transitions[0].to_state_id == "state-b"
     assert batch.observations[0].state_id == "state-b"
     assert batch.observations[0].transition_id == "tr-1"
+    assert batch.runs[0].tool == EvidenceTool.TESTAR
+    assert StateModelLayer.CONCRETE in batch.runs[0].state_model_layers
+    assert len(batch.artifacts) == 1
+    assert batch.artifacts[0].kind == EvidenceArtifactKind.STATE_MODEL_JSON
