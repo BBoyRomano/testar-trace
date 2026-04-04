@@ -2,16 +2,16 @@
 
 ## UC.01 — Application login
 
-**Context of Use**  
+**Context of Use**
 Registered user will log into the application and based on the login name the user will be recognized either as a student or a teacher
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 Unlogged user
 
 **Stakeholders and Interests**
@@ -25,7 +25,7 @@ Unlogged user
 1. User is on the UIS homepage
 2. No other user is logged in - the upper bar has a black colour and on the right side there is a visible Login option of the menu
 
-**Trigger**  
+**Trigger**
 User selects the Login option from the menu located on the right side of the upper bar
 
 **Main Success Scenario**
@@ -69,16 +69,16 @@ N/A
 
 ## UC.02 — Application logout
 
-**Context of Use**  
+**Context of Use**
 Logged in user is logging out of the Application
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 Logged in user
 
 **Stakeholders and Interests**
@@ -91,7 +91,7 @@ N/A
 **Preconditions**
 1. User is logged in - the right side of the upper bar displays the Logout option
 
-**Trigger**  
+**Trigger**
 User clicks on the Login option on the menu located on the right side of the upper bar
 
 **Main Success Scenario**
@@ -122,16 +122,16 @@ N/A
 
 ## UC.03 — Change of user's personal data
 
-**Context of Use**  
+**Context of Use**
 Logged in user can change his/her first name and/or last name and/or email
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 Logged in user
 
 **Stakeholders and Interests**
@@ -147,7 +147,7 @@ Logged in user
 1. User is already logged in to the UIS
 2. User is located on the Overview page
 
-**Trigger**  
+**Trigger**
 User edits one of his/her entries or the combination of them
 
 **Main Success Scenario**
@@ -216,16 +216,16 @@ N/A
 
 ## UC.04 — Cancelling the registration (enrollment) to a subject
 
-**Context of Use**  
+**Context of Use**
 Student cancels the registration to a subject he/she previously enrolled
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 student
 
 **Stakeholders and Interests**
@@ -238,7 +238,7 @@ N/A
 1. Student is logged in to the UIS
 2. User is located on the My Subjects page
 
-**Trigger**  
+**Trigger**
 Student clicks the X button located in the same row as the subject intended for cancellation
 
 **Main Success Scenario**
@@ -294,16 +294,16 @@ N/A
 
 ## UC.05 — Displays subjects with passed examination
 
-**Context of Use**  
+**Context of Use**
 Summarized information about all subjects with successful examination and their evaluations
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 subfunction
 
-**Primary Actor**  
+**Primary Actor**
 student
 
 **Stakeholders and Interests**
@@ -315,7 +315,7 @@ student
 **Preconditions**
 1. Student is already logged in to the UIS
 
-**Trigger**  
+**Trigger**
 Student clicks on the option My Subjects of the menu.
 
 **Main Success Scenario**
@@ -343,16 +343,16 @@ N/A
 
 ## UC.06 — Subject enrollment
 
-**Context of Use**  
+**Context of Use**
 Student enrolls to one of the so far not enrolled subjects
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 student
 
 **Stakeholders and Interests**
@@ -366,7 +366,7 @@ student
 1. Student is logged in to the UIS
 2. Student is on the page Other Subjects
 
-**Trigger**  
+**Trigger**
 Student clicks on the Enroll button from the row of the subject intended for enrollment
 
 **Main Success Scenario**
@@ -411,16 +411,16 @@ N/A
 
 ## UC.07 — Cancellation of registered exam date
 
-**Context of Use**  
+**Context of Use**
 Student unregisters his/her exam date for the selected subject
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 student
 
 **Stakeholders and Interests**
@@ -433,7 +433,7 @@ N/A
 1. Student is already logged in to the UIS
 2. Student is on the page My Exam Dates
 
-**Trigger**  
+**Trigger**
 Student clicks the button Unregister in the selected subject's row with an assigned date for an examination
 
 **Main Success Scenario**
@@ -473,16 +473,16 @@ N/A
 
 ## UC.08 — Registration of a new exam date
 
-**Context of Use**  
+**Context of Use**
 Student registers a new exam date for the selected subject
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 student
 
 **Stakeholders and Interests**
@@ -498,7 +498,7 @@ student
 1. Student is already logged in to the UIS
 2. Student is located on the page Other Exam Dates
 
-**Trigger**  
+**Trigger**
 Student clicks on the button Register located in a sub-table for the selected subject with an assigned exam date
 
 **Main Success Scenario**
@@ -558,16 +558,16 @@ N/A
 
 ## UC.09 — Displays all examination participants - classmates
 
-**Context of Use**  
+**Context of Use**
 Summarized overview of all students registered for the date of an examination for a specific subject ("participants"), i.e. the student's classmates
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 subfunction
 
-**Primary Actor**  
+**Primary Actor**
 student
 
 **Stakeholders and Interests**
@@ -580,7 +580,7 @@ student
 1. Student is already logged in to the UIS
 2. Student is either on the Other Exam Dates page or the My Exam Dates page
 
-**Trigger**  
+**Trigger**
 Student clicks on the button Participants for the selected subject
 
 **Main Success Scenario**
@@ -609,16 +609,16 @@ N/A
 
 ## UC.10 — Cancellation of registered subject
 
-**Context of Use**  
+**Context of Use**
 Teacher cancels a subject he/she teaches.
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 teacher
 
 **Stakeholders and Interests**
@@ -631,7 +631,7 @@ teacher
 1. Teacher is already logged in to the UIS
 2. Teacher is on the page My Subjects
 
-**Trigger**  
+**Trigger**
 Teacher clicks on the button Remove located in the row of the subject intended for cancellation
 
 **Main Success Scenario**
@@ -682,16 +682,16 @@ Teacher clicks on the button Remove located in the row of the subject intended f
 
 ## UC.11 — Displays students registered in the subject
 
-**Context of Use**  
+**Context of Use**
 Summarized list of all students attending the specific subject
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 subfunction
 
-**Primary Actor**  
+**Primary Actor**
 teacher
 
 **Stakeholders and Interests**
@@ -704,7 +704,7 @@ N/A
 1. Teacher is already logged in to the UIS
 2. Teacher is on the page My Subjects
 
-**Trigger**  
+**Trigger**
 Teacher clicks on the button Students for the specific subject
 
 **Main Success Scenario**
@@ -732,16 +732,16 @@ N/A
 
 ## UC.12 — Cancellation of the exam date
 
-**Context of Use**  
+**Context of Use**
 Teacher cancels the exam date for his/her subject
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 teacher
 
 **Stakeholders and Interests**
@@ -754,7 +754,7 @@ teacher
 1. Teacher is already logged in to the UIS
 2. Teacher is on the page My Exam Dates
 
-**Trigger**  
+**Trigger**
 Teacher clicks on the button X in the row of the exam date
 
 **Main Success Scenario**
@@ -815,16 +815,16 @@ N/A
 
 ## UC.13 — Displays all examination participants
 
-**Context of Use**  
+**Context of Use**
 An overview of all students registered for the date of an examination for a specific subject ("participants")
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 subfunction
 
-**Primary Actor**  
+**Primary Actor**
 teacher
 
 **Stakeholders and Interests**
@@ -837,7 +837,7 @@ N/A
 1. Teacher is already logged in to the UIS
 2. Teacher is on the page My Exam Dates
 
-**Trigger**  
+**Trigger**
 Teacher clicks the button
 
 **Main Success Scenario**
@@ -866,16 +866,16 @@ Teacher clicks the button
 
 ## UC.14 — Announcement of a new exam date
 
-**Context of Use**  
+**Context of Use**
 Teacher announces a new exam date for his/her subject
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 teacher
 
 **Stakeholders and Interests**
@@ -893,7 +893,7 @@ teacher
 1. Teacher is already logged in to the UIS
 2. Teacher is on the page My Exam Dates
 
-**Trigger**  
+**Trigger**
 Teacher enters values and entries in the form
 
 **Main Success Scenario**
@@ -996,16 +996,16 @@ Teacher enters values and entries in the form
 
 ## UC.15 — Enters the examination evaluation
 
-**Context of Use**  
+**Context of Use**
 Teacher enters the examination evaluation of the selected student for the selected exam date he/she teaches
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 teacher
 
 **Stakeholders and Interests**
@@ -1018,7 +1018,7 @@ N/A
 1. Teacher is already logged in to the UIS
 2. Teacher is on the page Set Evaluation
 
-**Trigger**  
+**Trigger**
 Teacher enters values and entries to the form
 
 **Main Success Scenario**
@@ -1081,16 +1081,16 @@ Teacher enters values and entries to the form
 
 ## UC.16 — Enters or reenters (changes) the evaluation of the examination
 
-**Context of Use**  
+**Context of Use**
 Teacher enters an evaluation of an examination of the selected student or changes already entered evaluation
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 teacher
 
 **Stakeholders and Interests**
@@ -1103,7 +1103,7 @@ N/A
 1. Teacher is already logged in to the UIS
 2. Teacher is on the page Evaluation Table
 
-**Trigger**  
+**Trigger**
 Teacher enters values and entries to the entry form of the filter
 
 **Main Success Scenario**
@@ -1160,16 +1160,16 @@ N/A
 
 ## UC.17 — Signs up to teach a subject
 
-**Context of Use**  
+**Context of Use**
 Teacher begins to teach a certain subject
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 teacher
 
 **Stakeholders and Interests**
@@ -1182,7 +1182,7 @@ teacher
 1. Teacher is already logged in to the UIS
 2. Teacher is on the page Others' Subjects
 
-**Trigger**  
+**Trigger**
 Teacher clicks on the button Participate in the row of the desired subject
 
 **Main Success Scenario**
@@ -1226,16 +1226,16 @@ N/A
 
 ## UC.18 — Displays the list of teachers and subjects they teach
 
-**Context of Use**  
+**Context of Use**
 Overview of teachers and subjects they teach
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 user goal
 
-**Primary Actor**  
+**Primary Actor**
 teacher
 
 **Stakeholders and Interests**
@@ -1247,7 +1247,7 @@ N/A
 **Preconditions**
 1. Teacher is already logged in to the UIS
 
-**Trigger**  
+**Trigger**
 Teacher clicks on the option List of All Teachers of the menu
 
 **Main Success Scenario**
@@ -1275,16 +1275,16 @@ N/A
 
 ## UC.19 — Restoration of the database
 
-**Context of Use**  
+**Context of Use**
 Unlogged user restores DB's into the default state, usually before proceeding to the tests
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 subfunction
 
-**Primary Actor**  
+**Primary Actor**
 unlogged user
 
 **Stakeholders and Interests**
@@ -1296,7 +1296,7 @@ N/A
 **Preconditions**
 1. No one is logged in the UIS - the upper menu contains the option Restore DB
 
-**Trigger**  
+**Trigger**
 Unlogged user clicks on the option Restore DB of the menu
 
 **Main Success Scenario**
@@ -1321,16 +1321,16 @@ N/A
 
 ## UC.20 — Displays information about system's abilities
 
-**Context of Use**  
+**Context of Use**
 Unlogged user gets information about existing use-cases, contents of databes and restrictions in the UIS
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 subfunction
 
-**Primary Actor**  
+**Primary Actor**
 unlogged user
 
 **Stakeholders and Interests**
@@ -1343,7 +1343,7 @@ N/A
 1. No one is logged in to the UIS
 2. User is on the page University information System (Home page)
 
-**Trigger**  
+**Trigger**
 Unlogged user clicks on one of the options on the list on the lower left part of the UI/display
 
 **Main Success Scenario**
@@ -1367,16 +1367,16 @@ N/A
 
 ## UC.21 — Export of the database
 
-**Context of Use**  
+**Context of Use**
 Unlogged user saves the current content of the database as an external XML/JSON file
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 subfunction
 
-**Primary Actor**  
+**Primary Actor**
 unlogged user
 
 **Stakeholders and Interests**
@@ -1388,7 +1388,7 @@ N/A
 **Preconditions**
 1. >No one is logged in to the UIS - the upper menu has the option Export/Import DB
 
-**Trigger**  
+**Trigger**
 Unlogged user clicks on the Export/Import DB item on the menu
 
 **Main Success Scenario**
@@ -1415,16 +1415,16 @@ N/A
 
 ## UC.22 — Import of the database
 
-**Context of Use**  
+**Context of Use**
 Unlogged user rewriters the current content of the database with the content of external XML or JSON file
 
-**Scope**  
+**Scope**
 UIS
 
-**Level**  
+**Level**
 subfunction
 
-**Primary Actor**  
+**Primary Actor**
 Unlogged user
 
 **Stakeholders and Interests**
@@ -1436,7 +1436,7 @@ N/A
 **Preconditions**
 1. No one is logged in to the UIS - the upper menu has the option Export/Import DB
 
-**Trigger**  
+**Trigger**
 Unlogged user clicks on the Export/Import DB item on the menu
 
 **Main Success Scenario**

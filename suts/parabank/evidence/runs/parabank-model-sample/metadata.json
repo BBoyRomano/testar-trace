@@ -1,0 +1,11 @@
+{
+  "id": "parabank-model-sample",
+  "sut": "parabank",
+  "tool": "TESTAR",
+  "captured_at": null,
+  "model_files": [
+    "model/model.json"
+  ],
+  "raw_output_in_repo": false,
+  "notes": "Sample model-only evidence bundle."
+}

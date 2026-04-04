@@ -1,6 +1,10 @@
 # Parabank
 
-This SUT currently contains only a model artifact.
+Parabank currently contains a model-only evidence sample in the standard run-bundle layout.
 
-## Files
-- `evidence/models/parabank-model.json`: stored model artifact
+## Structure
+
+- `evidence/runs/parabank-model-sample/metadata.json`
+- `evidence/runs/parabank-model-sample/model/model.json`
+
+No protocol, requirements, or raw-output bundle is stored yet for this SUT.
