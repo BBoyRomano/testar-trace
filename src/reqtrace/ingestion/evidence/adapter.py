@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import logging
 
+from reqtrace.domain.evidence.enums import EvidenceArtifactKind, EvidenceTool, StateModelLayer
 from reqtrace.ingestion.common.models import (
     NormalizedActionRecord,
+    NormalizedEvidenceArtifactRecord,
     NormalizedEvidenceBatch,
     NormalizedEvidenceElementRecord,
     NormalizedEvidenceStateRecord,
@@ -17,18 +19,49 @@ from reqtrace.ingestion.evidence.models import ParsedEvidenceSource
 logger = logging.getLogger(__name__)
 
 
-class EvidenceAdapter:
+class DefaultEvidenceNormalizer:
     def ingest(self, parsed_source: ParsedEvidenceSource) -> NormalizedEvidenceBatch:
-        logger.info("Starting evidence normalization: source=%s", parsed_source.source_name)
+        logger.debug(
+            "Starting evidence normalization.",
+            extra={
+                "source_name": parsed_source.source_name,
+                "state_count": len(parsed_source.states),
+                "action_count": len(parsed_source.actions),
+                "transition_count": len(parsed_source.transitions),
+            },
+        )
         try:
+            tool = (
+                parsed_source.run.tool
+                if parsed_source.run.tool is not None
+                else (
+                    EvidenceTool.TESTAR
+                    if parsed_source.run.tool_name.strip().lower() == "testar"
+                    else EvidenceTool.OTHER
+                )
+            )
             run = NormalizedExecutionRunRecord(
                 id=parsed_source.run.id,
                 tool_name=parsed_source.run.tool_name,
+                tool=tool,
                 status=parsed_source.run.status,
                 tool_run_id=parsed_source.run.tool_run_id,
                 sequence_number=parsed_source.run.sequence_number,
                 started_at=parsed_source.run.started_at,
                 ended_at=parsed_source.run.ended_at,
+                state_model_layers=(
+                    list(parsed_source.run.state_model_layers)
+                    if parsed_source.run.state_model_layers
+                    else (
+                        [
+                            StateModelLayer.ABSTRACT,
+                            StateModelLayer.CONCRETE,
+                            StateModelLayer.SEQUENCE,
+                        ]
+                        if tool is EvidenceTool.TESTAR
+                        else []
+                    )
+                ),
                 source_type=parsed_source.source_type,
                 source_name=parsed_source.source_name,
                 native_id=parsed_source.run.native_id,
@@ -115,6 +148,36 @@ class EvidenceAdapter:
                 for item in parsed_source.observations
             ]
 
+            artifacts: list[NormalizedEvidenceArtifactRecord] = []
+            for item in parsed_source.artifacts:
+                artifacts.append(
+                    NormalizedEvidenceArtifactRecord(
+                        id=item.id,
+                        kind=item.kind,
+                        path_or_uri=item.path_or_uri,
+                        run_id=item.run_id,
+                        model_layer=item.model_layer,
+                        source_type=item.source_type,
+                        source_name=parsed_source.source_name,
+                        native_id=item.native_id,
+                        metadata=item.metadata,
+                    )
+                )
+            if not artifacts and parsed_source.path_or_uri is not None:
+                artifacts.append(
+                    NormalizedEvidenceArtifactRecord(
+                        id=f"{parsed_source.run.id}:state-model-json",
+                        kind=EvidenceArtifactKind.STATE_MODEL_JSON,
+                        path_or_uri=parsed_source.path_or_uri,
+                        run_id=parsed_source.run.id,
+                        model_layer=StateModelLayer.CONCRETE,
+                        source_type=parsed_source.source_type,
+                        source_name=parsed_source.source_name,
+                        native_id=parsed_source.run.native_id,
+                        metadata={"fallback": True},
+                    )
+                )
+
             batch = NormalizedEvidenceBatch(
                 states=states,
                 elements=elements,
@@ -123,18 +186,30 @@ class EvidenceAdapter:
                 runs=[run],
                 observations=observations,
                 attachments=[],
+                artifacts=artifacts,
             )
             validate_evidence_batch(batch)
-            logger.info(
-                "Completed evidence normalization: states=%d elements=%d actions=%d transitions=%d runs=%d observations=%d",
-                len(batch.states),
-                len(batch.elements),
-                len(batch.actions),
-                len(batch.transitions),
-                len(batch.runs),
-                len(batch.observations),
+            logger.debug(
+                "Completed evidence normalization.",
+                extra={
+                    "source_name": parsed_source.source_name,
+                    "states": len(batch.states),
+                    "elements": len(batch.elements),
+                    "actions": len(batch.actions),
+                    "transitions": len(batch.transitions),
+                    "runs": len(batch.runs),
+                    "observations": len(batch.observations),
+                },
             )
             return batch
-        except Exception:
-            logger.exception("Evidence normalization failed: source=%s", parsed_source.source_name)
+        except Exception as exc:
+            logger.error(
+                "Evidence normalization failed.",
+                exc_info=exc,
+                extra={"source_name": parsed_source.source_name},
+            )
             raise
+
+
+# Backward-compatible alias (kept to avoid breaking existing imports).
+EvidenceAdapter = DefaultEvidenceNormalizer

@@ -3,6 +3,7 @@ from reqtrace.domain.evidence.models import (
     Action,
     ApplicationState,
     Attachment,
+    EvidenceArtifact,
     ExecutionRun,
     Observation,
     Transition,
@@ -10,6 +11,7 @@ from reqtrace.domain.evidence.models import (
 )
 from reqtrace.domain.requirements.models import (
     RequirementArtifact,
+    RequirementDocument,
     RequirementFlow,
     RequirementFlowEdge,
     RequirementFragment,
@@ -19,6 +21,29 @@ from reqtrace.ingestion.common.provenance import build_provenance
 
 
 def map_requirements_batch_to_domain(batch: NormalizedRequirementBatch):
+    documents = [
+        RequirementDocument(
+            id=item.id,
+            title=item.title,
+            notation=item.notation,
+            file_format=item.file_format,
+            source_ref=SourceRef(
+                source_type=item.source_type,
+                source_name=item.source_name,
+                native_id=item.native_id,
+                path_or_uri=item.path_or_uri,
+            ),
+            provenance=build_provenance(
+                source_type=item.source_type,
+                source_name=item.source_name,
+                native_id=item.native_id,
+                path_or_uri=item.path_or_uri,
+                parser_name="ingestion-mapper",
+            ),
+            metadata=item.metadata,
+        )
+        for item in batch.documents
+    ]
     requirements = [
         RequirementArtifact(
             id=item.id,
@@ -30,6 +55,9 @@ def map_requirements_batch_to_domain(batch: NormalizedRequirementBatch):
             actor=item.actor,
             scope=item.scope,
             level=item.level,
+            notation=item.notation,
+            file_format=item.file_format,
+            document_id=item.document_id,
             source_ref=SourceRef(
                 source_type=item.source_type,
                 source_name=item.source_name,
@@ -83,7 +111,18 @@ def map_requirements_batch_to_domain(batch: NormalizedRequirementBatch):
         )
         for item in batch.flow_edges
     ]
+    requirement_ids_by_document_id: dict[str, list[str]] = {}
+    for requirement in requirements:
+        if requirement.document_id is None:
+            continue
+        requirement_ids_by_document_id.setdefault(requirement.document_id, []).append(
+            requirement.id
+        )
+    for document in documents:
+        document.requirement_ids = sorted(requirement_ids_by_document_id.get(document.id, []))
+
     return {
+        "documents": documents,
         "requirements": requirements,
         "fragments": fragments,
         "flows": flows,
@@ -165,11 +204,13 @@ def map_evidence_batch_to_domain(batch: NormalizedEvidenceBatch):
         ExecutionRun(
             id=item.id,
             tool_name=item.tool_name,
+            tool=item.tool,
             status=item.status,
             tool_run_id=item.tool_run_id,
             sequence_number=item.sequence_number,
             started_at=item.started_at,
             ended_at=item.ended_at,
+            state_model_layers=item.state_model_layers,
             source_ref=SourceRef(
                 source_type=item.source_type,
                 source_name=item.source_name,
@@ -213,6 +254,30 @@ def map_evidence_batch_to_domain(batch: NormalizedEvidenceBatch):
         )
         for item in batch.attachments
     ]
+    artifacts = [
+        EvidenceArtifact(
+            id=item.id,
+            kind=item.kind,
+            path_or_uri=item.path_or_uri,
+            run_id=item.run_id,
+            model_layer=item.model_layer,
+            source_ref=SourceRef(
+                source_type=item.source_type,
+                source_name=item.source_name,
+                native_id=item.native_id,
+                path_or_uri=item.path_or_uri,
+            ),
+            provenance=build_provenance(
+                source_type=item.source_type,
+                source_name=item.source_name,
+                native_id=item.native_id,
+                path_or_uri=item.path_or_uri,
+                parser_name="ingestion-mapper",
+            ),
+            metadata=item.metadata,
+        )
+        for item in batch.artifacts
+    ]
     return {
         "states": states,
         "elements": elements,
@@ -221,4 +286,5 @@ def map_evidence_batch_to_domain(batch: NormalizedEvidenceBatch):
         "runs": runs,
         "observations": observations,
         "attachments": attachments,
+        "artifacts": artifacts,
     }

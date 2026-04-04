@@ -17,3 +17,11 @@ class UnknownTraceabilityMethodError(TraceabilityError):
 
 class TraceabilityMethodExecutionError(TraceabilityError):
     """Raised when a method fails unexpectedly."""
+
+
+class RunHistoryError(TraceabilityError):
+    """Base exception for run history management failures."""
+
+
+class RunHistoryEntryNotFoundError(RunHistoryError):
+    """Raised when a run history entry cannot be found."""

@@ -9,14 +9,19 @@ from reqtrace.domain.common.enums import SourceType
 from reqtrace.domain.evidence.enums import (
     ActionKind,
     AttachmentKind,
+    EvidenceArtifactKind,
+    EvidenceTool,
     ExecutionRunStatus,
     ObservationKind,
+    StateModelLayer,
 )
 from reqtrace.domain.requirements.enums import (
     RequirementFlowEdgeKind,
     RequirementFlowKind,
+    RequirementFormat,
     RequirementFragmentKind,
     RequirementKind,
+    RequirementNotation,
 )
 
 
@@ -32,6 +37,9 @@ class NormalizedRequirementRecord(BaseModel):
     actor: Optional[str] = None
     scope: Optional[str] = None
     level: Optional[str] = None
+    notation: Optional[RequirementNotation] = None
+    file_format: Optional[RequirementFormat] = None
+    document_id: Optional[str] = None
     source_type: SourceType
     source_name: str = Field(..., min_length=1)
     native_id: Optional[str] = None
@@ -75,9 +83,24 @@ class NormalizedRequirementFlowEdgeRecord(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+class NormalizedRequirementDocumentRecord(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(..., min_length=1)
+    title: str = Field(..., min_length=1)
+    notation: RequirementNotation
+    file_format: RequirementFormat
+    source_type: SourceType
+    source_name: str = Field(..., min_length=1)
+    native_id: Optional[str] = None
+    path_or_uri: Optional[str] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
 class NormalizedRequirementBatch(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    documents: list[NormalizedRequirementDocumentRecord] = Field(default_factory=list)
     requirements: list[NormalizedRequirementRecord] = Field(default_factory=list)
     fragments: list[NormalizedRequirementFragmentRecord] = Field(default_factory=list)
     flows: list[NormalizedRequirementFlowRecord] = Field(default_factory=list)
@@ -149,11 +172,13 @@ class NormalizedExecutionRunRecord(BaseModel):
 
     id: str = Field(..., min_length=1)
     tool_name: str = Field(..., min_length=1)
+    tool: Optional[EvidenceTool] = None
     status: ExecutionRunStatus
     tool_run_id: Optional[str] = None
     sequence_number: Optional[int] = None
     started_at: Optional[datetime] = None
     ended_at: Optional[datetime] = None
+    state_model_layers: list[StateModelLayer] = Field(default_factory=list)
     source_type: SourceType
     source_name: str = Field(..., min_length=1)
     native_id: Optional[str] = None
@@ -187,6 +212,20 @@ class NormalizedAttachmentRecord(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+class NormalizedEvidenceArtifactRecord(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(..., min_length=1)
+    kind: EvidenceArtifactKind
+    path_or_uri: str = Field(..., min_length=1)
+    run_id: Optional[str] = None
+    model_layer: Optional[StateModelLayer] = None
+    source_type: SourceType
+    source_name: str = Field(..., min_length=1)
+    native_id: Optional[str] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
 class NormalizedEvidenceBatch(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -197,3 +236,4 @@ class NormalizedEvidenceBatch(BaseModel):
     runs: list[NormalizedExecutionRunRecord] = Field(default_factory=list)
     observations: list[NormalizedObservationRecord] = Field(default_factory=list)
     attachments: list[NormalizedAttachmentRecord] = Field(default_factory=list)
+    artifacts: list[NormalizedEvidenceArtifactRecord] = Field(default_factory=list)

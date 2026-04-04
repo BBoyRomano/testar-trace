@@ -3,17 +3,28 @@
 from .enums import (
     RequirementFlowEdgeKind,
     RequirementFlowKind,
+    RequirementFormat,
     RequirementFragmentKind,
     RequirementKind,
+    RequirementNotation,
 )
-from .models import RequirementArtifact, RequirementFlow, RequirementFlowEdge, RequirementFragment
+from .models import (
+    RequirementArtifact,
+    RequirementDocument,
+    RequirementFlow,
+    RequirementFlowEdge,
+    RequirementFragment,
+)
 
 __all__ = [
     "RequirementKind",
+    "RequirementNotation",
+    "RequirementFormat",
     "RequirementFragmentKind",
     "RequirementFlowKind",
     "RequirementFlowEdgeKind",
     "RequirementArtifact",
+    "RequirementDocument",
     "RequirementFragment",
     "RequirementFlow",
     "RequirementFlowEdge",

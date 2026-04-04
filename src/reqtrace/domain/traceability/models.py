@@ -27,7 +27,6 @@ class TraceLink(DomainModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
-
 class TraceEvidence(DomainModel):
     id: str = Field(..., min_length=1)
     trace_link_id: str = Field(..., min_length=1)
@@ -36,15 +35,26 @@ class TraceEvidence(DomainModel):
     matched_tokens: list[str] = Field(default_factory=list)
     run_id: Optional[str] = None
     state_id: Optional[str] = None
+    action_id: Optional[str] = None
     transition_id: Optional[str] = None
     element_id: Optional[str] = None
+    attachment_id: Optional[str] = None
+    artifact_id: Optional[str] = None
     details: dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def validate_support_payload(self) -> "TraceEvidence":
         has_context_anchor = any(
             value is not None
-            for value in (self.run_id, self.state_id, self.transition_id, self.element_id)
+            for value in (
+                self.run_id,
+                self.state_id,
+                self.action_id,
+                self.transition_id,
+                self.element_id,
+                self.attachment_id,
+                self.artifact_id,
+            )
         )
         has_content = bool(self.text_excerpt) or bool(self.matched_tokens)
         if not has_context_anchor and not has_content:

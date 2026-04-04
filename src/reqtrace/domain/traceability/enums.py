@@ -22,12 +22,14 @@ class ConfidenceLabel(StrEnum):
 
 
 class EvidenceTargetType(StrEnum):
+    EXECUTION_RUN = "execution_run"
     APPLICATION_STATE = "application_state"
     UI_ELEMENT = "ui_element"
     ACTION = "action"
     TRANSITION = "transition"
     OBSERVATION = "observation"
     ATTACHMENT = "attachment"
+    EVIDENCE_ARTIFACT = "evidence_artifact"
 
 
 class CoverageSubjectType(StrEnum):

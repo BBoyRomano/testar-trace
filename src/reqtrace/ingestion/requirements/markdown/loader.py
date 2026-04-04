@@ -5,9 +5,14 @@ import re
 from pathlib import Path
 
 from reqtrace.domain.common.enums import SourceType
+from reqtrace.domain.requirements.enums import RequirementFormat, RequirementNotation
 from reqtrace.ingestion.common.exceptions import SourceParseError, SourceValidationError
 from reqtrace.ingestion.common.normalization import normalize_text
-from reqtrace.ingestion.requirements.models import ParsedRequirementsSource
+from reqtrace.ingestion.requirements.models import (
+    ParsedAlternativeFlow,
+    ParsedRequirementRecord,
+    ParsedRequirementsSource,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -15,19 +20,30 @@ logger = logging.getLogger(__name__)
 class MarkdownRequirementsLoader:
     def load(self, source: str | Path) -> ParsedRequirementsSource:
         path = Path(source)
-        logger.info("Starting markdown requirements load: %s", path)
+        logger.debug("Starting markdown requirements load.", extra={"source_path": str(path)})
         try:
             text = path.read_text(encoding="utf-8")
         except OSError as exc:
-            logger.exception("Markdown requirements read failed: %s", path)
+            logger.error(
+                "Markdown requirements read failed.",
+                exc_info=exc,
+                extra={"source_path": str(path)},
+            )
             raise SourceParseError(f"Could not read markdown source: {path}") from exc
 
         try:
             parsed = self.load_text(text=text, source_name="markdown", path_or_uri=str(path))
-            logger.info("Completed markdown requirements load: %s", path)
+            logger.debug(
+                "Completed markdown requirements load.",
+                extra={"source_path": str(path), "requirement_count": len(parsed.requirements)},
+            )
             return parsed
-        except Exception:
-            logger.exception("Markdown requirements load failed: %s", path)
+        except Exception as exc:
+            logger.error(
+                "Markdown requirements load failed.",
+                exc_info=exc,
+                extra={"source_path": str(path)},
+            )
             raise
 
     def load_text(
@@ -47,15 +63,21 @@ class MarkdownRequirementsLoader:
         current_section = None
 
         preconditions: list[str] = []
+        triggers: list[str] = []
         main_steps: list[str] = []
         alternative_steps: list[str] = []
         postconditions: list[str] = []
+        constraints: list[str] = []
+        related_information: list[str] = []
 
         section_map = {
             "preconditions": preconditions,
+            "trigger": triggers,
             "main flow": main_steps,
             "alternative flow": alternative_steps,
             "postconditions": postconditions,
+            "constraints": constraints,
+            "related information": related_information,
         }
 
         for raw_line in lines:
@@ -91,17 +113,42 @@ class MarkdownRequirementsLoader:
         if not title:
             raise SourceValidationError("Markdown source is missing a top-level title.")
         if not main_steps and not preconditions and not alternative_steps and not postconditions:
-            raise SourceValidationError("Markdown source does not contain any supported requirement sections.")
+            raise SourceValidationError(
+                "Markdown source does not contain any supported requirement sections."
+            )
 
         return ParsedRequirementsSource(
-            title=title,
-            external_id=external_id,
-            actor=actor,
-            body=None,
-            preconditions=preconditions,
-            main_steps=main_steps,
-            alternative_steps=alternative_steps,
-            postconditions=postconditions,
+            document_title=title,
+            requirements=[
+                ParsedRequirementRecord(
+                    title=title,
+                    external_id=external_id,
+                    actor=actor,
+                    body=None,
+                    trigger=triggers[0] if triggers else None,
+                    preconditions=preconditions,
+                    main_steps=main_steps,
+                    alternative_steps=alternative_steps,
+                    alternative_flows=(
+                        [
+                            ParsedAlternativeFlow(
+                                title="Alternative flow",
+                                steps=alternative_steps,
+                                postconditions=[],
+                                metadata={},
+                            )
+                        ]
+                        if alternative_steps
+                        else []
+                    ),
+                    postconditions=postconditions,
+                    constraints=constraints,
+                    related_information=related_information,
+                    notation=RequirementNotation.USE_CASE,
+                    file_format=RequirementFormat.MARKDOWN,
+                    metadata={},
+                )
+            ],
             source_type=SourceType.FILE,
             source_name=source_name,
             path_or_uri=path_or_uri,

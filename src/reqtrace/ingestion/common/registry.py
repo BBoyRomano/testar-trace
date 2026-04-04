@@ -10,9 +10,12 @@ from reqtrace.ingestion.common.interfaces import (
     RequirementsLoader,
 )
 from reqtrace.ingestion.common.models import NormalizedEvidenceBatch, NormalizedRequirementBatch
-from reqtrace.ingestion.evidence.adapter import EvidenceAdapter as DefaultEvidenceAdapter
+from reqtrace.ingestion.evidence.adapter import DefaultEvidenceNormalizer
 from reqtrace.ingestion.evidence.testar.loader import TestarLoader
-from reqtrace.ingestion.requirements.adapter import RequirementsAdapter as DefaultRequirementsAdapter
+from reqtrace.ingestion.requirements.adapter import (
+    DefaultRequirementsNormalizer,
+)
+from reqtrace.ingestion.requirements.json.loader import JsonRequirementsLoader
 from reqtrace.ingestion.requirements.markdown.loader import MarkdownRequirementsLoader
 
 
@@ -58,9 +61,10 @@ class IngestionRegistry:
 
 def build_default_registry() -> IngestionRegistry:
     registry = IngestionRegistry(
-        requirement_adapter=DefaultRequirementsAdapter(),
-        evidence_adapter=DefaultEvidenceAdapter(),
+        requirement_adapter=DefaultRequirementsNormalizer(),
+        evidence_adapter=DefaultEvidenceNormalizer(),
     )
     registry.register_requirement_loader("markdown", MarkdownRequirementsLoader())
+    registry.register_requirement_loader("json", JsonRequirementsLoader())
     registry.register_evidence_loader("testar", TestarLoader())
     return registry

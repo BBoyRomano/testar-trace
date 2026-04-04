@@ -6,10 +6,17 @@ from pathlib import Path
 from typing import Any
 
 from reqtrace.domain.common.enums import SourceType
-from reqtrace.domain.evidence.enums import ActionKind, ExecutionRunStatus
+from reqtrace.domain.evidence.enums import (
+    ActionKind,
+    EvidenceArtifactKind,
+    EvidenceTool,
+    ExecutionRunStatus,
+    StateModelLayer,
+)
 from reqtrace.ingestion.common.exceptions import SourceParseError, SourceValidationError
 from reqtrace.ingestion.evidence.models import (
     ParsedEvidenceAction,
+    ParsedEvidenceArtifact,
     ParsedEvidenceElement,
     ParsedEvidenceRun,
     ParsedEvidenceSource,
@@ -22,23 +29,68 @@ logger = logging.getLogger(__name__)
 
 class TestarLoader:
     def load(self, source: str | Path) -> ParsedEvidenceSource:
-        path = Path(source)
-        logger.info("Starting TESTAR load: %s", path)
-        try:
-            payload = json.loads(path.read_text(encoding="utf-8"))
-        except OSError as exc:
-            logger.exception("TESTAR read failed: %s", path)
-            raise SourceParseError(f"Could not read TESTAR source: {path}") from exc
-        except json.JSONDecodeError as exc:
-            logger.exception("Invalid TESTAR JSON: %s", path)
-            raise SourceParseError(f"Invalid TESTAR JSON: {path}") from exc
+        source_path = Path(source)
+        logger.debug("Starting TESTAR load.", extra={"source_path": str(source_path)})
+        source_type = SourceType.DIRECTORY if source_path.is_dir() else SourceType.FILE
+        if source_type is SourceType.DIRECTORY:
+            run_root = source_path
+            model_path = self._resolve_model_json_path(run_root)
+        else:
+            run_root = self._resolve_run_root_for_model_file(source_path)
+            model_path = source_path
 
         try:
-            parsed = self.load_payload(payload=payload, source_name="testar", path_or_uri=str(path))
-            logger.info("Completed TESTAR load: %s", path)
+            payload = json.loads(model_path.read_text(encoding="utf-8"))
+        except OSError as exc:
+            logger.error(
+                "TESTAR read failed.",
+                exc_info=exc,
+                extra={"model_path": str(model_path)},
+            )
+            raise SourceParseError(f"Could not read TESTAR source: {model_path}") from exc
+        except json.JSONDecodeError as exc:
+            logger.error(
+                "Invalid TESTAR JSON.",
+                exc_info=exc,
+                extra={"model_path": str(model_path)},
+            )
+            raise SourceParseError(f"Invalid TESTAR JSON: {model_path}") from exc
+
+        try:
+            parsed = self.load_payload(
+                payload=payload,
+                source_name="testar",
+                path_or_uri=str(source_path),
+                source_type=source_type,
+                model_path_or_uri=str(model_path),
+                run_folder_name=run_root.name,
+            )
+            parsed.artifacts.extend(
+                self._discover_artifacts(
+                    run=parsed.run,
+                    source_name=parsed.source_name,
+                    source_type=source_type,
+                    source_path=source_path,
+                    model_path=model_path,
+                    run_root=run_root,
+                )
+            )
+            logger.debug(
+                "Completed TESTAR load.",
+                extra={
+                    "source_path": str(source_path),
+                    "state_count": len(parsed.states),
+                    "action_count": len(parsed.actions),
+                    "transition_count": len(parsed.transitions),
+                },
+            )
             return parsed
-        except Exception:
-            logger.exception("TESTAR payload validation failed: %s", path)
+        except Exception as exc:
+            logger.error(
+                "TESTAR payload validation failed.",
+                exc_info=exc,
+                extra={"source_path": str(source_path)},
+            )
             raise
 
     def load_payload(
@@ -47,6 +99,9 @@ class TestarLoader:
         payload: dict[str, Any],
         source_name: str = "testar",
         path_or_uri: str | None = None,
+        source_type: SourceType = SourceType.FILE,
+        model_path_or_uri: str | None = None,
+        run_folder_name: str | None = None,
     ) -> ParsedEvidenceSource:
         if not isinstance(payload, dict):
             raise SourceValidationError("TESTAR payload must be an object.")
@@ -61,13 +116,19 @@ class TestarLoader:
         if not isinstance(transitions_payload, list):
             raise SourceValidationError("TESTAR payload is missing list 'ConcreteTransitions'.")
 
-        run_id = self._build_run_id(path_or_uri)
+        run_id = self._build_run_id(model_path_or_uri, run_folder_name)
         run = ParsedEvidenceRun(
             id=run_id,
             tool_name="TESTAR",
+            tool=EvidenceTool.TESTAR,
             status=ExecutionRunStatus.COMPLETED,
-            tool_run_id=Path(path_or_uri).parent.name if path_or_uri else None,
-            native_id=Path(path_or_uri).name if path_or_uri else None,
+            tool_run_id=run_folder_name,
+            native_id=Path(model_path_or_uri).name if model_path_or_uri else None,
+            state_model_layers=[
+                StateModelLayer.ABSTRACT,
+                StateModelLayer.CONCRETE,
+                StateModelLayer.SEQUENCE,
+            ],
             attributes={
                 "initial_url": payload.get("InitialUrl"),
                 "initial_page": payload.get("InitialPage"),
@@ -84,7 +145,9 @@ class TestarLoader:
         for state_payload in states_payload:
             if not isinstance(state_payload, dict):
                 raise SourceValidationError("Each TESTAR state must be an object.")
-            state_id = self._required_str(state_payload.get("AbstractID"), "ConcreteState.AbstractID")
+            state_id = self._required_str(
+                state_payload.get("AbstractID"), "ConcreteState.AbstractID"
+            )
             widget_tree = state_payload.get("WidgetTree", [])
             if not isinstance(widget_tree, list):
                 raise SourceValidationError(f"WidgetTree must be a list for state {state_id!r}.")
@@ -108,9 +171,14 @@ class TestarLoader:
                 node_abstract_id = node.get("AbstractID")
                 node_concrete_id = node.get("ConcreteID")
                 node_local_id = node.get("id")
-                if not any(isinstance(v, str) and v.strip() for v in (node_concrete_id, node_abstract_id, node_local_id)):
+                if not any(
+                    isinstance(v, str) and v.strip()
+                    for v in (node_concrete_id, node_abstract_id, node_local_id)
+                ):
                     continue
-                element_key = self._first_non_empty(node_concrete_id, node_abstract_id, node_local_id)
+                element_key = self._first_non_empty(
+                    node_concrete_id, node_abstract_id, node_local_id
+                )
                 assert element_key is not None
                 element_id = f"{state_id}:{element_key}"
                 if isinstance(node_abstract_id, str) and node_abstract_id.strip():
@@ -124,7 +192,9 @@ class TestarLoader:
                         tool_element_id_concrete=node_concrete_id,
                         tag_name=node.get("WebTagName"),
                         role=node.get("Role") or node.get("WebAriaRole") or node.get("WebType"),
-                        text=node.get("WebTextContent") or node.get("WebInnerText") or node.get("Desc"),
+                        text=node.get("WebTextContent")
+                        or node.get("WebInnerText")
+                        or node.get("Desc"),
                         title=node.get("WebTitle") or node.get("Title"),
                         href=node.get("WebHref"),
                         css_selector=node.get("WebCssSelector"),
@@ -158,7 +228,9 @@ class TestarLoader:
         for action_payload in actions_payload:
             if not isinstance(action_payload, dict):
                 raise SourceValidationError("Each TESTAR action must be an object.")
-            action_id = self._required_str(action_payload.get("AbstractID"), "ConcreteAction.AbstractID")
+            action_id = self._required_str(
+                action_payload.get("AbstractID"), "ConcreteAction.AbstractID"
+            )
             if action_id in action_ids:
                 continue
             action_ids.add(action_id)
@@ -194,9 +266,15 @@ class TestarLoader:
         for index, transition_payload in enumerate(transitions_payload):
             if not isinstance(transition_payload, dict):
                 raise SourceValidationError("Each TESTAR transition must be an object.")
-            source_state_id = self._required_str(transition_payload.get("Source"), "ConcreteTransitions.Source")
-            target_state_id = self._required_str(transition_payload.get("Target"), "ConcreteTransitions.Target")
-            action_id = self._required_str(transition_payload.get("Action"), "ConcreteTransitions.Action")
+            source_state_id = self._required_str(
+                transition_payload.get("Source"), "ConcreteTransitions.Source"
+            )
+            target_state_id = self._required_str(
+                transition_payload.get("Target"), "ConcreteTransitions.Target"
+            )
+            action_id = self._required_str(
+                transition_payload.get("Action"), "ConcreteTransitions.Action"
+            )
             transitions.append(
                 ParsedEvidenceTransition(
                     id=f"tr-{index:05d}-{source_state_id}-{action_id}-{target_state_id}",
@@ -212,7 +290,8 @@ class TestarLoader:
                 )
             )
 
-        # Enrich actions with a representative source state / target element when a match is obvious.
+        # Enrich actions with a representative source state / target element
+        # when a match is obvious.
         source_states_by_action: dict[str, str] = {}
         for transition in transitions:
             source_states_by_action.setdefault(transition.action_id, transition.from_state_id)
@@ -232,20 +311,130 @@ class TestarLoader:
             actions=actions,
             transitions=transitions,
             observations=[],
-            source_type=SourceType.FILE,
+            artifacts=[],
+            source_type=source_type,
             source_name=source_name,
             path_or_uri=path_or_uri,
         )
 
     @staticmethod
-    def _build_run_id(path_or_uri: str | None) -> str:
-        if path_or_uri is None:
+    def _build_run_id(model_path_or_uri: str | None, run_folder_name: str | None) -> str:
+        if run_folder_name is not None and run_folder_name.strip():
+            return f"run-{run_folder_name.strip()}"
+        if model_path_or_uri is None:
             return "testar-model-run"
-        path = Path(path_or_uri)
+        path = Path(model_path_or_uri)
         folder_name = path.parent.name.strip()
         if folder_name:
             return f"run-{folder_name}"
         return f"run-{path.stem}"
+
+    @staticmethod
+    def _resolve_model_json_path(run_root: Path) -> Path:
+        candidates = [run_root / "model" / "model.json", run_root / "model.json"]
+        for candidate in candidates:
+            if candidate.is_file():
+                return candidate
+        raise SourceParseError(
+            "Could not locate TESTAR model JSON in run directory. "
+            "Expected 'model/model.json' or 'model.json'."
+        )
+
+    @staticmethod
+    def _resolve_run_root_for_model_file(model_path: Path) -> Path:
+        if model_path.name == "model.json" and model_path.parent.name == "model":
+            return model_path.parent.parent
+        return model_path.parent
+
+    def _discover_artifacts(
+        self,
+        *,
+        run: ParsedEvidenceRun,
+        source_name: str,
+        source_type: SourceType,
+        source_path: Path,
+        model_path: Path,
+        run_root: Path,
+    ) -> list[ParsedEvidenceArtifact]:
+        artifacts: list[ParsedEvidenceArtifact] = []
+        artifacts.append(
+            ParsedEvidenceArtifact(
+                id=f"{run.id}:model-json",
+                kind=EvidenceArtifactKind.STATE_MODEL_JSON,
+                path_or_uri=str(model_path),
+                run_id=run.id,
+                model_layer=StateModelLayer.CONCRETE,
+                source_type=SourceType.FILE,
+                native_id=model_path.name,
+                metadata={"source_name": source_name},
+            )
+        )
+
+        amp_path = model_path.with_suffix(".amp")
+        if amp_path.is_file():
+            artifacts.append(
+                ParsedEvidenceArtifact(
+                    id=f"{run.id}:model-amp",
+                    kind=EvidenceArtifactKind.STATE_MODEL_AMP,
+                    path_or_uri=str(amp_path),
+                    run_id=run.id,
+                    model_layer=StateModelLayer.CONCRETE,
+                    source_type=SourceType.FILE,
+                    native_id=amp_path.name,
+                    metadata={"source_name": source_name},
+                )
+            )
+
+        output_path = run_root / "output"
+        if source_type is SourceType.DIRECTORY and output_path.exists():
+            artifacts.append(
+                ParsedEvidenceArtifact(
+                    id=f"{run.id}:output",
+                    kind=EvidenceArtifactKind.RUN_OUTPUT_DIRECTORY,
+                    path_or_uri=str(output_path),
+                    run_id=run.id,
+                    model_layer=StateModelLayer.SEQUENCE,
+                    source_type=SourceType.DIRECTORY,
+                    native_id=output_path.name,
+                    metadata={"source_name": source_name},
+                )
+            )
+
+        metadata_path = run_root / "metadata.json"
+        if source_type is SourceType.DIRECTORY and metadata_path.is_file():
+            run.attributes["metadata_path"] = str(metadata_path)
+            try:
+                metadata_payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                logger.warning(
+                    "Could not parse TESTAR run metadata.",
+                    extra={"metadata_path": str(metadata_path)},
+                )
+                return artifacts
+            raw_output_dir = metadata_payload.get("raw_output_dir")
+            if isinstance(raw_output_dir, str) and raw_output_dir.strip():
+                raw_output_path = run_root / raw_output_dir
+                artifacts.append(
+                    ParsedEvidenceArtifact(
+                        id=f"{run.id}:raw-output",
+                        kind=EvidenceArtifactKind.RUN_OUTPUT_DIRECTORY,
+                        path_or_uri=str(raw_output_path),
+                        run_id=run.id,
+                        model_layer=StateModelLayer.SEQUENCE,
+                        source_type=SourceType.DIRECTORY,
+                        native_id=raw_output_path.name,
+                        metadata={
+                            "source_name": source_name,
+                            "exists": raw_output_path.exists(),
+                            "from_metadata": True,
+                        },
+                    )
+                )
+
+        if source_type is SourceType.FILE:
+            run.attributes["source_path"] = str(source_path)
+
+        return artifacts
 
     @staticmethod
     def _required_str(value: Any, field_name: str) -> str:

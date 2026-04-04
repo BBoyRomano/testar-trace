@@ -9,6 +9,27 @@ class RequirementKind(StrEnum):
     ACCEPTANCE_CRITERION = "acceptance_criterion"
 
 
+class RequirementNotation(StrEnum):
+    USE_CASE = "use_case"
+    USER_STORY = "user_story"
+    GHERKIN = "gherkin"
+    NATURAL_LANGUAGE = "natural_language"
+    FORMAL = "formal"
+
+
+class RequirementFormat(StrEnum):
+    MARKDOWN = "markdown"
+    JSON = "json"
+    CSV = "csv"
+    FEATURE = "feature"
+    REQIF = "reqif"
+    YAML = "yaml"
+    XML = "xml"
+    HTML = "html"
+    TEXT = "text"
+    OTHER = "other"
+
+
 class RequirementFragmentKind(StrEnum):
     PRECONDITION = "precondition"
     TRIGGER = "trigger"

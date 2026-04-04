@@ -12,5 +12,4 @@ class TraceabilityMethod(Protocol):
 
     name: str
 
-    def run(self, request: TraceabilityRequest) -> TraceabilityResult:
-        ...
+    def run(self, request: TraceabilityRequest) -> TraceabilityResult: ...

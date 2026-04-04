@@ -6,7 +6,14 @@ from typing import Any, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 from reqtrace.domain.common.enums import SourceType
-from reqtrace.domain.evidence.enums import ActionKind, ExecutionRunStatus, ObservationKind
+from reqtrace.domain.evidence.enums import (
+    ActionKind,
+    EvidenceArtifactKind,
+    EvidenceTool,
+    ExecutionRunStatus,
+    ObservationKind,
+    StateModelLayer,
+)
 
 
 class ParsedEvidenceRun(BaseModel):
@@ -14,11 +21,13 @@ class ParsedEvidenceRun(BaseModel):
 
     id: str = Field(..., min_length=1)
     tool_name: str = Field(..., min_length=1)
+    tool: Optional[EvidenceTool] = None
     status: ExecutionRunStatus
     tool_run_id: Optional[str] = None
     sequence_number: Optional[int] = None
     started_at: Optional[datetime] = None
     ended_at: Optional[datetime] = None
+    state_model_layers: list[StateModelLayer] = Field(default_factory=list)
     native_id: Optional[str] = None
     attributes: dict[str, Any] = Field(default_factory=dict)
 
@@ -94,6 +103,19 @@ class ParsedEvidenceObservation(BaseModel):
     attributes: dict[str, Any] = Field(default_factory=dict)
 
 
+class ParsedEvidenceArtifact(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(..., min_length=1)
+    kind: EvidenceArtifactKind
+    path_or_uri: str = Field(..., min_length=1)
+    run_id: str | None = None
+    model_layer: Optional[StateModelLayer] = None
+    source_type: SourceType = SourceType.FILE
+    native_id: Optional[str] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
 class ParsedEvidenceSource(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -103,6 +125,7 @@ class ParsedEvidenceSource(BaseModel):
     actions: list[ParsedEvidenceAction] = Field(default_factory=list)
     transitions: list[ParsedEvidenceTransition] = Field(default_factory=list)
     observations: list[ParsedEvidenceObservation] = Field(default_factory=list)
+    artifacts: list[ParsedEvidenceArtifact] = Field(default_factory=list)
     source_type: SourceType = SourceType.FILE
     source_name: str = Field(..., min_length=1)
     path_or_uri: str | None = None

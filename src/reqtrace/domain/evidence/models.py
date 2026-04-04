@@ -9,8 +9,11 @@ from reqtrace.domain.common import DomainModel, Provenance, SourceRef
 from reqtrace.domain.evidence.enums import (
     ActionKind,
     AttachmentKind,
+    EvidenceArtifactKind,
+    EvidenceTool,
     ExecutionRunStatus,
     ObservationKind,
+    StateModelLayer,
 )
 
 
@@ -67,11 +70,13 @@ class Transition(DomainModel):
 class ExecutionRun(DomainModel):
     id: str = Field(..., min_length=1)
     tool_name: str = Field(..., min_length=1)
+    tool: Optional[EvidenceTool] = None
     status: ExecutionRunStatus
     tool_run_id: Optional[str] = None
     sequence_number: Optional[int] = Field(default=None, ge=0)
     started_at: Optional[datetime] = None
     ended_at: Optional[datetime] = None
+    state_model_layers: list[StateModelLayer] = Field(default_factory=list)
     source_ref: Optional[SourceRef] = None
     provenance: Optional[Provenance] = None
     attributes: dict[str, Any] = Field(default_factory=dict)
@@ -84,6 +89,8 @@ class ExecutionRun(DomainModel):
             and self.ended_at < self.started_at
         ):
             raise ValueError("ended_at cannot be earlier than started_at.")
+        if len(self.state_model_layers) != len(set(self.state_model_layers)):
+            raise ValueError("state_model_layers must not contain duplicates.")
         return self
 
 
@@ -119,3 +126,14 @@ class Attachment(DomainModel):
         if self.run_id is None and self.state_id is None and self.observation_id is None:
             raise ValueError("Attachment must reference at least one owner entity.")
         return self
+
+
+class EvidenceArtifact(DomainModel):
+    id: str = Field(..., min_length=1)
+    kind: EvidenceArtifactKind
+    path_or_uri: str = Field(..., min_length=1)
+    run_id: Optional[str] = None
+    model_layer: Optional[StateModelLayer] = None
+    source_ref: Optional[SourceRef] = None
+    provenance: Optional[Provenance] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
