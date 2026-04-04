@@ -18,14 +18,14 @@
         \begin{tikzpicture}[remember picture,overlay]
             \node[anchor=south, inner sep=0pt] at (current page.south) {\includegraphics[scale=0.7]{papers/figures/logo.jpg}};
         \end{tikzpicture}
-        
+
         \vspace*{2\bigskipamount}
 
         % Title
         {\makeatletter
             \titlestyle\color{title}\Huge\@title
         \makeatother}
-    
+
         % Optional subtitle
         {\makeatletter
             \ifx\@subtitle\undefined\else
@@ -33,33 +33,33 @@
                 \titlefont\titleshape\LARGE\@subtitle
             \fi
         \makeatother}
-        
+
         \vspace{2\bigskipamount}
         by
         \vspace{2\bigskipamount}
-        
+
         % Author
         {\makeatletter
             \titlefont\Large\bfseries\@author
         \makeatother}
-        
+
         \vfill
-        
+
         in partial fulfillment of the requirements for the degree of
-        
+
         \vspace{2\bigskipamount}
-        
+
         {\bfseries Master of Science}
-        
+
         in Software Engineering
-        
+
         \vspace{2\bigskipamount}
-        
+
         at the Open University, Faculty of Management, Science and Technology \\
         Master Software Engineering
-        
+
         to be defended publicly on Day Month DD, YYYY at HH:00 PM.
-        
+
         \vfill
 
         % Metadata
