@@ -1,111 +1,197 @@
 # Requirements Traceability for Scriptless Testing (ReqTrace)
 
-This repository contains the software prototype, documentation, evaluation assets, and thesis materials
-for **Requirements Traceability for Scriptless Testing**.
+ReqTrace is a Python thesis prototype for establishing requirements traceability between requirement artifacts and scriptless GUI-testing evidence, with an initial focus on TESTAR state-model exports.
 
-The central software component is **ReqTrace**, a Python prototype for exploring requirements-to-evidence
-traceability using executable requirements and TESTAR-generated evidence models.
+This repository contains source code, tests, architecture docs, SUT bundles, and thesis materials.
+
+## Current implemented scope
+
+ReqTrace currently supports:
+
+- requirements ingestion from `markdown` and `json`
+- requirements input as one file, many files, or directory input
+- evidence ingestion for `testar` (state-model JSON and run-bundle style inputs)
+- baseline traceability execution (`baseline`) as the default production method
+- CLI and local GUI execution
+- JSON import/export of traceability results
+- persisted GUI run history at `.reqtrace/gui-history/`
+- asynchronous multi-run execution via application-level run executor
+
+## Method status
+
+- `baseline`: enabled by default in CLI/GUI and used as the stable control path
+- `candidate_match`: lexical retrieval comparator (step-level evidence matching)
+- `flow_match`: ordered flow alignment method (path-aware matching)
+- `hybrid_match`: primary ensemble candidate (combines `flow_match` + `candidate_match`)
 
 ## Repository structure
 
-- [`src/reqtrace/`](src/reqtrace/) — the ReqTrace prototype
+- [`src/reqtrace/`](src/reqtrace/) — source code
 - [`tests/`](tests/) — automated tests
-- [`docs/`](docs/) — project and architecture documentation
-- [`suts/`](suts/) — systems under test and evaluation artifacts
-- [`papers/`](papers/) — thesis and paper material
-
-## Interfaces
-
-ReqTrace currently provides two interfaces:
-
-- **CLI** via `reqtrace`
-- **UI** via `reqtrace ui`
+- [`docs/`](docs/) — architecture and planning docs (see [`docs/README.md`](docs/README.md))
+- [`suts/`](suts/) — per-SUT reproducibility bundles
+- [`papers/`](papers/) — thesis/proposal materials (Overleaf Git sync)
+- [`docs/archived-v0/`](docs/archived-v0/) — archived legacy material (non-authoritative)
 
 ## Setup
 
 ### Devcontainer
 
-If you use the provided devcontainer, dependencies are installed automatically as part of the container
-setup.
+Use the provided devcontainer (`Python 3.13`) for a ready-to-run environment.
 
-### Local installation
-
-For a local Python environment:
+### Local setup
 
 ```bash
 python -m pip install --upgrade pip
 pip install -e ".[dev]"
 ```
 
-The quotes around `".[dev]"` avoid shell expansion issues in shells such as `zsh`.
+## Quality checks
 
-## Current supported inputs
+```bash
+ruff check .
+pytest -q
+```
 
-| Input kind | Currently supported format | Current execution input |
-| --- | --- | --- |
-| Requirements | Markdown | Requirement files. The CLI currently accepts one file, multiple files, or a directory of files. |
-| Evidence | TESTAR model export JSON | One evidence model JSON file per run. |
+Optional local hook runner:
 
-## Current traceability methods
+```bash
+pre-commit run --all-files
+```
 
-- `baseline` — end-to-end control method that exercises the pipeline without performing real matching
-- `candidate_match` — fragment-level candidate retrieval and scoring against states, UI elements, actions, and transitions
-- `flow_match`
+Optional coverage report:
 
-`candidate_match` is intentionally a *candidate matching* method, not a path/flow realization method. It evaluates requirement fragments independently and aggregates the results at requirement level. Ordered step realization, transition chaining, and main/alternate flow alignment belong to a later `flow_match`-style method.
+```bash
+pytest --cov=reqtrace --cov-report=term-missing
+```
 
-## Usage
+## CLI usage
 
-See the available commands and options:
+Show help:
 
 ```bash
 reqtrace --help
 reqtrace run --help
 ```
 
-List the available traceability methods:
+List enabled methods in the default CLI wiring:
 
 ```bash
 reqtrace methods
 ```
 
-Run traceability for one requirement file:
+Run with one requirements file:
 
 ```bash
-reqtrace run   --requirements <path/to/requirement-file.md>   --requirements-format markdown   --evidence <path/to/model.json>   --evidence-format testar   --method candidate_match
+reqtrace run \
+  --requirements <path/to/requirements.md> \
+  --requirements-format markdown \
+  --evidence <path/to/testar-model.json> \
+  --evidence-format testar \
+  --method baseline
 ```
 
-Run traceability for multiple requirement files:
+Run with multiple requirement paths:
 
 ```bash
-reqtrace run   --requirements <path/to/requirement-a.md>   --requirements <path/to/requirement-b.md>   --requirements-format markdown   --evidence <path/to/model.json>   --evidence-format testar   --method candidate_match
+reqtrace run \
+  --requirements <path/to/req-a.md> \
+  --requirements <path/to/req-b.md> \
+  --requirements-format markdown \
+  --evidence <path/to/testar-model.json> \
+  --evidence-format testar \
+  --method baseline
 ```
 
-Run traceability for a directory of requirement files:
+Run with a directory of JSON requirements:
 
 ```bash
-reqtrace run   --requirements <path/to/requirements-directory>   --requirements-format markdown   --evidence <path/to/model.json>   --evidence-format testar   --method candidate_match
+reqtrace run \
+  --requirements <path/to/requirements-json-dir> \
+  --requirements-format json \
+  --evidence <path/to/testar-model.json> \
+  --evidence-format testar \
+  --method baseline
 ```
 
-Show a saved result:
+Render a saved result:
 
 ```bash
 reqtrace show-result <path/to/result.json>
 ```
 
-Launch the UI:
+Launch GUI:
 
 ```bash
 reqtrace ui
 ```
 
-If `--output` is omitted, ReqTrace currently generates an output filename automatically. If `--output`
-is provided, ReqTrace writes the result to that explicit path.
+Enable debug logging and persist logs to a rotating file:
+
+```bash
+reqtrace -vv --log-file .reqtrace/logs/reqtrace.log run \
+  --requirements <path/to/requirements.md> \
+  --evidence <path/to/testar-model.json>
+```
+
+Normal logging levels:
+
+- default: warnings/errors only
+- `-v`: run-level progress (`INFO`)
+- `-vv`: deep troubleshooting (`DEBUG`)
+- `--log-level <LEVEL>`: explicit override
+
+Notes:
+
+- If `--output` is omitted, results are rendered only.
+- If `--output` is set, the result JSON is also written to disk.
+- `--log-file` is optional. Without it, logs are written to the terminal stream only.
+
+GUI logging can be configured via environment variables:
+
+```bash
+REQTRACE_LOG_LEVEL=DEBUG REQTRACE_LOG_FILE=.reqtrace/logs/gui.log reqtrace ui
+```
+
+## SUT data strategy
+
+Data is organized per system-under-test under `suts/<sut-name>/`.
+
+Each bundle can contain:
+
+- requirements datasets (`canonical`, `execution`, `source`, `variants`)
+- TESTAR protocols and evidence bundles
+- curated evaluation outputs
+- optional local export area for ad-hoc runs
+
+See [`suts/README.md`](suts/README.md) for the authoritative structure policy.
+
+## Documentation map
+
+- Documentation index: [`docs/README.md`](docs/README.md)
+- Roadmap: [`docs/roadmap.md`](docs/roadmap.md)
+- Test strategy: [`tests/README.md`](tests/README.md)
+- Contribution guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+
+## README policy
+
+To avoid documentation bloat, README files are intentionally limited to these levels:
+
+- root `README.md`: setup, usage, and repository entry point
+- `docs/README.md`: design/planning map
+- `tests/README.md`: test strategy
+- `suts/README.md` + `suts/<sut>/README.md`: SUT data policy and per-SUT specifics
+
+## Reproducibility notes
+
+- Automated tests are intentionally SUT-agnostic.
+- Real evaluation bundles and pinned experiment outputs live under `suts/`.
+- Overleaf-synced thesis/proposal material lives under `papers/`.
 
 ## Citation
 
-If you use this repository or its artifacts, please cite the associated Master's thesis. See
-[`CITATION.cff`](CITATION.cff) for citation details.
+If you use this repository or its artifacts, cite the associated thesis.
+See [`CITATION.cff`](CITATION.cff).
 
 ## License
 

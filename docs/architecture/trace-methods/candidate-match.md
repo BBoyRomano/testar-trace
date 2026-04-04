@@ -2,15 +2,19 @@
 
 ## Purpose
 
-`candidate_match` is a fragment-level evidence retrieval and scoring method.
+`candidate_match` is a fragment-level evidence retrieval/scoring method.
 
-It is intended to answer:
+It answers:
 
-- what evidence candidates plausibly support each requirement fragment?
+- which evidence candidates plausibly support each requirement fragment?
 - how strong is that support?
-- what requirement-level coverage/confidence follows from those fragment-level matches?
+- what requirement-level coverage follows from fragment-level matches?
 
-It is **not** intended to prove that all requirement steps are realized as one coherent trace.
+## Current status
+
+- implemented in code
+- treated as experimental in current architecture
+- available in default CLI/GUI service wiring for comparison runs
 
 ## Inputs
 
@@ -23,41 +27,26 @@ The method operates on the standard application request:
 
 ## Evidence space
 
-The method currently builds candidates from canonical evidence objects:
+Current candidate space is built from canonical evidence objects:
 
-- application states
+- states
 - UI elements
 - actions
 - transitions
-
-## Fragment coverage
-
-The method includes all fragment kinds:
-
-- preconditions
-- main steps
-- alternate steps
-- postconditions
-
-It scores them independently and aggregates them at requirement level.
 
 ## Output
 
 The method produces:
 
-- fragment-level coverage assessments
-- requirement-level coverage assessments
-- trace links
-- supporting trace evidence
+- fragment-level coverage outcomes
+- requirement-level coverage outcomes
+- trace links and supporting trace evidence
 - aggregate summary metrics
 
-## Boundary of the method
+## Current limits
 
-`candidate_match` stops at candidate retrieval and scoring.
+`candidate_match` does not fully guarantee:
 
-It does not yet perform:
-
-- ordered step/path realization
-- transition chain validation across the whole use case
-- main vs alternate flow path reporting
-- explicit precondition/postcondition context reasoning
+- ordered end-to-end path realization for full use cases
+- complete branch/alternate-flow realization proof
+- strict precondition/postcondition context proof

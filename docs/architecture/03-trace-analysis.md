@@ -1,51 +1,67 @@
 # Trace analysis
 
-The application layer currently exposes two traceability methods:
+## Purpose
 
-- `baseline`
-- `candidate_match`
+This document describes traceability methods in the application layer and their current status.
 
-## Baseline
+## Method status
 
-`baseline` is a control method. It executes the full application pipeline and returns valid result
-objects without attempting real traceability inference.
+- `baseline`: control method for pipeline sanity checks
+- `candidate_match`: lexical retrieval comparator
+- `flow_match`: ordered flow/path alignment method
+- `hybrid_match`: ensemble method (flow-first with candidate fallback/enrichment)
 
-## Candidate match
+Default service wiring now exposes all methods for direct CLI/GUI comparison.
 
-`candidate_match` is the first real traceability method.
+## Method summary
 
-Its purpose is to:
+### baseline
 
-1. take requirement fragments from the application request
-2. build searchable evidence candidates from canonical evidence objects
-3. score fragment-to-candidate matches
-4. keep the best-supported fragment matches
-5. aggregate fragment results to requirement-level coverage and confidence
+Control method.
 
-### What it includes
+- exercises the full pipeline end-to-end
+- produces valid result contracts
+- does not perform substantive matching
 
-`candidate_match` includes all fragment kinds as candidate-matching inputs, including:
+### candidate_match (experimental)
 
-- preconditions
-- main steps
-- alternate steps
-- postconditions
+Fragment-level candidate retrieval and scoring.
 
-### What it does not prove
+- scores fragments against evidence candidates
+- aggregates to requirement-level coverage
+- useful for early retrieval-quality experiments
 
-`candidate_match` does **not** prove that the requirement is realized as a coherent ordered execution
-path through the state model.
+Limitations:
 
-In particular, it does not yet prove:
+- does not strongly guarantee ordered full-flow realization
+- not sufficient by itself to prove coherent end-to-end requirement execution
 
-- that all main steps are realized in order
-- that alternate flows are realized as complete alternate paths
-- that preconditions hold at the correct entry context
-- that postconditions hold at the correct resulting context
+### flow_match (experimental)
 
-Those concerns belong to a later flow/path-aware method.
+Flow-aware matching across transitions and requirement-flow structure.
 
-## Planned next method
+- attempts ordered alignment for flow fragments
+- reports representative execution instances
+- separates main/alternate flow outcomes
 
-The next major method should be a flow/path-oriented method, for example `flow_match`, which uses
-the structured requirement flow and the state-model transitions to reason about ordered realization.
+Limitations:
+
+- still evolving for robust branch/path proof and confidence calibration
+
+### hybrid_match
+
+Flow-first ensemble that merges strengths of:
+
+- `flow_match` for ordered execution evidence
+- `candidate_match` for lexical fallback and evidence enrichment
+
+## Canonical naming
+
+Use traceability method as the standard term in docs and UI.
+
+## Detailed method specs
+
+- `trace-methods/baseline.md`
+- `trace-methods/candidate-match.md`
+- `trace-methods/flow-match.md`
+- `trace-methods/hybrid-match.md`

@@ -4,25 +4,27 @@
 
 `flow_match` is an ordered flow-oriented traceability method.
 
-It is intended to answer:
+It attempts to align requirement flow fragments with plausible ordered evidence sequences.
 
-- can the requirement's evidence anchors be aligned into a plausible ordered flow?
-- how complete is that aligned flow?
-- how coherent is the resulting sequence of states, actions, and transitions?
+## Current status
+
+- implemented in code
+- treated as experimental in current architecture
+- available in default CLI/GUI service wiring for comparison runs
 
 ## Current behavior
 
 The method currently:
 
-- retrieves candidate evidence for all fragments
+- retrieves evidence candidates for fragments
 - aligns main-flow fragments in order
-- applies simple continuity bonuses between adjacent chosen candidates
-- evaluates preconditions, alternate steps, and postconditions separately
+- applies continuity heuristics between adjacent selected candidates
+- evaluates preconditions, alternate fragments, and postconditions separately
 
-## Current limit
+## Current limits
 
-The method does not yet perform:
+The method does not yet provide exhaustive graph-theoretic proof for:
 
-- exhaustive path search
-- complete alternate-branch realization
-- explicit graph-theoretic proof of flow reachability
+- complete branch reachability
+- exhaustive alternate-flow realization
+- globally optimal path selection under all noisy trace conditions

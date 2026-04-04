@@ -2,69 +2,64 @@
 
 ## Purpose
 
-This document is the entry point for the architecture documentation set.
+This document is the entry point for the ReqTrace architecture set.
 
 It explains:
-- what the system does now
-- how the architecture is split into layers
-- how data moves through the system
-- which terms are used consistently across the repository
-- where to find subsystem-specific details
+
+- current system behavior
+- architectural layers and responsibilities
+- end-to-end data flow
+- canonical terminology
 
 ## System summary
 
-ReqTrace ingests requirements and GUI-testing evidence, maps them into a canonical domain model, executes a selected traceability method, and exposes results through CLI, GUI, and JSON exports.
-
-At a high level:
-
-```text
-requirements sources + evidence sources
--> ingestion
--> domain model
--> application methods
--> presentation
-```
+ReqTrace ingests requirements and scriptless-testing evidence, maps them into canonical models, executes a traceability method, and exposes results via CLI, GUI, and JSON import/export.
 
 ## End-to-end flow
 
 ```text
-source files
--> source loader
--> parsed source model
--> normalized record batch
--> ingestion validation
+requirements/evidence inputs
+-> ingestion loaders + normalization
 -> domain mapping
--> canonical domain model
--> selected traceability method
--> result models
--> CLI / GUI / exports
+-> application request snapshot
+-> traceability method execution
+-> result model
+-> CLI/GUI rendering + JSON persistence
 ```
 
-## Architecture layers
+## Layers
 
-### Ingestion
-`ingestion/` reads external sources, parses source-specific formats, normalizes extracted content, validates ingestion-side records, and maps them into the domain model.
+### Ingestion (`src/reqtrace/ingestion/`)
 
-### Domain model
-`domain/` defines the stable canonical concepts used across the system for requirements, evidence, and traceability.
+Owns source-specific parsing, normalization, validation, and mapping into canonical application/domain snapshots.
 
-### Application
-`application/` selects and executes traceability methods and returns stable request/result models.
+### Domain (`src/reqtrace/domain/`)
 
-### Presentation
-`presentation/` exposes analysis setup, run execution, results, imports, and exports through GUI and CLI interfaces.
+Owns stable source-agnostic concepts for requirements, evidence, and traceability relationships.
 
-## Current implementation note
+### Application (`src/reqtrace/application/`)
 
-The current implementation is intentionally lean:
-- ingestion is source-aware but domain-mapped
-- application executes methods synchronously through a thin service
-- GUI uses presentation-owned background threading for responsiveness
-- there is no full application-level live run manager yet
+Owns request/result contracts, method selection/execution, async run execution, and run-history use-cases.
 
-Where future-oriented features are discussed elsewhere in the docs, they should be read as potential extensions rather than already implemented behavior.
+### Infrastructure (`src/reqtrace/infrastructure/`)
 
-## Repository structure
+Owns persistence/serialization adapters (for example JSON result serialization and JSON-backed run-history storage).
+
+### Presentation (`src/reqtrace/presentation/`)
+
+Owns CLI/GUI interaction, input collection, run orchestration wiring, and result rendering.
+
+## Current implementation status
+
+Current implementation is intentionally lightweight but complete for baseline thesis runs:
+
+- ingestion supports markdown/json requirements and TESTAR evidence
+- default selected method is baseline (`baseline`)
+- `candidate_match`, `flow_match`, and `hybrid_match` are available for direct comparison
+- run execution concurrency is handled by an application-level async executor
+- GUI run history is persisted locally (`.reqtrace/gui-history`)
+
+## Repository map
 
 ```text
 docs/
@@ -74,15 +69,19 @@ docs/
     02-ingestion.md
     03-trace-analysis.md
     04-presentation.md
+    05-infrastructure.md
     trace-methods/
       baseline.md
-      heuristic.md
+      candidate-match.md
+      flow-match.md
+      hybrid-match.md
 
 src/
   reqtrace/
-    ingestion/
     domain/
+    ingestion/
     application/
+    infrastructure/
     presentation/
 ```
 
@@ -90,20 +89,12 @@ src/
 
 | Term | Meaning |
 |---|---|
-| **Normalized record** | A shared ingestion-side shape produced before domain mapping |
-| **Requirement artifact** | A canonical requirement record in the domain model |
-| **Requirement fragment** | A smaller traceable unit within a requirement artifact |
-| **Requirement flow** | A structured sequence such as a main flow or alternative flow |
-| **Evidence item** | A canonical evidence record in the domain model |
-| **Trace link** | A resolved relationship between a requirement target and evidence |
-| **Coverage assessment** | Coverage status and supporting metrics for a requirement target |
-| **Method** | The selected traceability approach used for a run |
-| **Run** | One completed or imported execution/result shown to the user |
-
-## Cross-cutting rules
-
-- Ingestion owns source access, parsing, normalization, and mapping into the domain model.
-- The domain model does not own source-specific parsing logic.
-- The application layer owns method selection and result shaping, not parsing or UI.
-- Presentation consumes application-layer contracts and must not implement traceability scoring.
-- Method-specific documentation belongs under `docs/architecture/trace-methods/`.
+| Normalized record | Shared ingestion-side shape before domain mapping |
+| Requirement artifact | Canonical requirement unit |
+| Requirement fragment | Traceable fragment within a requirement |
+| Requirement flow | Main/alternative structured flow |
+| Evidence artifact | Canonical evidence unit |
+| Trace link | Resolved requirement-to-evidence relation |
+| Coverage assessment | Coverage and confidence outcome |
+| Traceability method | Selected analysis approach for a run |
+| Run | One traceability execution or imported result |
