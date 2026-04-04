@@ -9,12 +9,20 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+.python-version
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.hypothesis/
+.tox/
+.nox/
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
 *.egg-info/
+.eggs/
+pip-wheel-metadata/
 
 # Build artifacts
 build/
@@ -46,4 +54,12 @@ hs_err_pid*
 replay_pid*
 
 # Local generated outputs
+.reqtrace/
 exports/
+suts/*/exports/*.json
+suts/*/evidence/runs/*/output/
+suts/*/app/*.war
+
+# Local environment files
+.env
+.env.*
