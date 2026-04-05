@@ -46,6 +46,7 @@ Planned next:
 Completed now:
 
 - JSON import/export baseline contract
+- Windows executable build pipeline (`.exe`) via PyInstaller + GitHub Actions artifacts
 
 Planned next:
 

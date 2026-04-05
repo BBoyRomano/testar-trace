@@ -32,6 +32,9 @@ dev = [
   "pre-commit>=3.7,<4.0",
   "ruff>=0.6,<1.0",
 ]
+packaging = [
+  "pyinstaller>=6.0,<7.0",
+]
 
 [project.scripts]
 reqtrace = "reqtrace.presentation.cli.main:main"

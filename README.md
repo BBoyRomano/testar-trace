@@ -29,6 +29,7 @@ ReqTrace currently supports:
 - [`src/reqtrace/`](src/reqtrace/) — source code
 - [`tests/`](tests/) — automated tests
 - [`docs/`](docs/) — architecture and planning docs (see [`docs/README.md`](docs/README.md))
+- [`packaging/`](packaging/) — executable/distribution build assets
 - [`suts/`](suts/) — per-SUT reproducibility bundles
 - [`papers/`](papers/) — thesis/proposal materials (Overleaf Git sync)
 - [`docs/archived-v0/`](docs/archived-v0/) — archived legacy material (non-authoritative)
@@ -152,6 +153,28 @@ GUI logging can be configured via environment variables:
 ```bash
 REQTRACE_LOG_LEVEL=DEBUG REQTRACE_LOG_FILE=.reqtrace/logs/gui.log reqtrace ui
 ```
+
+## Executable distribution (Windows)
+
+For users who should run ReqTrace without cloning this repository, build standalone
+executables with PyInstaller.
+
+Local build commands (Windows):
+
+```powershell
+python -m pip install --upgrade pip
+pip install -e ".[dev,packaging]"
+pyinstaller packaging/pyinstaller/reqtrace-cli.spec
+pyinstaller packaging/pyinstaller/reqtrace-gui.spec
+```
+
+Outputs:
+
+- `dist/reqtrace/reqtrace.exe`
+- `dist/reqtrace-gui/reqtrace-gui.exe`
+
+You can also run the manual GitHub Actions workflow
+`Build Executables` to generate downloadable Windows artifacts.
 
 ## SUT data strategy
 
