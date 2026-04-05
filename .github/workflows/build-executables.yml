@@ -7,8 +7,25 @@ permissions:
   contents: read
 
 jobs:
-  windows-executables:
-    runs-on: windows-latest
+  build-executables:
+    name: Build (${{ matrix.target.name }})
+    runs-on: ${{ matrix.target.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - name: windows-x64
+            os: windows-latest
+            cli_executable: dist/reqtrace/reqtrace.exe
+            gui_artifact_path: dist/reqtrace-gui/**
+          - name: macos-x64
+            os: macos-13
+            cli_executable: dist/reqtrace/reqtrace
+            gui_artifact_path: dist/reqtrace-gui/**
+          - name: linux-x64
+            os: ubuntu-latest
+            cli_executable: dist/reqtrace/reqtrace
+            gui_artifact_path: dist/reqtrace-gui/**
 
     steps:
       - name: Checkout
@@ -30,14 +47,18 @@ jobs:
       - name: Build GUI executable
         run: pyinstaller packaging/pyinstaller/reqtrace-gui.spec
 
+      - name: Smoke test CLI executable
+        run: |
+          python -c "import subprocess; subprocess.run(['${{ matrix.target.cli_executable }}', '--help'], check=True)"
+
       - name: Upload CLI artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
-          name: reqtrace-cli-windows
+          name: reqtrace-cli-${{ matrix.target.name }}
           path: dist/reqtrace/**
 
       - name: Upload GUI artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
-          name: reqtrace-gui-windows
-          path: dist/reqtrace-gui/**
+          name: reqtrace-gui-${{ matrix.target.name }}
+          path: ${{ matrix.target.gui_artifact_path }}
