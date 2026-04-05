@@ -22,18 +22,16 @@ This roadmap maps thesis goals to implementation phases.
 - improve alternate-flow branch quality and uncertainty calibration
 - strengthen multi-instance reporting for repeated requirement realizations
 
-## Phase 3: run management UX (partially completed)
+## Phase 3: run management UX (completed)
 
 Completed now:
 
 - application-level async run executor
 - concurrent run handling
 - persisted GUI run history
-
-Planned next:
-
 - richer in-flight per-requirement progress visibility
 - cancellation controls
+- process-isolated GUI execution to keep the interface responsive
 
 ## Phase 4: explainability and interaction (planned)
 
@@ -46,7 +44,7 @@ Planned next:
 Completed now:
 
 - JSON import/export baseline contract
-- Windows executable build pipeline (`.exe`) via PyInstaller + GitHub Actions artifacts
+- cross-platform executable build pipeline via PyInstaller + GitHub Actions artifacts
 
 Planned next:
 

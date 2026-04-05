@@ -16,6 +16,8 @@ ReqTrace currently supports:
 - JSON import/export of traceability results
 - persisted GUI run history at `.reqtrace/gui-history/`
 - asynchronous multi-run execution via application-level run executor
+- process-isolated GUI run execution for responsive desktop interaction
+- live per-requirement GUI progress updates and cooperative cancellation
 
 ## Method status
 
@@ -127,6 +129,12 @@ Launch GUI:
 reqtrace ui
 ```
 
+GUI runtime notes:
+
+- run preparation and analysis execution are both off the UI thread
+- analysis execution uses spawned worker processes, so the GUI remains responsive
+- multiple runs can be started while earlier runs are still executing
+
 Enable debug logging and persist logs to a rotating file:
 
 ```bash
@@ -154,12 +162,12 @@ GUI logging can be configured via environment variables:
 REQTRACE_LOG_LEVEL=DEBUG REQTRACE_LOG_FILE=.reqtrace/logs/gui.log reqtrace ui
 ```
 
-## Executable distribution (Windows)
+## Executable distribution (cross-platform)
 
 For users who should run ReqTrace without cloning this repository, build standalone
 executables with PyInstaller.
 
-Local build commands (Windows):
+Local build commands:
 
 ```powershell
 python -m pip install --upgrade pip
@@ -170,11 +178,19 @@ pyinstaller packaging/pyinstaller/reqtrace-gui.spec
 
 Outputs:
 
-- `dist/reqtrace/reqtrace.exe`
-- `dist/reqtrace-gui/reqtrace-gui.exe`
+- Windows:
+  - `dist/reqtrace.exe`
+  - `dist/reqtrace-gui.exe`
+- macOS/Linux:
+  - `dist/reqtrace`
+  - `dist/reqtrace-gui`
 
 You can also run the manual GitHub Actions workflow
-`Build Executables` to generate downloadable Windows artifacts.
+`Build Executables` to generate downloadable artifacts for:
+
+- `windows-x64`
+- `macos`
+- `linux-x64`
 
 ## SUT data strategy
 

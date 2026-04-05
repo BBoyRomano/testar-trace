@@ -55,11 +55,17 @@ Primary commands:
 Current GUI behavior:
 
 - start multiple runs
+- immediate run enqueue/focus in history with async preparation state
+- live in-flight run progress (per-requirement status and aggregate progress)
+- cooperative cancellation for queued and running jobs
 - import and export JSON results
+- delete local history entries
 - inspect run summary and per-requirement outcomes
 - persist run history across sessions using local storage (`.reqtrace/gui-history`)
 
 Concurrency and run events are handled by an application-level async executor.
+For GUI responsiveness during CPU-heavy methods, analysis execution runs in
+process workers (spawn backend), while the Tk main loop stays interactive.
 
 ## Import/export
 
