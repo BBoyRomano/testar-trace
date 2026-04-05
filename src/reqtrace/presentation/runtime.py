@@ -34,7 +34,9 @@ logger = logging.getLogger(__name__)
 
 SUPPORTED_REQUIREMENTS_FORMATS = ("markdown", "json")
 SUPPORTED_EVIDENCE_FORMATS = ("testar",)
+AUTO_REQUIREMENTS_FORMAT = "auto"
 _REQUIREMENTS_FORMAT_ALIASES = {
+    "auto": "auto",
     "md": "markdown",
     "markdown": "markdown",
     "json": "json",
@@ -68,7 +70,8 @@ def normalize_requirements_format(value: str) -> str:
     if canonical is None:
         raise RunInputValidationError(
             f"Unsupported requirements format: {value!r}. "
-            f"Supported values: {', '.join(SUPPORTED_REQUIREMENTS_FORMATS)}."
+            f"Supported values: {AUTO_REQUIREMENTS_FORMAT}, "
+            f"{', '.join(SUPPORTED_REQUIREMENTS_FORMATS)}."
         )
     return canonical
 
@@ -89,6 +92,11 @@ def resolve_requirement_paths(run_input: RunInput) -> list[Path]:
         extra={"requirements_format": run_input.requirements_format},
     )
     requirements_format = normalize_requirements_format(run_input.requirements_format)
+    if requirements_format == AUTO_REQUIREMENTS_FORMAT:
+        raise RunInputValidationError(
+            "Requirements format is set to auto. "
+            "Resolve it before calling resolve_requirement_paths."
+        )
     raw_paths: list[Path] = []
     if run_input.requirements_paths:
         raw_paths.extend(run_input.requirements_paths)
@@ -123,6 +131,62 @@ def resolve_requirement_paths(run_input: RunInput) -> list[Path]:
         extra={"resolved_requirement_path_count": len(resolved)},
     )
     return resolved
+
+
+def infer_requirements_format(requirement_paths: list[Path]) -> str:
+    """Infer requirements format from selected paths.
+
+    Supported inference:
+    - `.md` -> `markdown`
+    - `.json` -> `json`
+    - directory paths using contained `*.md` or `*.json` files (non-recursive)
+    """
+
+    if not requirement_paths:
+        raise RunInputValidationError("At least one requirements path must be provided.")
+
+    detected_formats: set[str] = set()
+    for raw_path in requirement_paths:
+        path = Path(raw_path)
+        if not path.exists():
+            raise RunInputValidationError(f"Requirements path does not exist: {path}")
+        if path.is_file():
+            suffix = path.suffix.lower()
+            if suffix == ".md":
+                detected_formats.add("markdown")
+            elif suffix == ".json":
+                detected_formats.add("json")
+            else:
+                raise RunInputValidationError(
+                    f"Could not infer requirements format from file extension: {path.name}"
+                )
+            continue
+
+        markdown_files = [candidate for candidate in path.glob("*.md") if candidate.is_file()]
+        json_files = [candidate for candidate in path.glob("*.json") if candidate.is_file()]
+        if markdown_files and json_files:
+            raise RunInputValidationError(
+                f"Requirements directory contains mixed markdown and json files: {path}"
+            )
+        if markdown_files:
+            detected_formats.add("markdown")
+            continue
+        if json_files:
+            detected_formats.add("json")
+            continue
+        raise RunInputValidationError(
+            "Could not infer requirements format: "
+            f"directory contains no *.md or *.json files: {path}"
+        )
+
+    if len(detected_formats) > 1:
+        raise RunInputValidationError(
+            "Could not infer one requirements format from mixed inputs. "
+            "Select files/directories that use the same format."
+        )
+    if not detected_formats:
+        raise RunInputValidationError("Could not infer requirements format from selected input.")
+    return next(iter(detected_formats))
 
 
 def build_request(

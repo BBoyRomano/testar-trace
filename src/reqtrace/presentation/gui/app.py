@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import multiprocessing as mp
 import os
 import sys
 import tkinter as tk
@@ -28,6 +29,9 @@ def launch_gui(*, log_level: str | None = None, log_file: str | Path | None = No
         resolved_log_file = os.environ.get("REQTRACE_LOG_FILE")
     if resolved_log_file is not None and not str(resolved_log_file).strip():
         resolved_log_file = None
+
+    # Required on Windows for spawn-based child workers, especially in frozen builds.
+    mp.freeze_support()
     try:
         configure_logging(resolved_log_level, log_file=resolved_log_file)
     except (OSError, ValueError) as exc:

@@ -14,6 +14,7 @@ from reqtrace.presentation.runtime import (
     execute_run,
     export_result_json,
     import_result_json,
+    infer_requirements_format,
     normalize_evidence_format,
     normalize_requirements_format,
 )
@@ -140,3 +141,24 @@ def test_build_request_deduplicates_repeated_requirement_paths(tmp_path: Path) -
 def test_normalize_evidence_format_rejects_unknown_value() -> None:
     with pytest.raises(RunInputValidationError):
         normalize_evidence_format("xml")
+
+
+def test_infer_requirements_format_from_file_and_directory(tmp_path: Path) -> None:
+    markdown_file = tmp_path / "requirements.md"
+    markdown_file.write_text("# UC\n## Main flow\n- step", encoding="utf-8")
+    assert infer_requirements_format([markdown_file]) == "markdown"
+
+    json_dir = tmp_path / "req-json"
+    json_dir.mkdir()
+    write_minimal_use_case_json_file(json_dir / "uc.json")
+    assert infer_requirements_format([json_dir]) == "json"
+
+
+def test_infer_requirements_format_rejects_mixed_inputs(tmp_path: Path) -> None:
+    markdown_file = tmp_path / "requirements.md"
+    markdown_file.write_text("# UC\n## Main flow\n- step", encoding="utf-8")
+    json_file = tmp_path / "requirements.json"
+    json_file.write_text('{"requirements":[]}', encoding="utf-8")
+
+    with pytest.raises(RunInputValidationError):
+        infer_requirements_format([markdown_file, json_file])

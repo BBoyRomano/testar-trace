@@ -24,6 +24,8 @@ class RunHistoryRepository(Protocol):
 
     def load_result(self, result_path: str | Path) -> TraceabilityResult: ...
 
+    def delete_result(self, result_path: str | Path) -> None: ...
+
 
 class RunHistoryService:
     def __init__(self, repository: RunHistoryRepository) -> None:
@@ -87,7 +89,6 @@ class RunHistoryService:
                 "status": RunStatus.COMPLETED,
                 "run_id": result.run.id,
                 "method_name": result.run.method_name,
-                "label": f"{result.run.method_name} :: {result.run.id} :: completed",
                 "result_path": str(result_path),
                 "error_message": None,
                 "updated_at": datetime.now(timezone.utc),
@@ -111,7 +112,6 @@ class RunHistoryService:
         updated = entry.model_copy(
             update={
                 "status": RunStatus.FAILED,
-                "label": f"{entry.method_name} :: failed",
                 "error_message": message,
                 "updated_at": datetime.now(timezone.utc),
             }
@@ -152,6 +152,15 @@ class RunHistoryService:
             },
         )
         return entry
+
+    def delete_entry(self, entry_id: str) -> None:
+        entry = self.get_entry(entry_id)
+        if entry.result_path:
+            self._repository.delete_result(entry.result_path)
+        self._entries = [entry for entry in self._entries if entry.id != entry_id]
+        self._result_cache.pop(entry_id, None)
+        self._save_entries()
+        logger.info("Deleted run history entry.", extra={"entry_id": entry_id})
 
     def _replace_entry(self, updated: RunHistoryEntry) -> None:
         for index, entry in enumerate(self._entries):

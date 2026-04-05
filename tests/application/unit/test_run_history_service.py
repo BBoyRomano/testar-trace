@@ -32,6 +32,10 @@ class InMemoryRunHistoryRepository:
         entry_id = Path(result_path).stem
         return self.results[entry_id]
 
+    def delete_result(self, result_path: str | Path) -> None:
+        entry_id = Path(result_path).stem
+        self.results.pop(entry_id, None)
+
 
 def _build_result(tmp_path: Path) -> TraceabilityResult:
     requirements_path = tmp_path / "requirements.md"
@@ -99,3 +103,29 @@ def test_run_history_mark_completed_raises_for_unknown_entry(tmp_path: Path) -> 
     result = _build_result(tmp_path)
     with pytest.raises(RunHistoryEntryNotFoundError):
         service.mark_completed("missing", result)
+
+
+def test_run_history_delete_entry_removes_history_and_cached_result(tmp_path: Path) -> None:
+    service = RunHistoryService(InMemoryRunHistoryRepository())
+    entry = service.create_running_entry(method_name="baseline", label="baseline :: run")
+    result = _build_result(tmp_path)
+    service.mark_completed(entry.id, result)
+    assert service.get_result(entry.id) is not None
+
+    service.delete_entry(entry.id)
+
+    with pytest.raises(RunHistoryEntryNotFoundError):
+        service.get_entry(entry.id)
+
+
+def test_run_history_preserves_user_label_on_completion_and_failure(tmp_path: Path) -> None:
+    service = RunHistoryService(InMemoryRunHistoryRepository())
+    entry = service.create_running_entry(method_name="baseline", label="My analysis label")
+    result = _build_result(tmp_path)
+
+    completed = service.mark_completed(entry.id, result)
+    assert completed.label == "My analysis label"
+
+    failed_entry = service.create_running_entry(method_name="baseline", label="Failure label")
+    failed = service.mark_failed(failed_entry.id, "boom")
+    assert failed.label == "Failure label"

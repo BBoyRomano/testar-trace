@@ -92,6 +92,21 @@ class JsonRunHistoryRepository:
         logger.debug("Loading run history result payload.", extra={"result_path": str(result_path)})
         return load_report(result_path)
 
+    def delete_result(self, result_path: str | Path) -> None:
+        path = Path(result_path)
+        try:
+            path.unlink(missing_ok=True)
+        except OSError as exc:
+            logger.error(
+                "Failed to delete run history result payload.",
+                exc_info=exc,
+                extra={"result_path": str(path)},
+            )
+            raise RunHistoryPersistenceError(
+                f"Could not delete run history result payload at {path}"
+            ) from exc
+        logger.info("Deleted run history result payload.", extra={"result_path": str(path)})
+
 
 class RunHistoryIndex(BaseModel):
     model_config = ConfigDict(extra="forbid")

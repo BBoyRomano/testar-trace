@@ -42,6 +42,20 @@ def test_json_run_history_repository_roundtrip_result(tmp_path: Path) -> None:
     assert loaded.summary.requirement_count == result.summary.requirement_count
 
 
+def test_json_run_history_repository_delete_result_is_idempotent(tmp_path: Path) -> None:
+    repository = JsonRunHistoryRepository(tmp_path / ".reqtrace")
+    result = _build_result(tmp_path)
+
+    saved_path = repository.save_result("entry-1", result)
+    assert saved_path.exists()
+
+    repository.delete_result(saved_path)
+    assert not saved_path.exists()
+
+    # Repeated delete should be a no-op.
+    repository.delete_result(saved_path)
+
+
 def test_json_run_history_repository_raises_for_invalid_index_schema(tmp_path: Path) -> None:
     repository = JsonRunHistoryRepository(tmp_path / ".reqtrace")
     history_path = tmp_path / ".reqtrace" / "history.json"

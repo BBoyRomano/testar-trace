@@ -2,10 +2,17 @@ from __future__ import annotations
 
 import logging
 import tkinter as tk
+from concurrent.futures import Future, ThreadPoolExecutor
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
+from queue import Empty, Queue
+from threading import Event
+from time import monotonic
 from tkinter import filedialog, messagebox
 
 from reqtrace.application.history_models import RunHistoryEntry
+from reqtrace.application.progress import RequirementProgress
 from reqtrace.application.result_enums import RunStatus
 from reqtrace.application.results import TraceabilityResult
 from reqtrace.application.services import AsyncRunExecutor, RunHistoryService
@@ -17,36 +24,59 @@ from reqtrace.application.services.traceability_service import build_default_tra
 from reqtrace.infrastructure.persistence import JsonRunHistoryRepository
 from reqtrace.presentation.exceptions import RunInputValidationError
 from reqtrace.presentation.gui.views import ReqTraceGuiView
-from reqtrace.presentation.runtime import (
-    SUPPORTED_EVIDENCE_FORMATS,
-    SUPPORTED_REQUIREMENTS_FORMATS,
-    RunInput,
-    build_request,
-)
+from reqtrace.presentation.runtime import RunInput, build_request, infer_requirements_format
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass(slots=True, frozen=True)
+class _PreparationEvent:
+    entry_id: str
+    kind: str
+    job_id: str | None = None
+    requirements: list[tuple[str, str]] | None = None
+    phase: str | None = None
+    message: str | None = None
+
+
 class ReqTraceGuiController:
+    _SPINNER_FRAMES = ("|", "/", "-", "\\")
+    _RUNNING_REFRESH_INTERVAL_SECONDS = 0.35
+
     def __init__(self) -> None:
         self._service = build_default_traceability_service()
-        self._executor = AsyncRunExecutor(self._service)
+        self._executor = AsyncRunExecutor(self._service, execution_backend="process")
+        self._prepare_executor = ThreadPoolExecutor(
+            max_workers=2,
+            thread_name_prefix="reqtrace-prepare",
+        )
         self._history = RunHistoryService(
             JsonRunHistoryRepository(Path.cwd() / ".reqtrace" / "gui-history")
         )
+        self._prepare_events: Queue[_PreparationEvent] = Queue()
+        self._prepare_futures: dict[str, Future[None]] = {}
+        self._prepare_cancel_flags: dict[str, Event] = {}
+        self._preparing_entries: set[str] = set()
         self._job_to_entry: dict[str, str] = {}
-        self._entry_ids: list[str] = []
-        self._entry_index_by_id: dict[str, int] = {}
+        self._entry_to_job: dict[str, str] = {}
+        self._pending_requirements: dict[str, list[tuple[str, str]]] = {}
+        self._live_requirement_statuses: dict[str, dict[str, str]] = {}
+        self._live_progress_meta: dict[str, dict[str, object]] = {}
+        self._cancel_requested_entries: set[str] = set()
+        self._refresh_requested_entries: set[str] = set()
+        self._last_running_refresh_at = 0.0
+        self._spinner_index = 0
+        self._closing = False
 
         self.view = ReqTraceGuiView(
             methods=self._service.available_methods(),
-            requirements_formats=list(SUPPORTED_REQUIREMENTS_FORMATS),
-            evidence_formats=list(SUPPORTED_EVIDENCE_FORMATS),
             on_browse_requirements_file=self._browse_requirements_file,
             on_browse_requirements_dir=self._browse_requirements_dir,
-            on_browse_evidence=self._browse_evidence,
+            on_browse_evidence_file=self._browse_evidence_file,
             on_browse_evidence_dir=self._browse_evidence_dir,
             on_start_run=self._start_run,
+            on_cancel_selected=self._cancel_selected,
+            on_delete_selected=self._delete_selected,
             on_import_result=self._import_result,
             on_export_selected=self._export_selected,
             on_run_selected=self._refresh_selected_run,
@@ -55,24 +85,37 @@ class ReqTraceGuiController:
         self.view.root.protocol("WM_DELETE_WINDOW", self._on_close)
 
         for entry in self._history.list_entries():
-            self._append_entry_to_view(entry)
+            self._upsert_entry_row(entry)
 
         self.view.root.after(150, self._poll_executor)
+        self.view.root.after(180, self._animate_running_state)
         logger.info(
             "GUI controller initialized.",
-            extra={"history_entry_count": len(self._entry_ids)},
+            extra={"history_entry_count": len(self._history.list_entries())},
         )
 
     def run(self) -> None:
         self.view.run()
 
     def _on_close(self) -> None:
-        self._executor.shutdown()
+        self._closing = True
+        for cancel_flag in self._prepare_cancel_flags.values():
+            cancel_flag.set()
+        self._prepare_executor.shutdown(wait=False, cancel_futures=True)
+        self._executor.shutdown(wait=False)
         logger.info("GUI controller shutdown.")
         self.view.root.destroy()
 
     def _browse_requirements_file(self) -> None:
-        selected = filedialog.askopenfilename(title="Select requirements file")
+        selected = filedialog.askopenfilename(
+            title="Select requirements file",
+            filetypes=[
+                ("Requirements files", "*.md *.json"),
+                ("Markdown files", "*.md"),
+                ("JSON files", "*.json"),
+                ("All files", "*"),
+            ],
+        )
         if selected:
             self.view.requirements_path_var.set(selected)
 
@@ -81,13 +124,20 @@ class ReqTraceGuiController:
         if selected:
             self.view.requirements_path_var.set(selected)
 
-    def _browse_evidence(self) -> None:
-        selected = filedialog.askopenfilename(title="Select evidence file")
+    def _browse_evidence_file(self) -> None:
+        selected = filedialog.askopenfilename(
+            title="Select TESTAR evidence file",
+            filetypes=[
+                ("TESTAR model", "model.json"),
+                ("JSON files", "*.json"),
+                ("All files", "*"),
+            ],
+        )
         if selected:
             self.view.evidence_path_var.set(selected)
 
     def _browse_evidence_dir(self) -> None:
-        selected = filedialog.askdirectory(title="Select evidence directory")
+        selected = filedialog.askdirectory(title="Select TESTAR evidence directory")
         if selected:
             self.view.evidence_path_var.set(selected)
 
@@ -97,41 +147,281 @@ class ReqTraceGuiController:
         if not requirements_text or not evidence_text:
             logger.warning("GUI run start rejected due to missing input paths.")
             messagebox.showerror(
-                "ReqTrace", "Select a requirements file or directory and an evidence file."
+                "ReqTrace",
+                "Select a requirements source and an evidence source before starting.",
             )
             return
 
+        requirements_path = Path(requirements_text)
+        selected_format = self.view.requirements_format_var.get().strip().lower()
+        try:
+            resolved_format = (
+                infer_requirements_format([requirements_path])
+                if selected_format == "auto"
+                else selected_format
+            )
+        except RunInputValidationError as exc:
+            logger.warning(
+                "GUI requirements format inference failed.",
+                extra={"error_message": str(exc)},
+            )
+            messagebox.showerror("ReqTrace", str(exc))
+            return
+
         run_input = RunInput(
-            requirements_paths=[Path(requirements_text)],
+            requirements_paths=[requirements_path],
             evidence_path=Path(evidence_text),
-            requirements_format=self.view.requirements_format_var.get(),
-            evidence_format=self.view.evidence_format_var.get(),
+            requirements_format=resolved_format,
+            evidence_format="testar",
             method_name=self.view.method_var.get(),
         )
+
+        entry = self._history.create_running_entry(
+            method_name=self.view.method_var.get(),
+            label=self._build_analysis_label(
+                requirements_path=Path(requirements_text),
+                evidence_path=Path(evidence_text),
+                explicit_name=self.view.analysis_name_var.get().strip(),
+            ),
+        )
+        self._pending_requirements[entry.id] = []
+        self._live_requirement_statuses[entry.id] = {}
+        self._live_progress_meta[entry.id] = {
+            "processed": 0,
+            "total": 0,
+            "phase": "preparing",
+            "message": "Loading requirements and evidence.",
+        }
+        self._preparing_entries.add(entry.id)
+        self._prepare_cancel_flags[entry.id] = Event()
+        self._upsert_entry_row(entry)
+        self._select_entry(entry.id)
+        self._refresh_selected_run()
+
+        future = self._prepare_executor.submit(
+            self._prepare_and_submit_run,
+            entry.id,
+            run_input,
+            self._prepare_cancel_flags[entry.id],
+        )
+        self._prepare_futures[entry.id] = future
+        logger.info(
+            "GUI run preparation submitted.",
+            extra={"entry_id": entry.id, "method_name": run_input.method_name},
+        )
+
+    def _prepare_and_submit_run(
+        self,
+        entry_id: str,
+        run_input: RunInput,
+        cancel_flag: Event,
+    ) -> None:
+        if cancel_flag.is_set():
+            self._prepare_events.put(
+                _PreparationEvent(
+                    entry_id=entry_id,
+                    kind="failed",
+                    message="Canceled by user before execution started.",
+                )
+            )
+            return
 
         try:
             request = build_request(run_input)
         except RunInputValidationError as exc:
-            logger.warning("GUI run input validation failed.", extra={"error_message": str(exc)})
-            messagebox.showerror("ReqTrace", str(exc))
+            self._prepare_events.put(
+                _PreparationEvent(entry_id=entry_id, kind="failed", message=str(exc))
+            )
             return
         except Exception as exc:  # pragma: no cover - defensive boundary
             logger.error("GUI run request build failed.", exc_info=exc)
-            messagebox.showerror("ReqTrace", f"Could not prepare run:\n{exc}")
+            self._prepare_events.put(
+                _PreparationEvent(
+                    entry_id=entry_id,
+                    kind="failed",
+                    message=f"Could not prepare run: {exc}",
+                )
+            )
             return
 
-        entry = self._history.create_running_entry(
-            method_name=self.view.method_var.get(),
-            label=f"{self.view.method_var.get()} :: {Path(requirements_text).name} :: running",
-        )
-        self._append_entry_to_view(entry)
+        if cancel_flag.is_set():
+            self._prepare_events.put(
+                _PreparationEvent(
+                    entry_id=entry_id,
+                    kind="failed",
+                    message="Canceled by user before execution started.",
+                )
+            )
+            return
 
-        job_id = self._executor.submit(request)
-        self._job_to_entry[job_id] = entry.id
-        logger.info(
-            "GUI run submitted.",
-            extra={"job_id": job_id, "entry_id": entry.id, "method_name": request.method_name},
+        requirements = [
+            (requirement.id, requirement.title) for requirement in request.requirements.requirements
+        ]
+        self._prepare_events.put(
+            _PreparationEvent(
+                entry_id=entry_id,
+                kind="prepared",
+                requirements=requirements,
+                phase=request.method_name,
+            )
         )
+
+        try:
+            job_id = self._executor.submit(request)
+        except Exception as exc:  # pragma: no cover - defensive boundary
+            logger.error("GUI async submission failed.", exc_info=exc)
+            self._prepare_events.put(
+                _PreparationEvent(
+                    entry_id=entry_id,
+                    kind="failed",
+                    message=f"Could not submit run: {exc}",
+                )
+            )
+            return
+
+        self._prepare_events.put(
+            _PreparationEvent(entry_id=entry_id, kind="submitted", job_id=job_id)
+        )
+
+    def _drain_preparation_events(self) -> None:
+        selected = self._selected_history_entry()
+        selected_entry_id = selected.id if selected is not None else None
+        while True:
+            try:
+                event = self._prepare_events.get_nowait()
+            except Empty:
+                break
+
+            if event.kind == "prepared":
+                requirements = list(event.requirements or [])
+                self._pending_requirements[event.entry_id] = requirements
+                self._live_requirement_statuses[event.entry_id] = {
+                    requirement_id: "waiting" for requirement_id, _title in requirements
+                }
+                self._live_progress_meta[event.entry_id] = {
+                    "processed": 0,
+                    "total": len(requirements),
+                    "phase": event.phase or "analyzing",
+                    "message": "Prepared. Waiting for execution.",
+                }
+                self._refresh_requested_entries.add(event.entry_id)
+                continue
+
+            if event.kind == "submitted":
+                if event.job_id is None:
+                    continue
+                self._preparing_entries.discard(event.entry_id)
+                self._prepare_cancel_flags.pop(event.entry_id, None)
+                self._prepare_futures.pop(event.entry_id, None)
+                self._entry_to_job[event.entry_id] = event.job_id
+                self._job_to_entry[event.job_id] = event.entry_id
+                logger.info(
+                    "GUI run submitted.",
+                    extra={"entry_id": event.entry_id, "job_id": event.job_id},
+                )
+                if event.entry_id in self._cancel_requested_entries:
+                    self._executor.cancel(event.job_id)
+                self._refresh_requested_entries.add(event.entry_id)
+                continue
+
+            if event.kind == "failed":
+                self._preparing_entries.discard(event.entry_id)
+                self._prepare_cancel_flags.pop(event.entry_id, None)
+                self._prepare_futures.pop(event.entry_id, None)
+                self._entry_to_job.pop(event.entry_id, None)
+                self._pending_requirements.pop(event.entry_id, None)
+                self._live_requirement_statuses.pop(event.entry_id, None)
+                self._live_progress_meta.pop(event.entry_id, None)
+                self._cancel_requested_entries.discard(event.entry_id)
+                self._refresh_requested_entries.discard(event.entry_id)
+                message = event.message or "Could not prepare run."
+                entry = self._history.mark_failed(event.entry_id, message)
+                self._upsert_entry_row(entry)
+                self._refresh_requested_entries.add(event.entry_id)
+
+        if selected_entry_id is not None and selected_entry_id in self._refresh_requested_entries:
+            self._refresh_requested_entries.discard(selected_entry_id)
+            self._refresh_selected_run()
+
+    def _cancel_selected(self) -> None:
+        entry = self._selected_history_entry()
+        if entry is None:
+            messagebox.showinfo("ReqTrace", "Select a running analysis to cancel.")
+            return
+        if entry.status != RunStatus.RUNNING:
+            messagebox.showinfo("ReqTrace", "Selected analysis is not running.")
+            return
+
+        job_id = self._entry_to_job.get(entry.id)
+        if job_id is None:
+            if entry.id in self._preparing_entries:
+                self._cancel_requested_entries.add(entry.id)
+                future = self._prepare_futures.get(entry.id)
+                if future is not None and future.cancel():
+                    self._prepare_events.put(
+                        _PreparationEvent(
+                            entry_id=entry.id,
+                            kind="failed",
+                            message="Canceled by user before execution started.",
+                        )
+                    )
+                else:
+                    cancel_flag = self._prepare_cancel_flags.get(entry.id)
+                    if cancel_flag is not None:
+                        cancel_flag.set()
+                self._refresh_selected_run()
+                return
+            messagebox.showinfo("ReqTrace", "No active worker was found for the selected analysis.")
+            return
+
+        canceled = self._executor.cancel(job_id)
+        if canceled:
+            self._cancel_requested_entries.add(entry.id)
+            logger.info(
+                "GUI cancellation requested.",
+                extra={"job_id": job_id, "entry_id": entry.id},
+            )
+            self._refresh_selected_run()
+            return
+
+        messagebox.showinfo(
+            "ReqTrace",
+            "Could not cancel the selected analysis.\nIt may have already finished.",
+        )
+
+    def _delete_selected(self) -> None:
+        entry = self._selected_history_entry()
+        if entry is None:
+            messagebox.showinfo("ReqTrace", "Select an analysis to delete.")
+            return
+        if entry.status == RunStatus.RUNNING:
+            messagebox.showinfo("ReqTrace", "Cancel the running analysis before deleting it.")
+            return
+
+        confirmed = messagebox.askyesno(
+            "ReqTrace",
+            "Delete selected analysis from history?\n"
+            "Stored result data for that run will no longer be shown in the dashboard.",
+        )
+        if not confirmed:
+            return
+
+        self._history.delete_entry(entry.id)
+        self._job_to_entry = {
+            job_id: item for job_id, item in self._job_to_entry.items() if item != entry.id
+        }
+        self._entry_to_job.pop(entry.id, None)
+        self._pending_requirements.pop(entry.id, None)
+        self._live_requirement_statuses.pop(entry.id, None)
+        self._live_progress_meta.pop(entry.id, None)
+        self._cancel_requested_entries.discard(entry.id)
+        self._refresh_requested_entries.discard(entry.id)
+        self._preparing_entries.discard(entry.id)
+        self._prepare_futures.pop(entry.id, None)
+        self._prepare_cancel_flags.pop(entry.id, None)
+        if self.view.runs_table.exists(entry.id):
+            self.view.runs_table.delete(entry.id)
+        self._refresh_selected_run()
 
     def _import_result(self) -> None:
         selected = filedialog.askopenfilename(
@@ -149,17 +439,19 @@ class ReqTraceGuiController:
             messagebox.showerror("ReqTrace", f"Could not import result:\n{exc}")
             return
 
-        self._append_entry_to_view(entry)
+        self._upsert_entry_row(entry)
+        self._select_entry(entry.id)
         logger.info(
             "GUI result imported.",
             extra={"entry_id": entry.id, "run_id": result.run.id},
         )
+        self._refresh_selected_run()
 
     def _export_selected(self) -> None:
         entry = self._selected_history_entry()
         if entry is None:
             logger.debug("GUI export requested with no selected entry.")
-            messagebox.showinfo("ReqTrace", "Select a completed or imported run first.")
+            messagebox.showinfo("ReqTrace", "Select a completed or imported analysis first.")
             return
 
         result = self._history.get_result(entry.id)
@@ -168,7 +460,7 @@ class ReqTraceGuiController:
                 "GUI export requested for entry with no result.",
                 extra={"entry_id": entry.id},
             )
-            messagebox.showinfo("ReqTrace", "Selected run has no result payload to export.")
+            messagebox.showinfo("ReqTrace", "Selected analysis has no result payload to export.")
             return
 
         selected = filedialog.asksaveasfilename(
@@ -187,8 +479,13 @@ class ReqTraceGuiController:
 
     def _poll_executor(self) -> None:
         try:
+            self._drain_preparation_events()
             for event in self._executor.drain_events():
                 if event.status == RunStatus.RUNNING:
+                    if event.progress is not None:
+                        entry_id = self._job_to_entry.get(event.job_id)
+                        if entry_id is not None:
+                            self._apply_progress_update(entry_id, event.progress)
                     continue
                 entry_id = self._job_to_entry.pop(event.job_id, None)
                 if entry_id is None:
@@ -197,6 +494,16 @@ class ReqTraceGuiController:
                         extra={"job_id": event.job_id, "status": str(event.status)},
                     )
                     continue
+                self._entry_to_job.pop(entry_id, None)
+                self._pending_requirements.pop(entry_id, None)
+                self._live_requirement_statuses.pop(entry_id, None)
+                self._live_progress_meta.pop(entry_id, None)
+                self._cancel_requested_entries.discard(entry_id)
+                self._refresh_requested_entries.discard(entry_id)
+                self._preparing_entries.discard(entry_id)
+                self._prepare_futures.pop(entry_id, None)
+                self._prepare_cancel_flags.pop(entry_id, None)
+
                 if event.status == RunStatus.COMPLETED and event.result is not None:
                     entry = self._history.mark_completed(entry_id, event.result)
                     logger.info(
@@ -204,7 +511,7 @@ class ReqTraceGuiController:
                         extra={"job_id": event.job_id, "entry_id": entry_id},
                     )
                 else:
-                    message = event.error_message or "Run failed."
+                    message = event.error_message or "Analysis failed."
                     entry = self._history.mark_failed(entry_id, message)
                     logger.error(
                         "GUI observed run failure.",
@@ -214,34 +521,42 @@ class ReqTraceGuiController:
                             "error_message": message,
                         },
                     )
-                self._update_entry_label(entry)
+                self._upsert_entry_row(entry)
                 self._refresh_selected_run()
         finally:
-            self.view.root.after(150, self._poll_executor)
+            if not self._closing:
+                self.view.root.after(150, self._poll_executor)
 
-    def _append_entry_to_view(self, entry: RunHistoryEntry) -> None:
-        index = len(self._entry_ids)
-        self._entry_ids.append(entry.id)
-        self._entry_index_by_id[entry.id] = index
-        self.view.runs_list.insert(tk.END, entry.label)
-        logger.debug("GUI history entry appended.", extra={"entry_id": entry.id, "index": index})
-
-    def _update_entry_label(self, entry: RunHistoryEntry) -> None:
-        index = self._entry_index_by_id.get(entry.id)
-        if index is None:
-            self._append_entry_to_view(entry)
+    def _upsert_entry_row(self, entry: RunHistoryEntry) -> None:
+        values = (
+            entry.label,
+            self._status_display(entry),
+            entry.method_name,
+            self._timestamp_display(entry.updated_at),
+        )
+        tags = (self._run_row_tag(entry),)
+        if self.view.runs_table.exists(entry.id):
+            self.view.runs_table.item(entry.id, values=values, tags=tags)
             return
-        self.view.runs_list.delete(index)
-        self.view.runs_list.insert(index, entry.label)
+        self.view.runs_table.insert("", tk.END, iid=entry.id, values=values, tags=tags)
+        logger.debug("GUI history entry upserted.", extra={"entry_id": entry.id})
+
+    def _select_entry(self, entry_id: str) -> None:
+        if not self.view.runs_table.exists(entry_id):
+            return
+        self.view.runs_table.selection_set(entry_id)
+        self.view.runs_table.focus(entry_id)
 
     def _selected_history_entry(self) -> RunHistoryEntry | None:
-        selection = self.view.runs_list.curselection()
+        selection = self.view.runs_table.selection()
         if not selection:
             return None
-        index = selection[0]
-        if index >= len(self._entry_ids):
+        entry_id = selection[0]
+        try:
+            return self._history.get_entry(entry_id)
+        except Exception as exc:  # pragma: no cover - defensive boundary
+            logger.error("Failed to load selected history entry.", exc_info=exc)
             return None
-        return self._history.get_entry(self._entry_ids[index])
 
     def _selected_result(self) -> tuple[RunHistoryEntry | None, TraceabilityResult | None]:
         entry = self._selected_history_entry()
@@ -259,49 +574,79 @@ class ReqTraceGuiController:
 
     def _refresh_selected_run(self) -> None:
         entry, result = self._selected_result()
-        self.view.summary_text.delete("1.0", tk.END)
+        self.view.insights_text.delete("1.0", tk.END)
         for item in self.view.requirement_table.get_children():
             self.view.requirement_table.delete(item)
         self.view.detail_text.delete("1.0", tk.END)
+        self.view.clear_metrics()
 
         if entry is None:
             return
+
         if result is None:
-            status_line = f"Status: {entry.status}"
-            if entry.error_message:
-                status_line = status_line + f"\nError: {entry.error_message}"
-            self.view.summary_text.insert(tk.END, status_line)
+            self.view.metric_method_var.set(entry.method_name)
+            self.view.metric_status_var.set(self._status_display(entry))
+            if entry.status == RunStatus.RUNNING:
+                self._render_running_placeholders(entry)
+            else:
+                self._render_non_result_placeholders(entry)
             return
 
-        summary_lines = [
-            f"Run ID: {result.run.id}",
-            f"Method: {result.run.method_name}",
-            f"Status: {result.run.status}",
-            f"Requirements: {result.summary.requirement_count}",
-            f"Analyzed: {result.summary.analyzed_requirement_count}",
-            f"Covered: {result.summary.covered_requirement_count}",
-            f"Partially covered: {result.summary.partially_covered_requirement_count}",
-            f"Uncovered: {result.summary.uncovered_requirement_count}",
-            f"Trace links: {result.summary.trace_link_count}",
-            f"Trace evidence: {result.summary.trace_evidence_count}",
+        self.view.metric_run_id_var.set(result.run.id)
+        self.view.metric_method_var.set(result.run.method_name)
+        self.view.metric_status_var.set(str(result.run.status))
+        self.view.metric_duration_var.set(self._duration_display(result))
+        self.view.metric_requirements_var.set(str(result.summary.requirement_count))
+        self.view.metric_coverage_var.set(
+            f"{100.0 * result.summary.global_coverage.overall_coverage_ratio:.1f}%"
+        )
+        self.view.metric_links_var.set(str(result.summary.trace_link_count))
+        self.view.metric_confidence_var.set(
+            f"{100.0 * result.summary.global_coverage.average_confidence:.1f}%"
+        )
+        self.view.metric_progress_var.set(100.0)
+
+        coverage = result.summary.global_coverage
+        insights_lines = [
+            (
+                "Coverage mix: "
+                f"full {coverage.fully_covered}, "
+                f"main-only {coverage.main_only}, "
+                f"alt-only {coverage.alt_only}, "
+                f"partial {coverage.partial}, "
+                f"uncovered {coverage.none}, "
+                f"uncertain {coverage.uncertain}"
+            ),
+            (
+                "Traceability: "
+                f"{coverage.requirements_with_any_trace}/{coverage.total_requirements} "
+                "requirements have trace evidence "
+                f"(main {coverage.requirements_with_main_trace}, "
+                f"alt {coverage.requirements_with_alt_trace})"
+            ),
+            (
+                "Evidence links: "
+                f"{result.summary.trace_link_count} links, "
+                f"{result.summary.trace_evidence_count} evidence items"
+            ),
+            (f"Analysis quality: {100.0 * coverage.average_confidence:.1f}% average confidence"),
         ]
-        self.view.summary_text.insert(tk.END, "\n".join(summary_lines))
+        self.view.insights_text.insert(tk.END, "\n".join(insights_lines))
 
         for item in result.requirement_results:
-            coverage = (
-                str(item.artifact_coverage.coverage_status) if item.artifact_coverage else "n/a"
-            )
+            coverage = str(item.coverage.status)
             self.view.requirement_table.insert(
                 "",
                 tk.END,
                 iid=item.requirement_id,
                 text=f"{item.requirement_id}: {item.requirement_title}",
                 values=(
-                    str(item.status),
+                    self._requirement_status_display(item.status.value),
                     coverage,
                     len(item.trace_links),
                     len(item.trace_evidence),
                 ),
+                tags=(self._final_requirement_row_tag(item.status.value),),
             )
 
     def _refresh_requirement_detail(self) -> None:
@@ -320,19 +665,224 @@ class ReqTraceGuiController:
                 f"Requirement ID: {item.requirement_id}",
                 f"Title: {item.requirement_title}",
                 f"Status: {item.status}",
+                f"Coverage: {item.coverage.status}",
+                f"Main flow: {item.coverage.main_flow_status}",
+                f"Alternative flow: {item.coverage.alt_flow_status}",
+                f"Confidence: {item.coverage.confidence:.3f}",
                 f"Trace links: {len(item.trace_links)}",
                 f"Trace evidence: {len(item.trace_evidence)}",
                 f"Warnings: {len(item.warnings)}",
             ]
-            if item.artifact_coverage is not None:
-                lines.extend(
-                    [
-                        f"Coverage: {item.artifact_coverage.coverage_status}",
-                        f"Coverage ratio: {item.artifact_coverage.coverage_ratio}",
-                        f"Confidence: {item.artifact_coverage.confidence_ratio}",
-                    ]
-                )
             if item.error_message:
                 lines.append(f"Error: {item.error_message}")
             self.view.detail_text.insert(tk.END, "\n".join(lines))
             return
+
+    def _apply_progress_update(self, entry_id: str, progress: RequirementProgress) -> None:
+        statuses = self._live_requirement_statuses.setdefault(entry_id, {})
+        statuses[progress.requirement_id] = progress.state
+
+        pending_requirements = self._pending_requirements.setdefault(entry_id, [])
+        if progress.requirement_id not in {item[0] for item in pending_requirements}:
+            pending_requirements.append((progress.requirement_id, progress.requirement_title))
+
+        self._live_progress_meta[entry_id] = {
+            "processed": progress.processed_requirement_count,
+            "total": progress.total_requirement_count,
+            "phase": progress.phase,
+            "message": progress.message,
+        }
+        self._refresh_requested_entries.add(entry_id)
+
+    def _render_running_placeholders(self, entry: RunHistoryEntry) -> None:
+        spinner = self._spinner_frame()
+        pending_requirements = self._pending_requirements.get(entry.id, [])
+        progress_meta = self._live_progress_meta.get(entry.id, {})
+        processed_count = int(progress_meta.get("processed", 0))
+        total_count = int(progress_meta.get("total", len(pending_requirements)))
+        current_phase = str(progress_meta.get("phase") or entry.method_name)
+        current_message = progress_meta.get("message")
+        elapsed_seconds = (
+            datetime.now(tz=entry.created_at.tzinfo) - entry.created_at
+        ).total_seconds()
+
+        self.view.metric_run_id_var.set(f"{spinner} pending")
+        self.view.metric_duration_var.set(f"{elapsed_seconds:.1f}s")
+        if total_count:
+            self.view.metric_requirements_var.set(f"{processed_count}/{total_count}")
+        else:
+            self.view.metric_requirements_var.set(f"{spinner} scanning")
+        progress_percentage = (processed_count / total_count * 100.0) if total_count else 0.0
+        self.view.metric_progress_var.set(progress_percentage)
+        self.view.metric_coverage_var.set(f"{spinner} processing")
+        self.view.metric_links_var.set(f"{spinner}")
+        self.view.metric_confidence_var.set(f"{spinner} processing")
+
+        self.view.insights_text.insert(
+            tk.END,
+            f"Status: {self._status_display(entry, animated=True)}\n"
+            f"Analysis: {entry.label}\n"
+            f"Phase: {current_phase}\n"
+            f"Progress: {processed_count}/{total_count}\n"
+            "Metrics and trace links will appear when the run finishes.\n",
+        )
+        if entry.id in self._cancel_requested_entries:
+            self.view.insights_text.insert(
+                tk.END,
+                "Cancellation requested. Finishing current step.\n",
+            )
+        if isinstance(current_message, str) and current_message:
+            self.view.insights_text.insert(tk.END, f"{current_message}\n")
+
+        if total_count == 0:
+            return
+
+        live_statuses = self._live_requirement_statuses.get(entry.id, {})
+        for requirement_id, requirement_title in pending_requirements:
+            status = self._live_requirement_status_display(
+                live_statuses.get(requirement_id, "waiting")
+            )
+            self.view.requirement_table.insert(
+                "",
+                tk.END,
+                iid=requirement_id,
+                text=f"{requirement_id}: {requirement_title}",
+                values=(status, "-", 0, 0),
+                tags=(
+                    self._live_requirement_row_tag(live_statuses.get(requirement_id, "waiting")),
+                ),
+            )
+
+    def _render_non_result_placeholders(self, entry: RunHistoryEntry) -> None:
+        self.view.metric_run_id_var.set(entry.run_id or "n/a")
+        self.view.metric_duration_var.set("n/a")
+        self.view.metric_requirements_var.set("n/a")
+        self.view.metric_progress_var.set(0.0)
+        self.view.metric_coverage_var.set("n/a")
+        self.view.metric_links_var.set("n/a")
+        self.view.metric_confidence_var.set("n/a")
+
+        lines = [
+            f"Status: {self._status_display(entry)}",
+            f"Analysis: {entry.label}",
+            "Result payload is not available for this history item.",
+        ]
+        if entry.error_message:
+            lines.append(f"Error: {entry.error_message}")
+        self.view.insights_text.insert(tk.END, "\n".join(lines))
+
+    def _animate_running_state(self) -> None:
+        if self._closing:
+            return
+        self._spinner_index = (self._spinner_index + 1) % len(self._SPINNER_FRAMES)
+        for entry in self._history.list_entries():
+            if entry.status != RunStatus.RUNNING:
+                continue
+            if not self.view.runs_table.exists(entry.id):
+                continue
+            self.view.runs_table.item(
+                entry.id,
+                values=(
+                    entry.label,
+                    self._status_display(entry, animated=True),
+                    entry.method_name,
+                    self._timestamp_display(entry.updated_at),
+                ),
+                tags=(self._run_row_tag(entry),),
+            )
+
+        selected = self._selected_history_entry()
+        if selected is not None and selected.status == RunStatus.RUNNING:
+            now = monotonic()
+            needs_refresh = selected.id in self._refresh_requested_entries
+            if (
+                needs_refresh
+                or now - self._last_running_refresh_at >= self._RUNNING_REFRESH_INTERVAL_SECONDS
+            ):
+                self._refresh_requested_entries.discard(selected.id)
+                self._last_running_refresh_at = now
+                self._refresh_selected_run()
+
+        if not self._closing:
+            self.view.root.after(180, self._animate_running_state)
+
+    def _build_analysis_label(
+        self,
+        *,
+        requirements_path: Path,
+        evidence_path: Path,
+        explicit_name: str | None = None,
+    ) -> str:
+        if explicit_name:
+            return explicit_name
+        requirements_name = requirements_path.name
+        evidence_name = evidence_path.name
+        return f"{requirements_name} <- {evidence_name}"
+
+    def _status_display(self, entry: RunHistoryEntry, *, animated: bool = False) -> str:
+        if entry.status == RunStatus.RUNNING:
+            if entry.id in self._cancel_requested_entries:
+                return f"[{self._spinner_frame()}] canceling"
+            if entry.id in self._preparing_entries:
+                if animated:
+                    return f"[{self._spinner_frame()}] preparing"
+                return "[~] preparing"
+            if animated:
+                return f"[{self._spinner_frame()}] analyzing"
+            return "[~] running"
+        if entry.status == RunStatus.COMPLETED:
+            return "[OK] completed"
+        if entry.status == RunStatus.COMPLETED_WITH_ERRORS:
+            return "[!] completed-with-errors"
+        if entry.status == RunStatus.PENDING:
+            return "[ ] pending"
+        if entry.error_message and "canceled by user" in entry.error_message.lower():
+            return "[X] canceled"
+        return "[X] failed"
+
+    def _requirement_status_display(self, status_value: str) -> str:
+        return "[OK] done" if status_value == "done" else "[X] failed"
+
+    def _live_requirement_status_display(self, status_value: str) -> str:
+        if status_value == "completed":
+            return "[OK] done"
+        if status_value == "failed":
+            return "[X] failed"
+        if status_value == "processing":
+            return f"[{self._spinner_frame()}] analyzing"
+        return "[ ] waiting"
+
+    def _timestamp_display(self, value: datetime) -> str:
+        return value.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+
+    def _duration_display(self, result: TraceabilityResult) -> str:
+        if result.run.ended_at is None:
+            return "n/a"
+        elapsed = result.run.ended_at - result.run.started_at
+        return f"{elapsed.total_seconds():.2f}s"
+
+    def _spinner_frame(self) -> str:
+        return self._SPINNER_FRAMES[self._spinner_index]
+
+    def _run_row_tag(self, entry: RunHistoryEntry) -> str:
+        if entry.status == RunStatus.RUNNING:
+            return "run_running"
+        if entry.status == RunStatus.COMPLETED:
+            return "run_completed"
+        if entry.status == RunStatus.COMPLETED_WITH_ERRORS:
+            return "run_warning"
+        if entry.error_message and "canceled by user" in entry.error_message.lower():
+            return "run_canceled"
+        return "run_failed"
+
+    def _live_requirement_row_tag(self, status_value: str) -> str:
+        if status_value == "completed":
+            return "req_completed"
+        if status_value == "failed":
+            return "req_failed"
+        if status_value == "processing":
+            return "req_processing"
+        return "req_waiting"
+
+    def _final_requirement_row_tag(self, status_value: str) -> str:
+        return "req_completed" if status_value == "done" else "req_failed"
