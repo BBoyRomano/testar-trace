@@ -16,16 +16,16 @@ jobs:
         target:
           - name: windows-x64
             os: windows-latest
-            cli_executable: dist/reqtrace/reqtrace.exe
-            gui_artifact_path: dist/reqtrace-gui/**
-          - name: macos-x64
-            os: macos-13
-            cli_executable: dist/reqtrace/reqtrace
-            gui_artifact_path: dist/reqtrace-gui/**
+            cli_executable: dist/reqtrace.exe
+            gui_executable: dist/reqtrace-gui.exe
+          - name: macos
+            os: macos-latest
+            cli_executable: dist/reqtrace
+            gui_executable: dist/reqtrace-gui
           - name: linux-x64
             os: ubuntu-latest
-            cli_executable: dist/reqtrace/reqtrace
-            gui_artifact_path: dist/reqtrace-gui/**
+            cli_executable: dist/reqtrace
+            gui_executable: dist/reqtrace-gui
 
     steps:
       - name: Checkout
@@ -55,10 +55,10 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: reqtrace-cli-${{ matrix.target.name }}
-          path: dist/reqtrace/**
+          path: ${{ matrix.target.cli_executable }}
 
       - name: Upload GUI artifact
         uses: actions/upload-artifact@v6
         with:
           name: reqtrace-gui-${{ matrix.target.name }}
-          path: ${{ matrix.target.gui_artifact_path }}
+          path: ${{ matrix.target.gui_executable }}

@@ -19,14 +19,14 @@ kept separate from runtime source code in `src/`.
 
 The build workflow produces two artifacts per platform:
 
-- `reqtrace-cli-<platform>`: CLI bundle
-- `reqtrace-gui-<platform>`: GUI bundle
+- `reqtrace-cli-<platform>`: CLI executable (single-file)
+- `reqtrace-gui-<platform>`: GUI executable (single-file)
 
 Current platform suffixes:
 
 - `windows-x64`
-- `macos-x64`
+- `macos`
 - `linux-x64`
 
-Each workflow run also performs a smoke test by executing the built CLI with
+Each workflow run performs a CLI smoke test by executing the built binary with
 `--help` before artifacts are uploaded.
