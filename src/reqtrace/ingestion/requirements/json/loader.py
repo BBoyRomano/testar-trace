@@ -83,9 +83,7 @@ class JsonRequirementsLoader:
         requirements: list[ParsedRequirementRecord] = []
         for index, row in enumerate(rows, start=1):
             if not isinstance(row, dict):
-                raise SourceValidationError(
-                    f"JSON requirements entry #{index} must be an object."
-                )
+                raise SourceValidationError(f"JSON requirements entry #{index} must be an object.")
 
             title = normalize_text(row.get("title") or row.get("name"))
             if title is None:

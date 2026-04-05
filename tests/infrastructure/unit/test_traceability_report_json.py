@@ -45,4 +45,3 @@ def test_load_report_raises_deserialization_error_for_invalid_json(tmp_path: Pat
 
     with pytest.raises(ReportDeserializationError):
         load_report(path)
-
