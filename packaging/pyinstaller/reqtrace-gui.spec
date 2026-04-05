@@ -4,7 +4,8 @@ from pathlib import Path
 
 block_cipher = None
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
+SPEC_DIR = Path(globals().get("SPECPATH", Path.cwd())).resolve()
+ROOT_DIR = SPEC_DIR.parents[1] if SPEC_DIR.name == "pyinstaller" else SPEC_DIR
 SRC_DIR = ROOT_DIR / "src"
 ENTRYPOINT = ROOT_DIR / "packaging" / "pyinstaller" / "entrypoints" / "reqtrace_gui.py"
 
