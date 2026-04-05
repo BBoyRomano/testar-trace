@@ -100,9 +100,7 @@ class Candidate:
     action_kind: str | None = None
 
 
-def iter_selected_requirements(
-    snapshot: RequirementSnapshot, selected_ids: Iterable[str] | None
-):
+def iter_selected_requirements(snapshot: RequirementSnapshot, selected_ids: Iterable[str] | None):
     if not selected_ids:
         yield from snapshot.iter_requirements()
         return

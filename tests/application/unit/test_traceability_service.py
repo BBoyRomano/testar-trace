@@ -6,6 +6,7 @@ import pytest
 from tests.application.unit._snapshots import build_evidence_snapshot, build_requirements_snapshot
 
 from reqtrace.application.exceptions import (
+    RunCanceledError,
     TraceabilityMethodExecutionError,
     UnknownTraceabilityMethodError,
 )
@@ -68,3 +69,21 @@ def test_service_wraps_method_failure() -> None:
 
     with pytest.raises(TraceabilityMethodExecutionError):
         service.execute(request)
+
+
+def test_service_propagates_run_canceled_error() -> None:
+    class CancelingMethod:
+        name = "canceling"
+
+        def run(self, request: TraceabilityRequest, *, is_canceled=None) -> NoReturn:
+            raise RunCanceledError("Canceled by user.")
+
+    service = TraceabilityService(methods={"canceling": CancelingMethod()})
+    request = TraceabilityRequest(
+        method_name="canceling",
+        requirements=build_requirements_snapshot(),
+        evidence=build_evidence_snapshot(),
+    )
+
+    with pytest.raises(RunCanceledError):
+        service.execute(request, is_canceled=lambda: True)

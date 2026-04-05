@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
+from reqtrace.application.progress import CancellationCallback, ProgressCallback
 from reqtrace.application.results import TraceabilityRequest, TraceabilityResult
 
 
@@ -12,4 +13,10 @@ class TraceabilityMethod(Protocol):
 
     name: str
 
-    def run(self, request: TraceabilityRequest) -> TraceabilityResult: ...
+    def run(
+        self,
+        request: TraceabilityRequest,
+        *,
+        progress_callback: ProgressCallback | None = None,
+        is_canceled: CancellationCallback | None = None,
+    ) -> TraceabilityResult: ...

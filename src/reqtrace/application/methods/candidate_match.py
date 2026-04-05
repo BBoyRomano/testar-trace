@@ -9,6 +9,11 @@ from reqtrace.application.methods.common.candidate_utils import (
     filter_evidence_by_selected_runs,
     iter_selected_requirements,
 )
+from reqtrace.application.methods.common.progress import (
+    emit_requirement_progress,
+    raise_if_canceled,
+)
+from reqtrace.application.progress import CancellationCallback, ProgressCallback
 from reqtrace.application.protocols import TraceabilityMethod
 from reqtrace.application.result_metrics import build_input_summary, build_traceability_summary
 from reqtrace.application.results import (
@@ -35,19 +40,37 @@ class CandidateMatchMethod(TraceabilityMethod):
     name = "candidate_match"
     method_name = "candidate_match"
 
-    def run(self, request: TraceabilityRequest) -> TraceabilityResult:
+    def run(
+        self,
+        request: TraceabilityRequest,
+        *,
+        progress_callback: ProgressCallback | None = None,
+        is_canceled: CancellationCallback | None = None,
+    ) -> TraceabilityResult:
         started_at = datetime.now(UTC)
         analysis_run_id = f"trace-run-{uuid4().hex}"
         requirements = list(
             iter_selected_requirements(request.requirements, request.selected_requirement_ids)
         )
+        total_requirements = len(requirements)
         evidence = filter_evidence_by_selected_runs(
             request.evidence, request.selected_evidence_run_ids
         )
         candidates = build_candidates(evidence, request.selected_evidence_run_ids)
 
         results: list[RequirementTraceabilityResult] = []
+        processed_requirements = 0
         for requirement in requirements:
+            raise_if_canceled(is_canceled=is_canceled)
+            emit_requirement_progress(
+                progress_callback=progress_callback,
+                requirement_id=requirement.id,
+                requirement_title=requirement.title,
+                state="processing",
+                processed_requirement_count=processed_requirements,
+                total_requirement_count=total_requirements,
+                phase=self.method_name,
+            )
             fragments = list(request.requirements.fragments_for(requirement.id))
             fragment_results: list[FragmentTraceResult] = []
             fragment_coverages: list[CoverageAssessment] = []
@@ -58,6 +81,7 @@ class CandidateMatchMethod(TraceabilityMethod):
             instances: list[ExecutionInstance] = []
 
             for fragment in fragments:
+                raise_if_canceled(is_canceled=is_canceled)
                 match = best_match(fragment.text, candidates)
                 flow_status = FlowStatus.NOT_COVERED
                 if match is not None:
@@ -226,6 +250,16 @@ class CandidateMatchMethod(TraceabilityMethod):
                     trace_evidence=trace_evidence,
                     metadata={"method": self.method_name},
                 )
+            )
+            processed_requirements += 1
+            emit_requirement_progress(
+                progress_callback=progress_callback,
+                requirement_id=requirement.id,
+                requirement_title=requirement.title,
+                state="completed",
+                processed_requirement_count=processed_requirements,
+                total_requirement_count=total_requirements,
+                phase=self.method_name,
             )
 
         ended_at = datetime.now(UTC)

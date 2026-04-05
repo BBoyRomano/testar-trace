@@ -19,6 +19,10 @@ class TraceabilityMethodExecutionError(TraceabilityError):
     """Raised when a method fails unexpectedly."""
 
 
+class RunCanceledError(TraceabilityError):
+    """Raised when a traceability run is canceled by the user."""
+
+
 class RunHistoryError(TraceabilityError):
     """Base exception for run history management failures."""
 

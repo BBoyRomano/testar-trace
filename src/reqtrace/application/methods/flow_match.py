@@ -19,6 +19,11 @@ from reqtrace.application.methods.common.candidate_utils import (
     normalize_text,
     tokens,
 )
+from reqtrace.application.methods.common.progress import (
+    emit_requirement_progress,
+    raise_if_canceled,
+)
+from reqtrace.application.progress import CancellationCallback, ProgressCallback
 from reqtrace.application.protocols import TraceabilityMethod
 from reqtrace.application.result_metrics import build_input_summary, build_traceability_summary
 from reqtrace.application.results import (
@@ -86,12 +91,19 @@ class FlowMatchMethod(TraceabilityMethod):
     name = "flow_match"
     method_name = "flow_match"
 
-    def run(self, request: TraceabilityRequest) -> TraceabilityResult:
+    def run(
+        self,
+        request: TraceabilityRequest,
+        *,
+        progress_callback: ProgressCallback | None = None,
+        is_canceled: CancellationCallback | None = None,
+    ) -> TraceabilityResult:
         started_at = datetime.now(UTC)
         analysis_run_id = f"trace-run-{uuid4().hex}"
         requirements = list(
             iter_selected_requirements(request.requirements, request.selected_requirement_ids)
         )
+        total_requirements = len(requirements)
         evidence = filter_evidence_by_selected_runs(
             request.evidence, request.selected_evidence_run_ids
         )
@@ -116,8 +128,19 @@ class FlowMatchMethod(TraceabilityMethod):
 
         candidates = build_candidates(evidence, request.selected_evidence_run_ids)
         results: list[RequirementTraceabilityResult] = []
+        processed_requirements = 0
 
         for requirement in requirements:
+            raise_if_canceled(is_canceled=is_canceled)
+            emit_requirement_progress(
+                progress_callback=progress_callback,
+                requirement_id=requirement.id,
+                requirement_title=requirement.title,
+                state="processing",
+                processed_requirement_count=processed_requirements,
+                total_requirement_count=total_requirements,
+                phase=self.method_name,
+            )
             fragments = list(request.requirements.fragments_for(requirement.id))
             preconditions, main_fragments, alt_groups, postconditions = _partition_fragments(
                 fragments
@@ -178,6 +201,7 @@ class FlowMatchMethod(TraceabilityMethod):
             all_local_scores: list[float] = []
 
             for fragment in fragments:
+                raise_if_canceled(is_canceled=is_canceled)
                 match = best_match(fragment.text, candidates)
                 local_score = float(match["score"]) if match else 0.0
                 all_local_scores.append(local_score)
@@ -380,6 +404,16 @@ class FlowMatchMethod(TraceabilityMethod):
                         else 0.0,
                     },
                 )
+            )
+            processed_requirements += 1
+            emit_requirement_progress(
+                progress_callback=progress_callback,
+                requirement_id=requirement.id,
+                requirement_title=requirement.title,
+                state="completed",
+                processed_requirement_count=processed_requirements,
+                total_requirement_count=total_requirements,
+                phase=self.method_name,
             )
 
         ended_at = datetime.now(UTC)

@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import inspect
 import logging
 import time
 from dataclasses import dataclass, field
 
 from reqtrace.application.exceptions import (
+    RunCanceledError,
     TraceabilityMethodExecutionError,
     UnknownTraceabilityMethodError,
 )
@@ -14,6 +16,7 @@ from reqtrace.application.methods.baseline import BaselineMethod
 from reqtrace.application.methods.candidate_match import CandidateMatchMethod
 from reqtrace.application.methods.flow_match import FlowMatchMethod
 from reqtrace.application.methods.hybrid_match import HybridMatchMethod
+from reqtrace.application.progress import CancellationCallback, ProgressCallback
 from reqtrace.application.protocols import TraceabilityMethod
 from reqtrace.application.results import TraceabilityRequest, TraceabilityResult
 
@@ -31,7 +34,13 @@ class TraceabilityService:
     def available_methods(self) -> list[str]:
         return sorted(self.methods)
 
-    def execute(self, request: TraceabilityRequest) -> TraceabilityResult:
+    def execute(
+        self,
+        request: TraceabilityRequest,
+        *,
+        progress_callback: ProgressCallback | None = None,
+        is_canceled: CancellationCallback | None = None,
+    ) -> TraceabilityResult:
         try:
             method = self.methods[request.method_name]
         except KeyError as exc:
@@ -49,7 +58,12 @@ class TraceabilityService:
         )
         started = time.perf_counter()
         try:
-            result = method.run(request)
+            result = self._run_method(
+                method,
+                request,
+                progress_callback=progress_callback,
+                is_canceled=is_canceled,
+            )
             elapsed = time.perf_counter() - started
             logger.info(
                 "Traceability method completed in %.2fs.",
@@ -61,11 +75,44 @@ class TraceabilityService:
                 },
             )
             return result
+        except RunCanceledError:
+            logger.info(
+                "Traceability method canceled by user.",
+                extra={"method_name": method.name},
+            )
+            raise
         except Exception as exc:  # pragma: no cover - defensive boundary
             logger.exception("Traceability method '%s' failed.", method.name)
             raise TraceabilityMethodExecutionError(
                 f"Traceability method '{method.name}' failed."
             ) from exc
+
+    def _run_method(
+        self,
+        method: TraceabilityMethod,
+        request: TraceabilityRequest,
+        *,
+        progress_callback: ProgressCallback | None,
+        is_canceled: CancellationCallback | None,
+    ) -> TraceabilityResult:
+        try:
+            signature = inspect.signature(method.run)
+        except (TypeError, ValueError):
+            # Some callables (for example C-extension-backed wrappers) do not
+            # expose introspectable signatures. Fall back to legacy invocation.
+            return method.run(request)
+        accepts_kwargs = any(
+            parameter.kind is inspect.Parameter.VAR_KEYWORD
+            for parameter in signature.parameters.values()
+        )
+        kwargs: dict[str, object] = {}
+        if progress_callback is not None and (
+            "progress_callback" in signature.parameters or accepts_kwargs
+        ):
+            kwargs["progress_callback"] = progress_callback
+        if is_canceled is not None and ("is_canceled" in signature.parameters or accepts_kwargs):
+            kwargs["is_canceled"] = is_canceled
+        return method.run(request, **kwargs)
 
 
 def build_default_traceability_service(
