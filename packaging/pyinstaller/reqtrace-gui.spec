@@ -1,10 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from pathlib import Path
+
 block_cipher = None
 
+ROOT_DIR = Path(__file__).resolve().parents[2]
+SRC_DIR = ROOT_DIR / "src"
+ENTRYPOINT = ROOT_DIR / "packaging" / "pyinstaller" / "entrypoints" / "reqtrace_gui.py"
+
 a = Analysis(
-    ["packaging/pyinstaller/entrypoints/reqtrace_gui.py"],
-    pathex=["src"],
+    [str(ENTRYPOINT)],
+    pathex=[str(SRC_DIR)],
     binaries=[],
     datas=[],
     hiddenimports=[],
@@ -21,9 +27,7 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
+    [],
     [],
     name="reqtrace-gui",
     debug=False,
@@ -38,4 +42,14 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+)
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name="reqtrace-gui",
 )
