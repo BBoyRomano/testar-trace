@@ -7,7 +7,7 @@ name = "reqtrace"
 version = "0.1.0"
 description = "Requirements traceability for scriptless GUI testing."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = { file = "LICENSE" }
 authors = [{ name = "R. J. H. van de Wetering" }]
 keywords = ["requirements", "traceability", "gui-testing", "testar", "thesis"]
@@ -16,7 +16,7 @@ classifiers = [
   "Intended Audience :: Science/Research",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Testing",
 ]
 dependencies = [
@@ -59,7 +59,7 @@ show_missing = true
 skip_covered = true
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py314"
 src = ["src", "tests"]
 line-length = 100
 

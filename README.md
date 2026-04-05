@@ -38,7 +38,7 @@ ReqTrace currently supports:
 
 ### Devcontainer
 
-Use the provided devcontainer (`Python 3.13`) for a ready-to-run environment.
+Use the provided devcontainer (`Python 3.14`) for a ready-to-run environment.
 
 ### Local setup
 
