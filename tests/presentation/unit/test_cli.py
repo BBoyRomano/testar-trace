@@ -29,6 +29,7 @@ def test_methods_lists_expected_methods() -> None:
     assert result.exit_code == 0
     assert "baseline" in result.stdout
     assert "candidate_match" in result.stdout
+    assert "conformance_match" in result.stdout
     assert "flow_match" in result.stdout
     assert "hybrid_match" in result.stdout
 

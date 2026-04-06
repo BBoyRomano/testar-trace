@@ -14,6 +14,7 @@ from reqtrace.application.exceptions import (
 )
 from reqtrace.application.methods.baseline import BaselineMethod
 from reqtrace.application.methods.candidate_match import CandidateMatchMethod
+from reqtrace.application.methods.conformance_match import ConformanceMatchMethod
 from reqtrace.application.methods.flow_match import FlowMatchMethod
 from reqtrace.application.methods.hybrid_match import HybridMatchMethod
 from reqtrace.application.progress import CancellationCallback, ProgressCallback
@@ -122,6 +123,7 @@ def build_default_traceability_service(
     service.register_method(BaselineMethod())
     if include_experimental_methods:
         service.register_method(CandidateMatchMethod())
+        service.register_method(ConformanceMatchMethod())
         service.register_method(FlowMatchMethod())
         service.register_method(HybridMatchMethod())
     return service

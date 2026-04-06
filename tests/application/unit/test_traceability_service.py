@@ -22,6 +22,7 @@ def test_service_exposes_all_default_methods() -> None:
     assert service.available_methods() == [
         "baseline",
         "candidate_match",
+        "conformance_match",
         "flow_match",
         "hybrid_match",
     ]
@@ -32,6 +33,7 @@ def test_service_can_opt_in_to_experimental_methods() -> None:
     assert service.available_methods() == [
         "baseline",
         "candidate_match",
+        "conformance_match",
         "flow_match",
         "hybrid_match",
     ]
