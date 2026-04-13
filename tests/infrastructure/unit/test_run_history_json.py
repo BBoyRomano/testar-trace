@@ -3,20 +3,10 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from tests._builders import write_minimal_requirement_markdown, write_minimal_testar_model_file
 
 from reqtrace.application.history_models import RunHistoryEntry
 from reqtrace.infrastructure.exceptions import RunHistoryPersistenceError
 from reqtrace.infrastructure.persistence.run_history_json import JsonRunHistoryRepository
-from reqtrace.presentation.runtime import RunInput, execute_run
-
-
-def _build_result(tmp_path: Path):
-    requirements_path = tmp_path / "requirements.md"
-    evidence_path = tmp_path / "testar.json"
-    write_minimal_requirement_markdown(requirements_path)
-    write_minimal_testar_model_file(evidence_path)
-    return execute_run(RunInput(requirements_path=requirements_path, evidence_path=evidence_path))
 
 
 def test_json_run_history_repository_roundtrip_entries(tmp_path: Path) -> None:
@@ -31,9 +21,9 @@ def test_json_run_history_repository_roundtrip_entries(tmp_path: Path) -> None:
     assert loaded[0].label == entry.label
 
 
-def test_json_run_history_repository_roundtrip_result(tmp_path: Path) -> None:
+def test_json_run_history_repository_roundtrip_result(tmp_path: Path, build_traceability_result) -> None:
     repository = JsonRunHistoryRepository(tmp_path / ".reqtrace")
-    result = _build_result(tmp_path)
+    result = build_traceability_result(tmp_path)
 
     saved_path = repository.save_result("entry-1", result)
     loaded = repository.load_result(saved_path)
@@ -42,9 +32,12 @@ def test_json_run_history_repository_roundtrip_result(tmp_path: Path) -> None:
     assert loaded.summary.requirement_count == result.summary.requirement_count
 
 
-def test_json_run_history_repository_delete_result_is_idempotent(tmp_path: Path) -> None:
+def test_json_run_history_repository_delete_result_is_idempotent(
+    tmp_path: Path,
+    build_traceability_result,
+) -> None:
     repository = JsonRunHistoryRepository(tmp_path / ".reqtrace")
-    result = _build_result(tmp_path)
+    result = build_traceability_result(tmp_path)
 
     saved_path = repository.save_result("entry-1", result)
     assert saved_path.exists()

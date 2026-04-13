@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
@@ -24,7 +25,12 @@ from reqtrace.application.services.traceability_service import build_default_tra
 from reqtrace.infrastructure.persistence import JsonRunHistoryRepository
 from reqtrace.presentation.exceptions import RunInputValidationError
 from reqtrace.presentation.gui.views import ReqTraceGuiView
-from reqtrace.presentation.runtime import RunInput, build_request, infer_requirements_format
+from reqtrace.presentation.runtime import (
+    RunInput,
+    build_request,
+    infer_evidence_format,
+    infer_requirements_format,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +48,7 @@ class _PreparationEvent:
 class ReqTraceGuiController:
     _SPINNER_FRAMES = ("|", "/", "-", "\\")
     _RUNNING_REFRESH_INTERVAL_SECONDS = 0.35
+    _UNSET_FORMAT_LABEL = "not detected"
 
     def __init__(self) -> None:
         self._service = build_default_traceability_service()
@@ -50,9 +57,10 @@ class ReqTraceGuiController:
             max_workers=2,
             thread_name_prefix="reqtrace-prepare",
         )
-        self._history = RunHistoryService(
-            JsonRunHistoryRepository(Path.cwd() / ".reqtrace" / "gui-history")
-        )
+        self._state_root = Path.cwd() / ".reqtrace"
+        self._ui_state_path = self._state_root / "gui-state.json"
+        self._ui_state = self._load_ui_state()
+        self._history = RunHistoryService(JsonRunHistoryRepository(self._state_root / "gui-history"))
         self._prepare_events: Queue[_PreparationEvent] = Queue()
         self._prepare_futures: dict[str, Future[None]] = {}
         self._prepare_cancel_flags: dict[str, Event] = {}
@@ -70,6 +78,8 @@ class ReqTraceGuiController:
 
         self.view = ReqTraceGuiView(
             methods=self._service.available_methods(),
+            on_requirements_path_changed=self._on_requirements_path_changed,
+            on_evidence_path_changed=self._on_evidence_path_changed,
             on_browse_requirements_file=self._browse_requirements_file,
             on_browse_requirements_dir=self._browse_requirements_dir,
             on_browse_evidence_file=self._browse_evidence_file,
@@ -86,6 +96,8 @@ class ReqTraceGuiController:
 
         for entry in self._history.list_entries():
             self._upsert_entry_row(entry)
+        self._restore_ui_state()
+        self._refresh_detected_formats()
 
         self.view.root.after(150, self._poll_executor)
         self.view.root.after(180, self._animate_running_state)
@@ -97,8 +109,14 @@ class ReqTraceGuiController:
     def run(self) -> None:
         self.view.run()
 
+    def _show_view_panel(self, method_name: str) -> None:
+        method = getattr(self.view, method_name, None)
+        if callable(method):
+            method()
+
     def _on_close(self) -> None:
         self._closing = True
+        self._save_ui_state()
         for cancel_flag in self._prepare_cancel_flags.values():
             cancel_flag.set()
         self._prepare_executor.shutdown(wait=False, cancel_futures=True)
@@ -106,9 +124,142 @@ class ReqTraceGuiController:
         logger.info("GUI controller shutdown.")
         self.view.root.destroy()
 
+    def _on_requirements_path_changed(self) -> None:
+        self._refresh_requirements_format_detected()
+
+    def _on_evidence_path_changed(self) -> None:
+        self._refresh_evidence_format_detected()
+
+    def _refresh_detected_formats(self) -> None:
+        self._refresh_requirements_format_detected()
+        self._refresh_evidence_format_detected()
+
+    def _refresh_requirements_format_detected(self) -> None:
+        detected = self._infer_requirements_format_label(self.view.requirements_path_var.get())
+        self.view.requirements_format_detected_var.set(detected)
+
+    def _refresh_evidence_format_detected(self) -> None:
+        detected = self._infer_evidence_format_label(self.view.evidence_path_var.get())
+        self.view.evidence_format_detected_var.set(detected)
+
+    def _infer_requirements_format_label(self, path_text: str) -> str:
+        normalized = path_text.strip()
+        if not normalized:
+            return self._UNSET_FORMAT_LABEL
+        path = Path(normalized)
+        if not path.exists():
+            return "unknown (path not found)"
+        try:
+            detected = infer_requirements_format([path])
+        except RunInputValidationError as exc:
+            return f"unknown ({self._truncate_text(str(exc), 110)})"
+        return f"{detected} (auto)"
+
+    def _infer_evidence_format_label(self, path_text: str) -> str:
+        normalized = path_text.strip()
+        if not normalized:
+            return self._UNSET_FORMAT_LABEL
+        path = Path(normalized)
+        if not path.exists():
+            return "unknown (path not found)"
+        try:
+            detected = infer_evidence_format(path)
+        except RunInputValidationError as exc:
+            return f"unknown ({self._truncate_text(str(exc), 110)})"
+        return f"{detected} (auto)"
+
+    @staticmethod
+    def _truncate_text(value: str, limit: int) -> str:
+        normalized = value.strip()
+        if len(normalized) <= limit:
+            return normalized
+        if limit <= 3:
+            return normalized[:limit]
+        return f"{normalized[:limit - 3]}..."
+
+    def _restore_ui_state(self) -> None:
+        requirements_path = str(self._ui_state.get("requirements_path", "")).strip()
+        evidence_path = str(self._ui_state.get("evidence_path", "")).strip()
+        if requirements_path:
+            self.view.requirements_path_var.set(requirements_path)
+        if evidence_path:
+            self.view.evidence_path_var.set(evidence_path)
+
+    def _load_ui_state(self) -> dict[str, str]:
+        if not self._ui_state_path.is_file():
+            return {}
+        try:
+            payload = json.loads(self._ui_state_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            logger.warning("Could not load GUI state file.", exc_info=exc)
+            return {}
+        if not isinstance(payload, dict):
+            return {}
+        return {
+            key: value
+            for key, value in payload.items()
+            if isinstance(key, str) and isinstance(value, str)
+        }
+
+    def _save_ui_state(self) -> None:
+        requirements_path = self.view.requirements_path_var.get().strip()
+        evidence_path = self.view.evidence_path_var.get().strip()
+        payload = {
+            "requirements_path": requirements_path,
+            "evidence_path": evidence_path,
+            "last_requirements_dir": self._derive_last_dir(
+                preferred_path=requirements_path,
+                fallback_key="last_requirements_dir",
+            ),
+            "last_evidence_dir": self._derive_last_dir(
+                preferred_path=evidence_path,
+                fallback_key="last_evidence_dir",
+            ),
+        }
+        self._ui_state = payload
+        try:
+            self._state_root.mkdir(parents=True, exist_ok=True)
+            self._ui_state_path.write_text(
+                json.dumps(payload, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+        except OSError as exc:
+            logger.warning("Could not save GUI state file.", exc_info=exc)
+
+    def _derive_last_dir(self, *, preferred_path: str, fallback_key: str) -> str:
+        normalized = preferred_path.strip()
+        if normalized:
+            path = Path(normalized)
+            if path.is_dir():
+                return str(path)
+            parent = path.parent
+            if parent.exists():
+                return str(parent)
+        fallback = str(self._ui_state.get(fallback_key, "")).strip()
+        if fallback and Path(fallback).exists():
+            return fallback
+        return str(Path.cwd())
+
+    def _dialog_initialdir(self, *, current_value: str, fallback_key: str) -> str:
+        normalized = current_value.strip()
+        if normalized:
+            path = Path(normalized)
+            if path.is_dir():
+                return str(path)
+            if path.parent.exists():
+                return str(path.parent)
+        fallback = str(self._ui_state.get(fallback_key, "")).strip()
+        if fallback and Path(fallback).exists():
+            return fallback
+        return str(Path.cwd())
+
     def _browse_requirements_file(self) -> None:
         selected = filedialog.askopenfilename(
             title="Select requirements file",
+            initialdir=self._dialog_initialdir(
+                current_value=self.view.requirements_path_var.get(),
+                fallback_key="last_requirements_dir",
+            ),
             filetypes=[
                 ("Requirements files", "*.md *.json"),
                 ("Markdown files", "*.md"),
@@ -118,15 +269,29 @@ class ReqTraceGuiController:
         )
         if selected:
             self.view.requirements_path_var.set(selected)
+            self._ui_state["last_requirements_dir"] = str(Path(selected).parent)
+            self._save_ui_state()
 
     def _browse_requirements_dir(self) -> None:
-        selected = filedialog.askdirectory(title="Select requirements directory")
+        selected = filedialog.askdirectory(
+            title="Select requirements directory",
+            initialdir=self._dialog_initialdir(
+                current_value=self.view.requirements_path_var.get(),
+                fallback_key="last_requirements_dir",
+            ),
+        )
         if selected:
             self.view.requirements_path_var.set(selected)
+            self._ui_state["last_requirements_dir"] = selected
+            self._save_ui_state()
 
     def _browse_evidence_file(self) -> None:
         selected = filedialog.askopenfilename(
             title="Select TESTAR evidence file",
+            initialdir=self._dialog_initialdir(
+                current_value=self.view.evidence_path_var.get(),
+                fallback_key="last_evidence_dir",
+            ),
             filetypes=[
                 ("TESTAR model", "model.json"),
                 ("JSON files", "*.json"),
@@ -135,11 +300,21 @@ class ReqTraceGuiController:
         )
         if selected:
             self.view.evidence_path_var.set(selected)
+            self._ui_state["last_evidence_dir"] = str(Path(selected).parent)
+            self._save_ui_state()
 
     def _browse_evidence_dir(self) -> None:
-        selected = filedialog.askdirectory(title="Select TESTAR evidence directory")
+        selected = filedialog.askdirectory(
+            title="Select TESTAR evidence directory",
+            initialdir=self._dialog_initialdir(
+                current_value=self.view.evidence_path_var.get(),
+                fallback_key="last_evidence_dir",
+            ),
+        )
         if selected:
             self.view.evidence_path_var.set(selected)
+            self._ui_state["last_evidence_dir"] = selected
+            self._save_ui_state()
 
     def _start_run(self) -> None:
         requirements_text = self.view.requirements_path_var.get().strip()
@@ -153,16 +328,12 @@ class ReqTraceGuiController:
             return
 
         requirements_path = Path(requirements_text)
-        selected_format = self.view.requirements_format_var.get().strip().lower()
         try:
-            resolved_format = (
-                infer_requirements_format([requirements_path])
-                if selected_format == "auto"
-                else selected_format
-            )
+            resolved_requirements_format = infer_requirements_format([requirements_path])
+            resolved_evidence_format = infer_evidence_format(Path(evidence_text))
         except RunInputValidationError as exc:
             logger.warning(
-                "GUI requirements format inference failed.",
+                "GUI format inference failed.",
                 extra={"error_message": str(exc)},
             )
             messagebox.showerror("ReqTrace", str(exc))
@@ -171,10 +342,12 @@ class ReqTraceGuiController:
         run_input = RunInput(
             requirements_paths=[requirements_path],
             evidence_path=Path(evidence_text),
-            requirements_format=resolved_format,
-            evidence_format="testar",
+            requirements_format=resolved_requirements_format,
+            evidence_format=resolved_evidence_format,
             method_name=self.view.method_var.get(),
         )
+
+        self._save_ui_state()
 
         entry = self._history.create_running_entry(
             method_name=self.view.method_var.get(),
@@ -197,6 +370,7 @@ class ReqTraceGuiController:
         self._upsert_entry_row(entry)
         self._select_entry(entry.id)
         self._refresh_selected_run()
+        self._show_view_panel("show_overview")
 
         future = self._prepare_executor.submit(
             self._prepare_and_submit_run,
@@ -574,7 +748,8 @@ class ReqTraceGuiController:
 
     def _refresh_selected_run(self) -> None:
         entry, result = self._selected_result()
-        self.view.insights_text.delete("1.0", tk.END)
+        self._show_view_panel("show_overview")
+        self._set_insight_rows([])
         for item in self.view.requirement_table.get_children():
             self.view.requirement_table.delete(item)
         self.view.detail_text.delete("1.0", tk.END)
@@ -605,33 +780,29 @@ class ReqTraceGuiController:
             f"{100.0 * result.summary.global_coverage.average_confidence:.1f}%"
         )
         self.view.metric_progress_var.set(100.0)
+        self.view.metric_progress_text_var.set("100%")
+        self.view.insight_summary_var.set("Completed")
 
         coverage = result.summary.global_coverage
-        insights_lines = [
-            (
-                "Coverage mix: "
-                f"full {coverage.fully_covered}, "
-                f"main-only {coverage.main_only}, "
-                f"alt-only {coverage.alt_only}, "
-                f"partial {coverage.partial}, "
-                f"uncovered {coverage.none}, "
-                f"uncertain {coverage.uncertain}"
-            ),
-            (
-                "Traceability: "
-                f"{coverage.requirements_with_any_trace}/{coverage.total_requirements} "
-                "requirements have trace evidence "
-                f"(main {coverage.requirements_with_main_trace}, "
-                f"alt {coverage.requirements_with_alt_trace})"
-            ),
-            (
-                "Evidence links: "
-                f"{result.summary.trace_link_count} links, "
-                f"{result.summary.trace_evidence_count} evidence items"
-            ),
-            (f"Analysis quality: {100.0 * coverage.average_confidence:.1f}% average confidence"),
-        ]
-        self.view.insights_text.insert(tk.END, "\n".join(insights_lines))
+        self._set_insight_rows(
+            [
+                ("Coverage: full", str(coverage.fully_covered)),
+                ("Coverage: main-only", str(coverage.main_only)),
+                ("Coverage: alt-only", str(coverage.alt_only)),
+                ("Coverage: partial", str(coverage.partial)),
+                ("Coverage: uncovered", str(coverage.none)),
+                ("Coverage: uncertain", str(coverage.uncertain)),
+                (
+                    "Traceability",
+                    (
+                        f"{coverage.requirements_with_any_trace}/{coverage.total_requirements} "
+                        f"(main {coverage.requirements_with_main_trace}, "
+                        f"alt {coverage.requirements_with_alt_trace})"
+                    ),
+                ),
+                ("Evidence items", str(result.summary.trace_evidence_count)),
+            ]
+        )
 
         for item in result.requirement_results:
             coverage = str(item.coverage.status)
@@ -657,6 +828,7 @@ class ReqTraceGuiController:
         selection = self.view.requirement_table.selection()
         if not selection:
             return
+        self._show_view_panel("show_detail")
         requirement_id = selection[0]
         for item in result.requirement_results:
             if item.requirement_id != requirement_id:
@@ -714,25 +886,28 @@ class ReqTraceGuiController:
             self.view.metric_requirements_var.set(f"{spinner} scanning")
         progress_percentage = (processed_count / total_count * 100.0) if total_count else 0.0
         self.view.metric_progress_var.set(progress_percentage)
+        if total_count:
+            self.view.metric_progress_text_var.set(f"{progress_percentage:.0f}%")
+        else:
+            self.view.metric_progress_text_var.set(f"{spinner} scanning")
         self.view.metric_coverage_var.set(f"{spinner} processing")
         self.view.metric_links_var.set(f"{spinner}")
         self.view.metric_confidence_var.set(f"{spinner} processing")
-
-        self.view.insights_text.insert(
-            tk.END,
-            f"Status: {self._status_display(entry, animated=True)}\n"
-            f"Analysis: {entry.label}\n"
-            f"Phase: {current_phase}\n"
-            f"Progress: {processed_count}/{total_count}\n"
-            "Metrics and trace links will appear when the run finishes.\n",
+        self.view.insight_summary_var.set(
+            f"{self._status_display(entry, animated=True)} | {current_phase}"
         )
+
+        rows = [
+            ("Analysis", entry.label),
+            ("Phase", current_phase),
+            ("Progress", f"{processed_count}/{total_count}"),
+            ("Status", "Metrics and trace links appear when the run finishes."),
+        ]
         if entry.id in self._cancel_requested_entries:
-            self.view.insights_text.insert(
-                tk.END,
-                "Cancellation requested. Finishing current step.\n",
-            )
+            rows.append(("Cancellation", "Requested. Finishing current step."))
         if isinstance(current_message, str) and current_message:
-            self.view.insights_text.insert(tk.END, f"{current_message}\n")
+            rows.append(("Message", current_message))
+        self._set_insight_rows(rows)
 
         if total_count == 0:
             return
@@ -758,18 +933,32 @@ class ReqTraceGuiController:
         self.view.metric_duration_var.set("n/a")
         self.view.metric_requirements_var.set("n/a")
         self.view.metric_progress_var.set(0.0)
+        self.view.metric_progress_text_var.set("0%")
         self.view.metric_coverage_var.set("n/a")
         self.view.metric_links_var.set("n/a")
         self.view.metric_confidence_var.set("n/a")
+        self.view.insight_summary_var.set(self._status_display(entry))
 
-        lines = [
-            f"Status: {self._status_display(entry)}",
-            f"Analysis: {entry.label}",
-            "Result payload is not available for this history item.",
+        rows = [
+            ("Status", self._status_display(entry)),
+            ("Analysis", entry.label),
+            ("Result", "Result payload is not available for this history item."),
         ]
         if entry.error_message:
-            lines.append(f"Error: {entry.error_message}")
-        self.view.insights_text.insert(tk.END, "\n".join(lines))
+            rows.append(("Error", entry.error_message))
+        self._set_insight_rows(rows)
+
+    def _set_insight_rows(self, rows: list[tuple[str, str]]) -> None:
+        for item in self.view.insights_table.get_children():
+            self.view.insights_table.delete(item)
+        for index, (label, value) in enumerate(rows):
+            self.view.insights_table.insert(
+                "",
+                tk.END,
+                iid=f"insight-{index}",
+                text=label,
+                values=(value,),
+            )
 
     def _animate_running_state(self) -> None:
         if self._closing:

@@ -1,9 +1,12 @@
 from pathlib import Path
 
+import pytest
+
 from reqtrace.ingestion.requirements.adapter import RequirementsAdapter
 from reqtrace.ingestion.requirements.json.loader import JsonRequirementsLoader
 
 FIXTURES_DIR = Path(__file__).resolve().parents[2] / "fixtures" / "ingestion"
+pytestmark = pytest.mark.integration
 
 
 def test_json_loader_and_adapter_ingest_use_case_collection() -> None:

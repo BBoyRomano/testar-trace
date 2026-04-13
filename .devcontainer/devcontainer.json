@@ -1,26 +1,24 @@
 {
-  "name": "reqtrace",
-  "image": "mcr.microsoft.com/devcontainers/python:1-3.14-bookworm",
+  "name": "reqtrace-dev",
+  "image": "python:3.14-slim-trixie",
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
         "charliermarsh.ruff",
-        "tamasfe.even-better-toml",
-        "james-yu.latex-workshop"
+        "astral-sh.ty"
       ],
       "settings": {
-        "editor.defaultFormatter": "charliermarsh.ruff",
-        "editor.formatOnSave": true,
         "python.testing.pytestEnabled": true,
         "python.testing.unittestEnabled": false,
         "python.testing.pytestArgs": [
           "tests"
         ],
-        "python.analysis.typeCheckingMode": "basic"
+        "editor.formatOnSave": true,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        }
       }
     }
   },
-  "postCreateCommand": "python -m pip install --upgrade pip && pip install -e \".[dev]\""
+  "postCreateCommand": "python -m pip install uv && uv sync"
 }

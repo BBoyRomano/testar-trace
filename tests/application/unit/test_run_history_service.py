@@ -3,14 +3,12 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from tests._builders import write_minimal_requirement_markdown, write_minimal_testar_model_file
 
 from reqtrace.application.exceptions import RunHistoryEntryNotFoundError
 from reqtrace.application.history_models import RunHistoryEntry
 from reqtrace.application.result_enums import RunStatus
 from reqtrace.application.results import TraceabilityResult
 from reqtrace.application.services.run_history_service import RunHistoryService
-from reqtrace.presentation.runtime import RunInput, execute_run
 
 
 class InMemoryRunHistoryRepository:
@@ -37,20 +35,15 @@ class InMemoryRunHistoryRepository:
         self.results.pop(entry_id, None)
 
 
-def _build_result(tmp_path: Path) -> TraceabilityResult:
-    requirements_path = tmp_path / "requirements.md"
-    evidence_path = tmp_path / "testar.json"
-    write_minimal_requirement_markdown(requirements_path)
-    write_minimal_testar_model_file(evidence_path)
-    return execute_run(RunInput(requirements_path=requirements_path, evidence_path=evidence_path))
-
-
-def test_run_history_tracks_running_completed_and_result_lookup(tmp_path: Path) -> None:
+def test_run_history_tracks_running_completed_and_result_lookup(
+    tmp_path: Path,
+    build_traceability_result,
+) -> None:
     service = RunHistoryService(InMemoryRunHistoryRepository())
     entry = service.create_running_entry(method_name="baseline", label="baseline :: run")
     assert entry.status == RunStatus.RUNNING
 
-    result = _build_result(tmp_path)
+    result = build_traceability_result(tmp_path)
     completed = service.mark_completed(entry.id, result)
 
     assert completed.status == RunStatus.COMPLETED
@@ -82,9 +75,9 @@ def test_run_history_tracks_failed_entry() -> None:
     assert failed.error_message == "boom"
 
 
-def test_run_history_add_imported_result(tmp_path: Path) -> None:
+def test_run_history_add_imported_result(tmp_path: Path, build_traceability_result) -> None:
     service = RunHistoryService(InMemoryRunHistoryRepository())
-    result = _build_result(tmp_path)
+    result = build_traceability_result(tmp_path)
     imported = service.add_imported_result(result=result, source_path="/tmp/result.json")
 
     assert imported.status == RunStatus.COMPLETED
@@ -98,17 +91,23 @@ def test_run_history_raises_for_unknown_entry() -> None:
         service.get_entry("missing")
 
 
-def test_run_history_mark_completed_raises_for_unknown_entry(tmp_path: Path) -> None:
+def test_run_history_mark_completed_raises_for_unknown_entry(
+    tmp_path: Path,
+    build_traceability_result,
+) -> None:
     service = RunHistoryService(InMemoryRunHistoryRepository())
-    result = _build_result(tmp_path)
+    result = build_traceability_result(tmp_path)
     with pytest.raises(RunHistoryEntryNotFoundError):
         service.mark_completed("missing", result)
 
 
-def test_run_history_delete_entry_removes_history_and_cached_result(tmp_path: Path) -> None:
+def test_run_history_delete_entry_removes_history_and_cached_result(
+    tmp_path: Path,
+    build_traceability_result,
+) -> None:
     service = RunHistoryService(InMemoryRunHistoryRepository())
     entry = service.create_running_entry(method_name="baseline", label="baseline :: run")
-    result = _build_result(tmp_path)
+    result = build_traceability_result(tmp_path)
     service.mark_completed(entry.id, result)
     assert service.get_result(entry.id) is not None
 
@@ -118,10 +117,13 @@ def test_run_history_delete_entry_removes_history_and_cached_result(tmp_path: Pa
         service.get_entry(entry.id)
 
 
-def test_run_history_preserves_user_label_on_completion_and_failure(tmp_path: Path) -> None:
+def test_run_history_preserves_user_label_on_completion_and_failure(
+    tmp_path: Path,
+    build_traceability_result,
+) -> None:
     service = RunHistoryService(InMemoryRunHistoryRepository())
     entry = service.create_running_entry(method_name="baseline", label="My analysis label")
-    result = _build_result(tmp_path)
+    result = build_traceability_result(tmp_path)
 
     completed = service.mark_completed(entry.id, result)
     assert completed.label == "My analysis label"

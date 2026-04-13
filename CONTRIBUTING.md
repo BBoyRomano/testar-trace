@@ -8,7 +8,8 @@ This repository supports a thesis prototype, so changes should prioritize clarit
 
 ```bash
 python -m pip install --upgrade pip
-pip install -e ".[dev]"
+python -m pip install uv
+uv sync --group dev --locked
 ```
 
 Or use the provided devcontainer.
@@ -18,20 +19,26 @@ Or use the provided devcontainer.
 Run quality checks locally:
 
 ```bash
-ruff check .
-pytest -q
+uv run ruff check .
+uv run pytest -q
 ```
 
 Optional but recommended local hook check:
 
 ```bash
-pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 If you touched runtime/data contracts, also run:
 
 ```bash
-pytest --cov=reqtrace --cov-report=term-missing
+uv run pytest --cov=reqtrace --cov-report=term-missing
+```
+
+If you touched type-heavy code, also run:
+
+```bash
+uv run ty check
 ```
 
 ## Scope and architecture rules

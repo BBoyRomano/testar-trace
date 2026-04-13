@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=69", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.11.3,<0.12"]
+build-backend = "uv_build"
 
 [project]
 name = "reqtrace"
@@ -8,60 +8,60 @@ version = "0.1.0"
 description = "Requirements traceability for scriptless GUI testing."
 readme = "README.md"
 requires-python = ">=3.14"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "R. J. H. van de Wetering" }]
 keywords = ["requirements", "traceability", "gui-testing", "testar", "thesis"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Testing",
 ]
 dependencies = [
-  "pydantic>=2.0,<3.0",
-  "typer>=0.12,<1.0",
-  "rich>=13.0,<14.0",
-]
-
-[project.optional-dependencies]
-dev = [
-  "pytest>=8.0,<9.0",
-  "pytest-cov>=5.0,<6.0",
-  "pre-commit>=3.7,<4.0",
-  "ruff>=0.6,<1.0",
-]
-packaging = [
-  "pyinstaller>=6.0,<7.0",
+  "pydantic>=2.12,<3",
+  "rich>=14.3,<15",
+  "typer>=0.24,<1",
 ]
 
 [project.scripts]
-reqtrace = "reqtrace.presentation.cli.main:main"
-reqtrace-gui = "reqtrace.presentation.gui.app:main"
+reqtrace = "reqtrace.cli:main"
 
-[tool.setuptools]
-package-dir = { "" = "src" }
+[project.gui-scripts]
+reqtrace-gui = "reqtrace.gui:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[dependency-groups]
+build = [
+  "pyinstaller>=6.19,<7",
+]
+lint = [
+  "ruff>=0.15,<1",
+]
+test = [
+  "pytest>=9,<10",
+  "pytest-cov>=7,<8",
+]
+typecheck = [
+  "ty>=0.0.29,<1",
+]
+dev = [
+  { include-group = "lint" },
+  { include-group = "test" },
+  { include-group = "typecheck" },
+  "pre-commit>=4.5,<5",
+]
 
-[tool.pytest.ini_options]
-addopts = "--import-mode=importlib --strict-config --strict-markers -ra"
+[tool.pytest]
+minversion = "9.0"
 testpaths = ["tests"]
-
-[tool.coverage.run]
-branch = true
-source = ["reqtrace"]
-
-[tool.coverage.report]
-show_missing = true
-skip_covered = true
-
-[tool.ruff]
-target-version = "py314"
-src = ["src", "tests"]
-line-length = 100
-
-[tool.ruff.lint]
-select = ["E", "F", "I"]
+addopts = [
+  "-ra",
+  "--strict-config",
+  "--strict-markers",
+  "--import-mode=importlib",
+]
+markers = [
+  "integration: tests that exercise component integration and I/O boundaries",
+]
+strict_xfail = true

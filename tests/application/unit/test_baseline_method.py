@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from tests.application.unit._snapshots import build_evidence_snapshot, build_requirements_snapshot
-
 from reqtrace.application.results import RequirementSnapshot, TraceabilityRequest
 from reqtrace.application.services.traceability_service import build_default_traceability_service
 from reqtrace.domain.traceability.enums import CoverageStatus
 
 
-def test_baseline_returns_uncovered_coverage_and_no_links() -> None:
+def test_baseline_returns_uncovered_coverage_and_no_links(
+    build_evidence_snapshot,
+    build_requirements_snapshot,
+) -> None:
     result = build_default_traceability_service().execute(
         TraceabilityRequest(
             requirements=build_requirements_snapshot(),
@@ -29,7 +30,10 @@ def test_baseline_returns_uncovered_coverage_and_no_links() -> None:
     assert result.requirement_results[0].trace_evidence == []
 
 
-def test_baseline_only_processes_selected_requirements() -> None:
+def test_baseline_only_processes_selected_requirements(
+    build_evidence_snapshot,
+    build_requirements_snapshot,
+) -> None:
     result = build_default_traceability_service().execute(
         TraceabilityRequest(
             requirements=build_requirements_snapshot(),
@@ -42,7 +46,10 @@ def test_baseline_only_processes_selected_requirements() -> None:
     assert [item.requirement_id for item in result.requirement_results] == ["REQ-2"]
 
 
-def test_baseline_explicitly_ignores_selected_evidence_run_ids() -> None:
+def test_baseline_explicitly_ignores_selected_evidence_run_ids(
+    build_evidence_snapshot,
+    build_requirements_snapshot,
+) -> None:
     result = build_default_traceability_service().execute(
         TraceabilityRequest(
             requirements=build_requirements_snapshot(),
@@ -57,7 +64,7 @@ def test_baseline_explicitly_ignores_selected_evidence_run_ids() -> None:
     assert result.requirement_results[0].metadata["selected_evidence_run_ids_ignored"] is True
 
 
-def test_baseline_handles_zero_requirements() -> None:
+def test_baseline_handles_zero_requirements(build_evidence_snapshot) -> None:
     empty_requirements = RequirementSnapshot.from_mapping(
         {
             "requirements": [],

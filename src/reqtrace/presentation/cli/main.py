@@ -13,7 +13,6 @@ from reqtrace.application.services.run_result_service import (
 from reqtrace.application.services.traceability_service import build_default_traceability_service
 from reqtrace.logging_config import configure_logging
 from reqtrace.presentation.cli.rendering import render_result
-from reqtrace.presentation.gui.app import launch_gui
 from reqtrace.presentation.runtime import (
     SUPPORTED_EVIDENCE_FORMATS,
     SUPPORTED_REQUIREMENTS_FORMATS,
@@ -27,6 +26,12 @@ logger = logging.getLogger(__name__)
 _cli_log_level = "WARNING"
 _cli_log_file: Path | None = None
 _LOG_LEVEL_ORDER = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
+
+
+def launch_gui(*, log_level: str | None = None, log_file: Path | None = None) -> int:
+    from reqtrace.presentation.gui.app import launch_gui as _launch_gui
+
+    return _launch_gui(log_level=log_level, log_file=log_file)
 
 
 def _resolve_log_level(base_level: str, *, verbose: int, quiet: int) -> str:
@@ -173,7 +178,18 @@ def show_result(result_path: Path = typer.Argument(..., exists=True, readable=Tr
 @app.command("ui")
 def ui() -> None:
     logger.info("Launching GUI from CLI.")
-    raise typer.Exit(code=launch_gui(log_level=_cli_log_level, log_file=_cli_log_file))
+    try:
+        exit_code = launch_gui(log_level=_cli_log_level, log_file=_cli_log_file)
+    except ImportError as exc:
+        logger.error("GUI module import failed.", exc_info=exc)
+        typer.secho(
+            "ReqTrace GUI is unavailable in this environment. "
+            "Ensure Tk libraries are installed and a display is available.",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2) from exc
+    raise typer.Exit(code=exit_code)
 
 
 def main() -> None:

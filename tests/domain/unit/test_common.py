@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 import pytest
+from pydantic import ValidationError
 
 from reqtrace.domain.common.enums import SourceType
 from reqtrace.domain.common.value_objects import ImportBatchRef, Provenance, SourceRef
@@ -48,7 +49,7 @@ def test_source_ref_rejects_blank_source_name() -> None:
 def test_frozen_value_objects_are_immutable() -> None:
     source = SourceRef(source_type=SourceType.FILE, source_name="sample")
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         source.source_name = "changed"
 
 

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import sys
+import types
+
 from reqtrace.presentation.gui import app as gui_app
 
 
@@ -45,3 +48,48 @@ def test_print_gui_unavailable_message_writes_to_stderr(capsys) -> None:
 
     captured = capsys.readouterr()
     assert captured.err == "GUI unavailable\n"
+
+
+def test_launch_gui_reports_missing_tk_runtime_when_display_available(
+    monkeypatch,
+    capsys,
+) -> None:
+    monkeypatch.setattr(gui_app.sys, "platform", "linux")
+    monkeypatch.setenv("DISPLAY", ":0")
+    monkeypatch.setitem(sys.modules, "tkinter", None)
+
+    exit_code = gui_app.launch_gui(log_level="INFO")
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "missing Tkinter runtime" in captured.err
+
+
+def test_launch_gui_reports_tkinter_error_when_controller_raises_tcl_error(
+    monkeypatch,
+    capsys,
+) -> None:
+    class FakeTclError(Exception):
+        pass
+
+    fake_tk = types.ModuleType("tkinter")
+    fake_tk.TclError = FakeTclError
+
+    fake_controller_module = types.ModuleType("reqtrace.presentation.gui.controller")
+
+    class FakeController:
+        def run(self) -> None:
+            raise FakeTclError("no display")
+
+    fake_controller_module.ReqTraceGuiController = FakeController
+
+    monkeypatch.setattr(gui_app.sys, "platform", "linux")
+    monkeypatch.setenv("DISPLAY", ":0")
+    monkeypatch.setitem(sys.modules, "tkinter", fake_tk)
+    monkeypatch.setitem(sys.modules, "reqtrace.presentation.gui.controller", fake_controller_module)
+
+    exit_code = gui_app.launch_gui(log_level="INFO")
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "Tkinter error" in captured.err

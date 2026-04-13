@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from tests._builders import write_minimal_requirement_markdown, write_minimal_testar_model_file
+import pytest
 
 from reqtrace.application.results import EvidenceSnapshot, RequirementSnapshot, TraceabilityRequest
 from reqtrace.application.services.traceability_service import build_default_traceability_service
@@ -10,8 +10,14 @@ from reqtrace.ingestion.common.mapping import (
 )
 from reqtrace.ingestion.common.registry import build_default_registry
 
+pytestmark = pytest.mark.integration
 
-def test_end_to_end_baseline_runs_from_ingestion(tmp_path: Path) -> None:
+
+def test_end_to_end_baseline_runs_from_ingestion(
+    tmp_path: Path,
+    write_minimal_requirement_markdown,
+    write_minimal_testar_model_file,
+) -> None:
     requirements_path = tmp_path / "requirements.md"
     write_minimal_requirement_markdown(requirements_path)
 

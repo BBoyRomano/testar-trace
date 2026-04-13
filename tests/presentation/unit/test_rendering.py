@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 from rich.console import Console
-from tests._builders import write_minimal_requirement_markdown, write_minimal_testar_model_file
 
 from reqtrace.presentation.cli.rendering import render_result
 from reqtrace.presentation.runtime import RunInput, execute_run
 
 
-def test_render_result_includes_duration_and_external_id_column(tmp_path) -> None:
+def test_render_result_includes_duration_and_external_id_column(
+    tmp_path,
+    write_minimal_requirement_markdown,
+    write_minimal_testar_model_file,
+) -> None:
     requirements_path = tmp_path / "requirements.md"
     write_minimal_requirement_markdown(
         requirements_path,

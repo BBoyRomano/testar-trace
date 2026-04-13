@@ -1,4 +1,4 @@
-from reqtrace.presentation.cli.main import main
+from reqtrace.cli import main
 
 if __name__ == "__main__":
     main()

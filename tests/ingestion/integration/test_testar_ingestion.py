@@ -8,6 +8,7 @@ from reqtrace.ingestion.evidence.adapter import EvidenceAdapter
 from reqtrace.ingestion.evidence.testar.loader import TestarLoader
 
 FIXTURES_DIR = Path(__file__).resolve().parents[2] / "fixtures" / "ingestion"
+pytestmark = pytest.mark.integration
 
 
 def test_testar_loader_and_adapter_ingest_sample_payload() -> None:

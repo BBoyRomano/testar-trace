@@ -262,7 +262,8 @@ def test_async_run_executor_process_backend_completes_run() -> None:
         saw_running = False
         saw_completed = False
 
-        for _ in range(200):
+        deadline = time.monotonic() + 8.0
+        while time.monotonic() < deadline:
             for event in executor.drain_events():
                 if event.job_id != job_id:
                     continue
@@ -273,9 +274,11 @@ def test_async_run_executor_process_backend_completes_run() -> None:
                     assert event.result is not None
             if saw_completed:
                 break
-            time.sleep(0.01)
+
+            # Process backend startup can be slow on constrained CI runners.
+            time.sleep(0.02)
 
         assert saw_running
-        assert saw_completed
+        assert saw_completed, "process backend did not emit a completion event before timeout"
     finally:
         executor.shutdown()

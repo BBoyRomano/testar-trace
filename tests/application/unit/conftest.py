@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+
+import pytest
+
 from reqtrace.application.results import EvidenceSnapshot, RequirementSnapshot
 from reqtrace.domain.evidence.enums import ExecutionRunStatus
 from reqtrace.domain.evidence.models import ExecutionRun
@@ -7,7 +11,7 @@ from reqtrace.domain.requirements.enums import RequirementFragmentKind, Requirem
 from reqtrace.domain.requirements.models import RequirementArtifact, RequirementFragment
 
 
-def build_requirements_snapshot() -> RequirementSnapshot:
+def _build_requirements_snapshot() -> RequirementSnapshot:
     return RequirementSnapshot.from_mapping(
         {
             "requirements": [
@@ -36,7 +40,7 @@ def build_requirements_snapshot() -> RequirementSnapshot:
     )
 
 
-def build_evidence_snapshot() -> EvidenceSnapshot:
+def _build_evidence_snapshot() -> EvidenceSnapshot:
     return EvidenceSnapshot.from_mapping(
         {
             "states": [],
@@ -51,3 +55,13 @@ def build_evidence_snapshot() -> EvidenceSnapshot:
             "attachments": [],
         }
     )
+
+
+@pytest.fixture
+def build_requirements_snapshot() -> Callable[[], RequirementSnapshot]:
+    return _build_requirements_snapshot
+
+
+@pytest.fixture
+def build_evidence_snapshot() -> Callable[[], EvidenceSnapshot]:
+    return _build_evidence_snapshot

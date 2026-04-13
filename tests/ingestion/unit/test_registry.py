@@ -1,5 +1,4 @@
 import pytest
-from tests._builders import write_minimal_testar_model_file, write_minimal_use_case_json_file
 
 from reqtrace.ingestion.common.exceptions import UnsupportedSourceError
 from reqtrace.ingestion.common.registry import build_default_registry
@@ -19,7 +18,10 @@ def test_default_registry_ingests_requirements_from_markdown_file(tmp_path) -> N
     assert len(batch.fragments) == 1
 
 
-def test_default_registry_ingests_evidence_from_testar_file(tmp_path) -> None:
+def test_default_registry_ingests_evidence_from_testar_file(
+    tmp_path,
+    write_minimal_testar_model_file,
+) -> None:
     registry = build_default_registry()
     path = tmp_path / "sample.json"
     write_minimal_testar_model_file(path)
@@ -30,7 +32,10 @@ def test_default_registry_ingests_evidence_from_testar_file(tmp_path) -> None:
     assert len(batch.states) == 1
 
 
-def test_default_registry_ingests_requirements_from_json_file(tmp_path) -> None:
+def test_default_registry_ingests_requirements_from_json_file(
+    tmp_path,
+    write_minimal_use_case_json_file,
+) -> None:
     registry = build_default_registry()
     path = tmp_path / "sample.json"
     write_minimal_use_case_json_file(path)

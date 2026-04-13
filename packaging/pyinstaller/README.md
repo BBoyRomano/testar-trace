@@ -17,9 +17,10 @@ From repository root:
 
 ```powershell
 python -m pip install --upgrade pip
-pip install -e ".[dev,packaging]"
-pyinstaller packaging/pyinstaller/reqtrace-cli.spec
-pyinstaller packaging/pyinstaller/reqtrace-gui.spec
+python -m pip install uv
+uv sync --group dev --group build --locked
+uv run pyinstaller packaging/pyinstaller/reqtrace-cli.spec
+uv run pyinstaller packaging/pyinstaller/reqtrace-gui.spec
 ```
 
 Build outputs are written to:

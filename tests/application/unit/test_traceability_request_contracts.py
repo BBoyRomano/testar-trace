@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import datetime
 
 import pytest
-from tests.application.unit._snapshots import build_evidence_snapshot, build_requirements_snapshot
 
 from reqtrace.application.exceptions import InvalidTraceabilityRequestError
 from reqtrace.application.results import (
@@ -19,7 +18,10 @@ def test_request_from_mapping_rejects_missing_keys() -> None:
         RequirementSnapshot.from_mapping({"requirements": []})
 
 
-def test_request_rejects_unknown_selected_requirement_ids() -> None:
+def test_request_rejects_unknown_selected_requirement_ids(
+    build_evidence_snapshot,
+    build_requirements_snapshot,
+) -> None:
     with pytest.raises(InvalidTraceabilityRequestError):
         TraceabilityRequest(
             requirements=build_requirements_snapshot(),
@@ -28,7 +30,10 @@ def test_request_rejects_unknown_selected_requirement_ids() -> None:
         )
 
 
-def test_request_rejects_unknown_selected_evidence_run_ids() -> None:
+def test_request_rejects_unknown_selected_evidence_run_ids(
+    build_evidence_snapshot,
+    build_requirements_snapshot,
+) -> None:
     with pytest.raises(InvalidTraceabilityRequestError):
         TraceabilityRequest(
             requirements=build_requirements_snapshot(),

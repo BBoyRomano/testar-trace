@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import NoReturn
 
 import pytest
-from tests.application.unit._snapshots import build_evidence_snapshot, build_requirements_snapshot
 
 from reqtrace.application.exceptions import (
     RunCanceledError,
@@ -44,7 +43,10 @@ def test_service_can_limit_to_baseline_only() -> None:
     assert service.available_methods() == ["baseline"]
 
 
-def test_service_raises_on_unknown_method() -> None:
+def test_service_raises_on_unknown_method(
+    build_evidence_snapshot,
+    build_requirements_snapshot,
+) -> None:
     request = TraceabilityRequest(
         method_name="unknown",
         requirements=build_requirements_snapshot(),
@@ -55,7 +57,10 @@ def test_service_raises_on_unknown_method() -> None:
         build_default_traceability_service().execute(request)
 
 
-def test_service_wraps_method_failure() -> None:
+def test_service_wraps_method_failure(
+    build_evidence_snapshot,
+    build_requirements_snapshot,
+) -> None:
     class FailingMethod:
         name = "failing"
 
@@ -73,7 +78,10 @@ def test_service_wraps_method_failure() -> None:
         service.execute(request)
 
 
-def test_service_propagates_run_canceled_error() -> None:
+def test_service_propagates_run_canceled_error(
+    build_evidence_snapshot,
+    build_requirements_snapshot,
+) -> None:
     class CancelingMethod:
         name = "canceling"
 

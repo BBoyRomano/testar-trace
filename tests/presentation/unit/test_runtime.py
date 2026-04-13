@@ -1,11 +1,6 @@
 from pathlib import Path
 
 import pytest
-from tests._builders import (
-    write_minimal_requirement_markdown,
-    write_minimal_testar_model_file,
-    write_minimal_use_case_json_file,
-)
 
 from reqtrace.presentation.exceptions import RunInputValidationError
 from reqtrace.presentation.runtime import (
@@ -13,6 +8,7 @@ from reqtrace.presentation.runtime import (
     build_request,
     execute_run,
     export_result_json,
+    infer_evidence_format,
     import_result_json,
     infer_requirements_format,
     normalize_evidence_format,
@@ -20,7 +16,11 @@ from reqtrace.presentation.runtime import (
 )
 
 
-def test_build_request_and_execute_roundtrip(tmp_path: Path) -> None:
+def test_build_request_and_execute_roundtrip(
+    tmp_path: Path,
+    write_minimal_requirement_markdown,
+    write_minimal_testar_model_file,
+) -> None:
     requirements_path = tmp_path / "requirements.md"
     write_minimal_requirement_markdown(requirements_path)
 
@@ -44,7 +44,11 @@ def test_build_request_and_execute_roundtrip(tmp_path: Path) -> None:
     assert imported.summary.requirement_count == 1
 
 
-def test_build_request_supports_requirements_directory(tmp_path: Path) -> None:
+def test_build_request_supports_requirements_directory(
+    tmp_path: Path,
+    write_minimal_requirement_markdown,
+    write_minimal_testar_model_file,
+) -> None:
     req_dir = tmp_path / "requirements"
     req_dir.mkdir()
     write_minimal_requirement_markdown(req_dir / "uc-01.md", title="UC 01")
@@ -57,7 +61,11 @@ def test_build_request_supports_requirements_directory(tmp_path: Path) -> None:
     assert len(request.requirements.requirements) == 2
 
 
-def test_build_request_supports_json_requirements_directory(tmp_path: Path) -> None:
+def test_build_request_supports_json_requirements_directory(
+    tmp_path: Path,
+    write_minimal_use_case_json_file,
+    write_minimal_testar_model_file,
+) -> None:
     req_dir = tmp_path / "requirements-json"
     req_dir.mkdir()
     write_minimal_use_case_json_file(req_dir / "tbuis.json")
@@ -75,16 +83,31 @@ def test_build_request_supports_json_requirements_directory(tmp_path: Path) -> N
     assert len(request.requirements.requirements) == 2
 
 
-def test_normalize_format_helpers_support_aliases_and_reject_unknowns() -> None:
-    assert normalize_requirements_format("md") == "markdown"
-    assert normalize_requirements_format("JSON") == "json"
+@pytest.mark.parametrize(
+    ("raw_value", "normalized"),
+    [
+        ("md", "markdown"),
+        ("JSON", "json"),
+    ],
+    ids=["requirements-markdown-alias", "requirements-json-case-insensitive"],
+)
+def test_normalize_requirements_format_aliases(raw_value: str, normalized: str) -> None:
+    assert normalize_requirements_format(raw_value) == normalized
+
+
+def test_normalize_evidence_format_aliases() -> None:
     assert normalize_evidence_format("TESTAR") == "testar"
 
+
+def test_normalize_requirements_format_rejects_unknown_value() -> None:
     with pytest.raises(RunInputValidationError):
         normalize_requirements_format("xml")
 
 
-def test_build_request_requires_evidence_path(tmp_path: Path) -> None:
+def test_build_request_requires_evidence_path(
+    tmp_path: Path,
+    write_minimal_requirement_markdown,
+) -> None:
     requirements_path = tmp_path / "requirements.md"
     write_minimal_requirement_markdown(requirements_path)
 
@@ -92,7 +115,10 @@ def test_build_request_requires_evidence_path(tmp_path: Path) -> None:
         build_request(RunInput(requirements_path=requirements_path, evidence_path=None))
 
 
-def test_build_request_rejects_missing_requirements_path(tmp_path: Path) -> None:
+def test_build_request_rejects_missing_requirements_path(
+    tmp_path: Path,
+    write_minimal_testar_model_file,
+) -> None:
     evidence_path = tmp_path / "testar.json"
     write_minimal_testar_model_file(evidence_path)
 
@@ -100,7 +126,10 @@ def test_build_request_rejects_missing_requirements_path(tmp_path: Path) -> None
         build_request(RunInput(requirements_paths=[], evidence_path=evidence_path))
 
 
-def test_build_request_rejects_missing_evidence_file(tmp_path: Path) -> None:
+def test_build_request_rejects_missing_evidence_file(
+    tmp_path: Path,
+    write_minimal_requirement_markdown,
+) -> None:
     requirements_path = tmp_path / "requirements.md"
     write_minimal_requirement_markdown(requirements_path)
 
@@ -112,6 +141,7 @@ def test_build_request_rejects_missing_evidence_file(tmp_path: Path) -> None:
 
 def test_build_request_rejects_requirements_directory_without_matching_files(
     tmp_path: Path,
+    write_minimal_testar_model_file,
 ) -> None:
     req_dir = tmp_path / "requirements"
     req_dir.mkdir()
@@ -123,7 +153,11 @@ def test_build_request_rejects_requirements_directory_without_matching_files(
         build_request(RunInput(requirements_paths=[req_dir], evidence_path=evidence_path))
 
 
-def test_build_request_deduplicates_repeated_requirement_paths(tmp_path: Path) -> None:
+def test_build_request_deduplicates_repeated_requirement_paths(
+    tmp_path: Path,
+    write_minimal_requirement_markdown,
+    write_minimal_testar_model_file,
+) -> None:
     requirements_path = tmp_path / "requirements.md"
     write_minimal_requirement_markdown(requirements_path)
     evidence_path = tmp_path / "testar.json"
@@ -143,7 +177,10 @@ def test_normalize_evidence_format_rejects_unknown_value() -> None:
         normalize_evidence_format("xml")
 
 
-def test_infer_requirements_format_from_file_and_directory(tmp_path: Path) -> None:
+def test_infer_requirements_format_from_file_and_directory(
+    tmp_path: Path,
+    write_minimal_use_case_json_file,
+) -> None:
     markdown_file = tmp_path / "requirements.md"
     markdown_file.write_text("# UC\n## Main flow\n- step", encoding="utf-8")
     assert infer_requirements_format([markdown_file]) == "markdown"
@@ -162,3 +199,24 @@ def test_infer_requirements_format_rejects_mixed_inputs(tmp_path: Path) -> None:
 
     with pytest.raises(RunInputValidationError):
         infer_requirements_format([markdown_file, json_file])
+
+
+def test_infer_evidence_format_from_file_and_directory(
+    tmp_path: Path,
+    write_minimal_testar_run_directory,
+) -> None:
+    model_file = tmp_path / "model.json"
+    model_file.write_text('{"ConcreteState": [], "ConcreteAction": [], "ConcreteTransitions": []}')
+    assert infer_evidence_format(model_file) == "testar"
+
+    run_dir = tmp_path / "run"
+    write_minimal_testar_run_directory(run_dir)
+    assert infer_evidence_format(run_dir) == "testar"
+
+
+def test_infer_evidence_format_rejects_invalid_directory(tmp_path: Path) -> None:
+    evidence_dir = tmp_path / "empty-evidence"
+    evidence_dir.mkdir()
+
+    with pytest.raises(RunInputValidationError):
+        infer_evidence_format(evidence_dir)

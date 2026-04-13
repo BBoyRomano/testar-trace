@@ -1,5 +1,4 @@
 import pytest
-from tests._builders import minimal_testar_model_payload, write_minimal_testar_run_directory
 
 from reqtrace.ingestion.common.exceptions import SourceValidationError
 from reqtrace.ingestion.evidence.testar.loader import TestarLoader
@@ -71,7 +70,10 @@ def test_testar_loader_parses_payload() -> None:
     assert parsed.transitions[0].run_id == parsed.run.id
 
 
-def test_testar_loader_loads_run_directory_and_discovers_artifacts(tmp_path) -> None:
+def test_testar_loader_loads_run_directory_and_discovers_artifacts(
+    tmp_path,
+    write_minimal_testar_run_directory,
+) -> None:
     run_dir = tmp_path / "run-1"
     write_minimal_testar_run_directory(run_dir)
     loader = TestarLoader()
@@ -85,7 +87,10 @@ def test_testar_loader_loads_run_directory_and_discovers_artifacts(tmp_path) -> 
     assert "run_output_directory" in kinds
 
 
-def test_testar_loader_uses_run_directory_name_for_model_file_input(tmp_path) -> None:
+def test_testar_loader_uses_run_directory_name_for_model_file_input(
+    tmp_path,
+    write_minimal_testar_run_directory,
+) -> None:
     run_dir = tmp_path / "2026-04-01-webdriver-sample"
     model_json = write_minimal_testar_run_directory(run_dir)
     loader = TestarLoader()
@@ -95,7 +100,7 @@ def test_testar_loader_uses_run_directory_name_for_model_file_input(tmp_path) ->
     assert parsed.run.id == "run-2026-04-01-webdriver-sample"
 
 
-def test_testar_loader_rejects_missing_states() -> None:
+def test_testar_loader_rejects_missing_states(minimal_testar_model_payload) -> None:
     loader = TestarLoader()
     payload = minimal_testar_model_payload()
     del payload["ConcreteState"]
@@ -104,7 +109,9 @@ def test_testar_loader_rejects_missing_states() -> None:
         loader.load_payload(payload=payload)
 
 
-def test_testar_loader_rejects_invalid_widget_tree_container() -> None:
+def test_testar_loader_rejects_invalid_widget_tree_container(
+    minimal_testar_model_payload,
+) -> None:
     loader = TestarLoader()
     payload = minimal_testar_model_payload(widget_tree={})
 

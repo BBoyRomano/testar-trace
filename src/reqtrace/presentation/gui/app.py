@@ -4,11 +4,9 @@ import logging
 import multiprocessing as mp
 import os
 import sys
-import tkinter as tk
 from pathlib import Path
 
 from reqtrace.logging_config import configure_logging
-from reqtrace.presentation.gui.controller import ReqTraceGuiController
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +51,19 @@ def launch_gui(*, log_level: str | None = None, log_file: str | Path | None = No
             "- Use the CLI:  reqtrace run ...\n"
             "- Run the GUI on your host machine\n"
             "- Configure GUI forwarding (X11/XWayland) and set $DISPLAY\n"
+        )
+        return 2
+
+    try:
+        import tkinter as tk
+
+        from reqtrace.presentation.gui.controller import ReqTraceGuiController
+    except ImportError as exc:
+        logger.error("ReqTrace GUI failed to import required GUI modules.", exc_info=exc)
+        _print_gui_unavailable_message(
+            "ReqTrace GUI cannot start (missing Tkinter runtime).\n"
+            f"Details: {exc}\n\n"
+            "Install the Tk runtime for your platform, then try again."
         )
         return 2
 

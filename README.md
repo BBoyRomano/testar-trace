@@ -46,26 +46,33 @@ Use the provided devcontainer (`Python 3.14`) for a ready-to-run environment.
 
 ```bash
 python -m pip install --upgrade pip
-pip install -e ".[dev]"
+python -m pip install uv
+uv sync --group dev --locked
 ```
 
 ## Quality checks
 
 ```bash
-ruff check .
-pytest -q
+uv run ruff check .
+uv run pytest -q
 ```
 
 Optional local hook runner:
 
 ```bash
-pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 Optional coverage report:
 
 ```bash
-pytest --cov=reqtrace --cov-report=term-missing
+uv run pytest --cov=reqtrace --cov-report=term-missing
+```
+
+Optional typecheck:
+
+```bash
+uv run ty check
 ```
 
 ## CLI usage
@@ -75,6 +82,7 @@ Show help:
 ```bash
 reqtrace --help
 reqtrace run --help
+python -m reqtrace --help
 ```
 
 List enabled methods in the default CLI wiring:
@@ -127,6 +135,7 @@ Launch GUI:
 
 ```bash
 reqtrace ui
+reqtrace-gui
 ```
 
 GUI runtime notes:
@@ -171,9 +180,10 @@ Local build commands:
 
 ```powershell
 python -m pip install --upgrade pip
-pip install -e ".[dev,packaging]"
-pyinstaller packaging/pyinstaller/reqtrace-cli.spec
-pyinstaller packaging/pyinstaller/reqtrace-gui.spec
+python -m pip install uv
+uv sync --group dev --group build --locked
+uv run pyinstaller packaging/pyinstaller/reqtrace-cli.spec
+uv run pyinstaller packaging/pyinstaller/reqtrace-gui.spec
 ```
 
 Outputs:

@@ -36,16 +36,17 @@ jobs:
         with:
           python-version: "3.14"
 
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev,packaging]"
+        run: uv sync --group dev --group build --locked
 
       - name: Build CLI executable
-        run: pyinstaller packaging/pyinstaller/reqtrace-cli.spec
+        run: uv run pyinstaller packaging/pyinstaller/reqtrace-cli.spec
 
       - name: Build GUI executable
-        run: pyinstaller packaging/pyinstaller/reqtrace-gui.spec
+        run: uv run pyinstaller packaging/pyinstaller/reqtrace-gui.spec
 
       - name: Smoke test CLI executable
         run: |

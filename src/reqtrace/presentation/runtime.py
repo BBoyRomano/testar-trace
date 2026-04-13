@@ -189,6 +189,33 @@ def infer_requirements_format(requirement_paths: list[Path]) -> str:
     return next(iter(detected_formats))
 
 
+def infer_evidence_format(evidence_path: Path) -> str:
+    """Infer evidence format from a selected path.
+
+    Supported inference currently detects TESTAR input from:
+    - a JSON file path (commonly `model.json`)
+    - a directory containing `model/model.json` or `model.json`
+    """
+
+    path = Path(evidence_path)
+    if not path.exists():
+        raise RunInputValidationError(f"Evidence path does not exist: {path}")
+    if path.is_file():
+        if path.suffix.lower() == ".json":
+            return "testar"
+        raise RunInputValidationError(
+            f"Could not infer evidence format from file extension: {path.name}"
+        )
+
+    model_candidates = (path / "model" / "model.json", path / "model.json")
+    if any(candidate.is_file() for candidate in model_candidates):
+        return "testar"
+    raise RunInputValidationError(
+        "Could not infer evidence format: "
+        "directory is missing 'model/model.json' or 'model.json'."
+    )
+
+
 def build_request(
     run_input: RunInput, *, registry: IngestionRegistry | None = None
 ) -> TraceabilityRequest:
