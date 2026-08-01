@@ -1,0 +1,138 @@
+timeout 10.0
+external 'extern'
+
+def Left_Click_at_a_login_to_Login_Page()
+  receive 'click', constraint: %(css == "" && text == "a_login")
+  send 'page_title', constraint: %(_title == "Login Page")
+end
+
+def Type_pass_into_input_enter_password_to_Login_Page()
+  receive 'fill_in', constraint: %(selector == "" && value == "pass")
+  send 'page_title', constraint: %(_title == "Login Page")
+end
+
+def Type_Easyrider_into_input_enter_username_to_Login_Page()
+  receive 'fill_in', constraint: %(selector == "" && value == "Easyrider")
+  send 'page_title', constraint: %(_title == "Login Page")
+end
+
+def Left_Click_at_button_login_to_Student_s_View()
+  receive 'click', constraint: %(css == "" && text == "button_login")
+  send 'page_title', constraint: %(_title == "Student's View")
+end
+
+def Left_Click_at_button_login_to_Login_Page()
+  receive 'click', constraint: %(css == "" && text == "button_login")
+  send 'page_title', constraint: %(_title == "Login Page")
+end
+
+def Left_Click_at_a_login_to_University_information_system()
+  receive 'click', constraint: %(css == "" && text == "a_login")
+  send 'page_title', constraint: %(_title == "University information system")
+end
+
+def Execute_Webdriver_script_to_load_the_previous_URL_in_the_history_list_to_Login_Page()
+  receive 'click', constraint: %(css == "" && text == "")
+  send 'page_title', constraint: %(_title == "Login Page")
+end
+
+def Left_Click_at_button_login_to_Teacher_s_View()
+  receive 'click', constraint: %(css == "" && text == "button_login")
+  send 'page_title', constraint: %(_title == "Teacher's View")
+end
+
+process('testar') {
+
+  channel('extern') {
+    stimulus 'visit', '_url' => :string
+    stimulus 'click', 'css' => :string, 'text' => :string
+    stimulus 'fill_in', 'selector' => :string, 'value' => :string
+    response 'page_title', '_title' => :string, '_url' => :string
+  }
+
+  behavior('launch') {
+    receive 'visit',
+    constraint: "_url == initial_url"
+    send 'page_title',
+    constraint: %(_title == "University information system")
+  }
+
+  behavior('Login Page - SAe9tmvg1e51036695304', :non_terminating) {
+    repeat {
+      o { Type_pass_into_input_enter_password_to_Login_Page(); behave_as 'Login Page - SAt0h8bb1e4237582080' }
+      o { Type_pass_into_input_enter_password_to_Login_Page(); behave_as 'Login Page - SA2n2fem1e44183702126' }
+    }
+  }
+
+  behavior('Login Page - SA1bkomki1e61739318350', :non_terminating) {
+    repeat {
+      o { Type_Easyrider_into_input_enter_username_to_Login_Page(); behave_as 'Login Page - SA8v6cfw1e61710772326' }
+      o { Type_Easyrider_into_input_enter_username_to_Login_Page(); behave_as 'Login Page - SAg3ctzn1e63638505666' }
+      o { Type_Easyrider_into_input_enter_username_to_Login_Page(); behave_as 'Login Page - SAe9tmvg1e51036695304' }
+    }
+  }
+
+  behavior('University information system - SAup5qk4360652090664', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SA1bkomki1e61739318350' }
+    }
+  }
+
+  behavior('University information system - SAlwu04s3373438165485', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_login_to_University_information_system(); behave_as 'University information system - SAlwu04s3373438165485' }
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SA1bkomki1e61739318350' }
+    }
+  }
+
+  behavior('University information system - SA1tfefv35d654274093', :non_terminating) {
+    repeat {
+      o { Left_Click_at_a_login_to_Login_Page(); behave_as 'Login Page - SA1bkomki1e61739318350' }
+    }
+  }
+
+  behavior('Login Page - SA8v6cfw1e61710772326', :non_terminating) {
+    repeat {
+      o { Type_pass_into_input_enter_password_to_Login_Page(); behave_as 'Login Page - SAn36c5q1e52750760275' }
+    }
+  }
+
+  behavior('Login Page - SAn36c5q1e52750760275', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1wbzxim3752741160087', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Login Page - SAg3ctzn1e63638505666', :non_terminating) {
+    repeat {
+      o { Type_pass_into_input_enter_password_to_Login_Page(); behave_as 'Login Page - SA9kn6jb1e5963116451' }
+    }
+  }
+
+  behavior('Login Page - SA9kn6jb1e5963116451', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Login Page - SAt0h8bb1e4237582080', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Login Page - SA2n2fem1e44183702126', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_login_to_Student_s_View(); behave_as 'Student's View - SA1wbzxim3752741160087' }
+    }
+  }
+
+  var 'initial_url', :string, "http://10.102.0.39:8080/uis-web/?successMessage=Database+has+been+successfully+restored%21"
+
+  call 'launch'
+
+  behave_as 'University information system - SAup5qk4360652090664'
+
+}

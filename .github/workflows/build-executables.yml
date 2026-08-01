@@ -17,15 +17,15 @@ jobs:
           - name: windows-x64
             os: windows-latest
             cli_executable: dist/reqtrace.exe
-            gui_executable: dist/reqtrace-gui.exe
+            desktop_executable: dist/reqtrace-desktop.exe
           - name: macos
             os: macos-latest
             cli_executable: dist/reqtrace
-            gui_executable: dist/reqtrace-gui
+            desktop_executable: dist/reqtrace-desktop
           - name: linux-x64
             os: ubuntu-latest
             cli_executable: dist/reqtrace
-            gui_executable: dist/reqtrace-gui
+            desktop_executable: dist/reqtrace-desktop
 
     steps:
       - name: Checkout
@@ -45,8 +45,8 @@ jobs:
       - name: Build CLI executable
         run: uv run pyinstaller packaging/pyinstaller/reqtrace-cli.spec
 
-      - name: Build GUI executable
-        run: uv run pyinstaller packaging/pyinstaller/reqtrace-gui.spec
+      - name: Build Desktop executable
+        run: uv run pyinstaller packaging/pyinstaller/reqtrace-desktop.spec
 
       - name: Smoke test CLI executable
         run: |
@@ -58,8 +58,9 @@ jobs:
           name: reqtrace-cli-${{ matrix.target.name }}
           path: ${{ matrix.target.cli_executable }}
 
-      - name: Upload GUI artifact
+      - name: Upload Desktop artifact
         uses: actions/upload-artifact@v6
         with:
-          name: reqtrace-gui-${{ matrix.target.name }}
-          path: ${{ matrix.target.gui_executable }}
+          name: reqtrace-desktop-${{ matrix.target.name }}
+          path: ${{ matrix.target.desktop_executable }}
+

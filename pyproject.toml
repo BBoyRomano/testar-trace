@@ -1,67 +1,89 @@
-[build-system]
-requires = ["uv_build>=0.11.3,<0.12"]
-build-backend = "uv_build"
-
-[project]
-name = "reqtrace"
-version = "0.1.0"
-description = "Requirements traceability for scriptless GUI testing."
-readme = "README.md"
-requires-python = ">=3.14"
-license = "MIT"
-license-files = ["LICENSE"]
-authors = [{ name = "R. J. H. van de Wetering" }]
-keywords = ["requirements", "traceability", "gui-testing", "testar", "thesis"]
-classifiers = [
-  "Development Status :: 3 - Alpha",
-  "Intended Audience :: Science/Research",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.14",
-  "Topic :: Software Development :: Testing",
-]
-dependencies = [
-  "pydantic>=2.12,<3",
-  "rich>=14.3,<15",
-  "typer>=0.24,<1",
-]
-
-[project.scripts]
-reqtrace = "reqtrace.cli:main"
-
-[project.gui-scripts]
-reqtrace-gui = "reqtrace.gui:main"
-
 [dependency-groups]
-build = [
-  "pyinstaller>=6.19,<7",
-]
-lint = [
-  "ruff>=0.15,<1",
-]
-test = [
+dev = [
+  "pre-commit>=4.5,<5",
   "pytest>=9,<10",
   "pytest-cov>=7,<8",
-]
-typecheck = [
+  "ruff>=0.15,<1",
   "ty>=0.0.29,<1",
 ]
-dev = [
-  { include-group = "lint" },
-  { include-group = "test" },
-  { include-group = "typecheck" },
-  "pre-commit>=4.5,<5",
+
+[tool.uv.workspace]
+members = [
+  "packages/reqtrace",
+  "packages/reqtrace-adapters",
+  "apps/cli",
+  "apps/api",
 ]
 
-[tool.pytest]
+[tool.uv.sources]
+reqtrace = { workspace = true }
+reqtrace-adapters = { workspace = true }
+reqtrace-api = { workspace = true }
+reqtrace-cli = { workspace = true }
+
+[tool.pytest.ini_options]
 minversion = "9.0"
-testpaths = ["tests"]
-addopts = [
-  "-ra",
-  "--strict-config",
-  "--strict-markers",
-  "--import-mode=importlib",
+addopts = ["-ra"]
+testpaths = [
+  "packages/reqtrace/tests",
+  "packages/reqtrace-adapters/tests",
+  "apps/cli/tests",
+  "apps/api/tests",
 ]
-markers = [
-  "integration: tests that exercise component integration and I/O boundaries",
+
+[tool.ruff]
+extend-exclude = [
+  "apps/api/**",
+  "packages/_archive/**",
 ]
-strict_xfail = true
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "ANN001",
+  "ANN201",
+  "ANN202",
+  "ANN401",
+  "C901",
+  "COM812",
+  "D203",
+  "D213",
+  "D105",
+  "D107",
+  "EM101",
+  "EM102",
+  "PERF401",
+  "PLC0415",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR2004",
+  "RET504",
+  "TC001",
+  "TC002",
+  "TC003",
+  "TRY003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"packages/**/tests/*.py" = ["D100", "D103", "INP001", "S101"]
+"apps/**/tests/*.py" = ["D100", "D103", "INP001", "S101"]
+"apps/cli/src/reqtrace_cli/main.py" = ["T201"]
+"apps/api/src/reqtrace_api/server.py" = ["T201"]
+
+[tool.ty.src]
+exclude = [
+  "apps/api/**",
+  "packages/_archive/**",
+]
+
+[tool.ty.rules]
+all = "error"
+
+[tool.ty.environment]
+root = [
+  "./packages/reqtrace/src",
+  "./packages/reqtrace-adapters/src",
+  "./apps/cli/src",
+  "./apps/api/src",
+]

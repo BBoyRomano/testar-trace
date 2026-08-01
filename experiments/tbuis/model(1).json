@@ -1,0 +1,101 @@
+{
+  "InitialStates": [
+    {
+      "AbstractID": "SA1txctmi3e72287611302",
+      "InitialUrl": "http://10.102.0.39:8080/uis-web/teacher-view/overview",
+      "InitialPage": "Teacher's View"
+    },
+    {
+      "AbstractID": "SA1wbzxim3752741160087",
+      "InitialUrl": "http://10.102.0.39:8080/uis-web/student-view/overview",
+      "InitialPage": "Student's View"
+    }
+  ],
+  "ConcreteState": [
+    {
+      "AbstractID": "SA1txctmi3e72287611302",
+      "WebTitle": "Teacher's View",
+      "WebHref": "http://10.102.0.39:8080/uis-web/teacher-view/overview",
+      "WidgetTree": [
+        {
+          "id": "n156_21",
+          "AbstractID": "SA1txctmi3e72287611302",
+          "ConcreteID": "SC1yyu2z4642290130692",
+          "WebTagName": "body",
+          "WebHref": "http://10.102.0.39:8080/uis-web/teacher-view/overview",
+          "WebOuterHTML": "\n<!-- Top Menu -->\n\n\n\n\n\n<!-- Sign in user menu style -->\n    <nav id=\"header\" class=\"navbar navbar-expand-md navbar-dark fixed-top bg-dark student-nav teacher-view-nav\">\n\n\n\n    <a id=\"header.title.logoTitle\" class=\"navbar-brand\" href=\"/uis-web/index.jsp\" title=\"Application home page\">University Information System</a>\n    <!-- Expand menu button for mobile devices -->\n    <button id=\"header.title.expandButton\" class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarsExampleDefault\" aria-controls=\"navbarsExampleDefault\" aria-expanded=\"false\" aria-label=\"Toggle navigation\" title=\"Expand menu\">\n        <span class=\"navbar-toggler-icon\"></span>\n    </button>\n\n    <!-- Collapsible menu items -->\n    <div class=\"collapse navbar-collapse\" id=\"navbarsExampleDefault\">\n        <!-- Left side -->\n        <ul class=\"navbar-nav mr-auto\">\n            <li class=\"nav-item active\">\n                <a id=\"header.link.home\" title=\"Application home page\" class=\"nav-link\" href=\"/uis-web/index.jsp\">Home <span class=\"sr-only\">(current)</span></a>\n            </li>\n            \n        </ul>\n        \n        <!-- Right side (Logged in user only) -->\n        <ul class=\"nav navbar-nav navbar-right\">\n            <li class=\"nav-item\"><a id=\"header.title.userHome\" title=\"User home page\" class=\"nav-link\" href=\"/uis-web/teacher-view\">Julia Easyrider</a></li>\n            <li class=\"nav-item\"><a id=\"header.link.logout\" title=\"Logout user\" class=\"nav-link\" href=\"/uis-web/logout\">Logout</a></li>\n        </ul>\n        \n    </div>\n</nav>\n<!-- Page content -->\n<div id=\"main-content\" class=\"container\">\n    <!-- ALERTS -->\n    <!-- Success alerts -->\n    \n    <!-- Error alerts -->\n    \n    <!-- Warning alerts -->\n    \n\n    <h1 id=\"tea.view.title\">Teacher's View</h1>\n    <div class=\"row\">\n        <div id=\"side-panel\" class=\"col-4\">\n            \n\n\n\n\n\n\n\n\n    <div id=\"side-menu-panel\" class=\"bootstrap-vertical-nav\">\n        <ul id=\"menu\" class=\"nav nav-pills flex-column\">\n            <li class=\"nav-item\">\n                <a id=\"tea.menu.overview\" class=\"nav-link active\" href=\"/uis-web/teacher-view/overview\" title=\"Overview tooltip\">Overview</a>\n            </li>\n            <li class=\"nav-item\">\n                <a id=\"tea.menu.mySubjects\" class=\"nav-link\" href=\"/uis-web/teacher-view/mySubjects\" title=\"My Subjects tooltip\">My Subjects</a>\n            </li>\n            <li class=\"nav-item\">\n                <a id=\"tea.menu.myExamDates\" class=\"nav-link\" href=\"/uis-web/teacher-view/myExamDates\" title=\"My Exam Dates tooltip\">My Exam Dates</a>\n            </li>\n            <li class=\"nav-item\">\n                <a id=\"tea.menu.newExamDates\" class=\"nav-link\" href=\"/uis-web/teacher-view/newExamDates\" title=\"New Exam Dates tooltip\">New Exam Dates</a>\n            </li>\n            <li class=\"nav-item\">\n                <a id=\"tea.menu.setEvaluation\" class=\"nav-link\" href=\"/uis-web/teacher-view/setEvaluation\" title=\"Set Evaluation tooltip\">Set Evaluation</a>\n            </li>\n            <li class=\"nav-item\">\n                <a id=\"tea.menu.evaluationTable\" class=\"nav-link\" href=\"/uis-web/teacher-view/evaluationTable\" title=\"Evaluation Table tooltip\">Evaluation Table</a>\n            </li>\n            <li class=\"nav-item\">\n                <a id=\"tea.menu.otherSubjects\" class=\"nav-link\" href=\"/uis-web/teacher-view/otherSubjects\" title=\"Others' Subjects tooltip\">Others' Subjects</a>\n            </li>\n            <li class=\"nav-item\">\n                <a id=\"tea.menu.listOfAllTeachers\" class=\"nav-link\" href=\"/uis-web/teacher-view/listOfAllTeachers\" title=\"List of All Teachers tooltip\">List of All Teachers</a>\n            </li>\n        </ul>\n    </div>\n\n        </div>\n\n        <div id=\"content\" class=\"col-8\">\n            <!-- Actual view -->\n            \n                \n                    \n\n\n\n\n<form id=\"overview.personalInfoForm\" method=\"POST\">\n    <div class=\"form-group row\">\n        <label id=\"overview.firstNameLabel\" for=\"overview.firstName\" class=\"col-sm-2 control-label\">First name</label>\n        <div class=\"col-sm-10\">\n            <input id=\"overview.firstName\" title=\"First name of logged user\" type=\"text\" name=\"firstName\" class=\"form-control\" placeholder=\"First name\" value=\"Julia\">\n        </div>\n    </div>\n    <div class=\"form-group row\">\n        <label id=\"overview.lastNameLabel\" for=\"overview.lastName\" class=\"col-sm-2 control-label\">Last name</label>\n        <div class=\"col-sm-10\">\n            <input id=\"overview.lastName\" title=\"Last name of logged user\" type=\"text\" name=\"lastName\" class=\"form-control\" placeholder=\"Last name\" value=\"Easyrider\">\n        </div>\n    </div>\n    <div class=\"form-group row\">\n        <label id=\"overview.emailLabel\" for=\"overview.email\" class=\"col-sm-2 control-label\">Email</label>\n        <div class=\"col-sm-10\">\n            <input id=\"overview.email\" title=\"email of logged user\" type=\"email\" name=\"email\" class=\"form-control\" placeholder=\"email@example.com\" value=\"easyrider@mail.edu\">\n        </div>\n    </div>\n    <div id=\"personalInfoFormSubmitField\" class=\"form-group row\">\n        <div class=\"col-sm-offset-2 col-sm-10\">\n            <button id=\"overview.saveButton\" type=\"submit\" class=\"btn btn-success\" title=\"Update personal information\">Update</button>\n        </div>\n    </div>\n</form>\n\n                \n                \n                \n                \n                \n                \n                \n                \n                \n            \n        </div>\n    </div>\n</div>\n\n<!-- Optional JavaScript -->\n<!-- jQuery first, then Popper.js, then Bootstrap JS -->\n<script src=\"/uis-web/js/jquery-3.1.1.slim.min.js\"></script>\n<script src=\"/uis-web/js/popper.min.js\"></script>\n<script src=\"/uis-web/js/bootstrap.min.js\"></script>\n\n\n\n"
+        }
+      ]
+    },
+    {
+      "AbstractID": "SA1wbzxim3752741160087",
+      "WebTitle": "Student's View",
+      "WebHref": "http://10.102.0.39:8080/uis-web/student-view/overview",
+      "WidgetTree": [
+        {
+          "id": "n154_24",
+          "AbstractID": "SA1wbzxim3752741160087",
+          "ConcreteID": "SC1s7iahu3e73115018187",
+          "WebTagName": "body",
+          "WebHref": "http://10.102.0.39:8080/uis-web/student-view/overview",
+          "WebOuterHTML": "\n<!-- Top Menu -->\n\n\n\n\n\n<!-- Sign in user menu style -->\n    <nav id=\"header\" class=\"navbar navbar-expand-md navbar-dark fixed-top bg-dark student-nav student-view-nav\">\n\n\n\n    <a id=\"header.title.logoTitle\" class=\"navbar-brand\" href=\"/uis-web/index.jsp\" title=\"Application home page\">University Information System</a>\n    <!-- Expand menu button for mobile devices -->\n    <button id=\"header.title.expandButton\" class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarsExampleDefault\" aria-controls=\"navbarsExampleDefault\" aria-expanded=\"false\" aria-label=\"Toggle navigation\" title=\"Expand menu\">\n        <span class=\"navbar-toggler-icon\"></span>\n    </button>\n\n    <!-- Collapsible menu items -->\n    <div class=\"collapse navbar-collapse\" id=\"navbarsExampleDefault\">\n        <!-- Left side -->\n        <ul class=\"navbar-nav mr-auto\">\n            <li class=\"nav-item active\">\n                <a id=\"header.link.home\" title=\"Application home page\" class=\"nav-link\" href=\"/uis-web/index.jsp\">Home <span class=\"sr-only\">(current)</span></a>\n            </li>\n            \n        </ul>\n        \n        <!-- Right side (Logged in user only) -->\n        <ul class=\"nav navbar-nav navbar-right\">\n            <li class=\"nav-item\"><a id=\"header.title.userHome\" title=\"User home page\" class=\"nav-link\" href=\"/uis-web/student-view\">James Blue</a></li>\n            <li class=\"nav-item\"><a id=\"header.link.logout\" title=\"Logout user\" class=\"nav-link\" href=\"/uis-web/logout\">Logout</a></li>\n        </ul>\n        \n    </div>\n</nav>\n<!-- Page content -->\n<div id=\"main-content\" class=\"container\">\n    <!-- ALERTS -->\n    <!-- Success alerts -->\n    \n    <!-- Error alerts -->\n    \n    <!-- Warning alerts -->\n    \n\n    <h1 id=\"stu.view.title\">Student's View</h1>\n    <div class=\"row\">\n        <div id=\"side-panel\" class=\"col-4\">\n            \n\n\n\n\n\n\n<div id=\"side-menu-panel\" class=\"bootstrap-vertical-nav\">\n    <ul id=\"menu\" class=\"nav nav-pills flex-column\">\n        <li class=\"nav-item\">\n            \n                \n                    <a id=\"stu.menu.overview\" class=\"nav-link active\" href=\"/uis-web/student-view/overview\" title=\"Overview tooltip\">Overview</a>\n                \n                \n            \n            </li>\n        <li class=\"nav-item\">\n            <a id=\"stu.menu.mySubjects\" class=\"nav-link\" href=\"/uis-web/student-view/mySubjects\" title=\"My Subjects tooltip\">My Subjects</a>\n        </li>\n        <li class=\"nav-item\">\n            <a id=\"stu.menu.otherSubjects\" class=\"nav-link\" href=\"/uis-web/student-view/otherSubjects\" title=\"Other Subjects tooltip\">Other Subjects</a>\n        </li>\n        <li class=\"nav-item\">\n            <a id=\"stu.menu.myExamDates\" class=\"nav-link\" href=\"/uis-web/student-view/myExamDates\" title=\"My Exam Dates tooltip\">My Exam Dates</a>\n        </li>\n        <li class=\"nav-item\">\n            <a id=\"stu.menu.otherExamDates\" class=\"nav-link\" href=\"/uis-web/student-view/otherExamDates\" title=\"Other Exam Dates tooltip\">Other Exam Dates</a>\n        </li>\n    </ul>\n</div>\n\n\n\n        </div>\n\n        <div id=\"content\" class=\"col-8\">\n            <!-- Actual view -->\n            \n                \n                    \n\n\n\n\n<form id=\"overview.personalInfoForm\" method=\"POST\">\n    <div class=\"form-group row\">\n        <label id=\"overview.firstNameLabel\" for=\"overview.firstName\" class=\"col-sm-2 control-label\">First name</label>\n        <div class=\"col-sm-10\">\n            <input id=\"overview.firstName\" title=\"First name of logged user\" type=\"text\" name=\"firstName\" class=\"form-control\" placeholder=\"First name\" value=\"James\">\n        </div>\n    </div>\n    <div class=\"form-group row\">\n        <label id=\"overview.lastNameLabel\" for=\"overview.lastName\" class=\"col-sm-2 control-label\">Last name</label>\n        <div class=\"col-sm-10\">\n            <input id=\"overview.lastName\" title=\"Last name of logged user\" type=\"text\" name=\"lastName\" class=\"form-control\" placeholder=\"Last name\" value=\"Blue\">\n        </div>\n    </div>\n    <div class=\"form-group row\">\n        <label id=\"overview.emailLabel\" for=\"overview.email\" class=\"col-sm-2 control-label\">Email</label>\n        <div class=\"col-sm-10\">\n            <input id=\"overview.email\" title=\"email of logged user\" type=\"email\" name=\"email\" class=\"form-control\" placeholder=\"email@example.com\" value=\"blue@mail.edu\">\n        </div>\n    </div>\n    <div id=\"personalInfoFormSubmitField\" class=\"form-group row\">\n        <div class=\"col-sm-offset-2 col-sm-10\">\n            <button id=\"overview.saveButton\" type=\"submit\" class=\"btn btn-success\" title=\"Update personal information\">Update</button>\n        </div>\n    </div>\n</form>\n\n                \n                \n                \n                \n                \n                \n            \n        </div>\n    </div>\n</div>\n\n<!-- Optional JavaScript -->\n<!-- jQuery first, then Popper.js, then Bootstrap JS -->\n<script src=\"/uis-web/js/jquery-3.1.1.slim.min.js\"></script>\n<script src=\"/uis-web/js/popper.min.js\"></script>\n<script src=\"/uis-web/js/bootstrap.min.js\"></script>\n\n\n"
+        }
+      ]
+    },
+    {
+      "AbstractID": "SA1ub8hc420f2378615080",
+      "WebTitle": "Login Page",
+      "WebHref": "http://10.102.0.39:8080/uis-web/login?logout",
+      "WidgetTree": [
+        {
+          "id": "n155_23",
+          "AbstractID": "SA1ub8hc420f2378615080",
+          "ConcreteID": "SCueeo2l23a584922830",
+          "WebTagName": "body",
+          "WebHref": "http://10.102.0.39:8080/uis-web/login?logout",
+          "WebOuterHTML": "\n<!-- Top Menu -->\n\n\n\n\n\n\n\n<!-- Public menu style -->\n    <nav id=\"header\" class=\"navbar navbar-expand-md navbar-dark fixed-top bg-dark\">\n\n    <a id=\"header.title.logoTitle\" class=\"navbar-brand\" href=\"/uis-web/index.jsp\" title=\"Application home page\">University Information System</a>\n    <!-- Expand menu button for mobile devices -->\n    <button id=\"header.title.expandButton\" class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarsExampleDefault\" aria-controls=\"navbarsExampleDefault\" aria-expanded=\"false\" aria-label=\"Toggle navigation\" title=\"Expand menu\">\n        <span class=\"navbar-toggler-icon\"></span>\n    </button>\n\n    <!-- Collapsible menu items -->\n    <div class=\"collapse navbar-collapse\" id=\"navbarsExampleDefault\">\n        <!-- Left side -->\n        <ul class=\"navbar-nav mr-auto\">\n            <li class=\"nav-item active\">\n                <a id=\"header.link.home\" title=\"Application home page\" class=\"nav-link\" href=\"/uis-web/index.jsp\">Home <span class=\"sr-only\">(current)</span></a>\n            </li>\n            \n                <li class=\"nav-item\">\n                    <a id=\"header.link.exportImport\" title=\"Export/Import data from/to DB\" class=\"nav-link\" href=\"/uis-web/import-export\">Export/Import DB </a>\n                </li>\n                <li class=\"nav-item\">\n                    <a id=\"header.link.restoreDB\" title=\"This button makes database restoring.\" class=\"nav-link\" href=\"/uis-web/restoreDB\">Restore DB </a>\n                </li>\n                <li class=\"nav-item\">\n                    <a id=\"header.link.login\" title=\"Login page\" class=\"nav-link\" href=\"/uis-web/login\">Login</a>\n                </li>\n            \n        </ul>\n        \n    </div>\n</nav>\n<!-- Page content -->\n<div id=\"main-content\" class=\"container\">\n    <!-- ALERTS -->\n    <!-- Bad login -->\n    \n    <!-- Logout successful -->\n    \n        <div id=\"loginPage.successAlert\" class=\"alert alert-success\" role=\"alert\">\n            <strong>Success!</strong> You have been successfully logged out.\n        </div>\n    \n\n    <h1 id=\"loginPage.title\">Login Page</h1>\n    <form id=\"loginPage.loginForm\" action=\"/uis-web/login\" method=\"post\">\n        <div id=\"loginPage.userNameField\" class=\"form-group\">\n            <label id=\"loginPage.usernameLabel\" for=\"loginPage.userNameInput\">Username</label>\n            <input type=\"text\" class=\"form-control\" id=\"loginPage.userNameInput\" name=\"username\" placeholder=\"Enter username\" title=\"Username of user\">\n        </div>\n        <div id=\"loginPage.passwordField\" class=\"form-group\">\n            <label id=\"loginPage.passwordLabel\" for=\"loginPage.passwordInput\">Password</label>\n            <input type=\"password\" class=\"form-control\" id=\"loginPage.passwordInput\" name=\"password\" placeholder=\"Enter password\" title=\"Password of user\">\n        </div>\n        <button id=\"loginPage.loginFormSubmit\" type=\"submit\" class=\"btn btn-primary\" title=\"Sign in to the application\">Login</button>\n    </form>\n</div>\n<!-- Optional JavaScript -->\n<!-- jQuery first, then Popper.js, then Bootstrap JS -->\n<!-- Bootstrap 4-->\n<script src=\"js/jquery-3.1.1.slim.min.js\"></script>\n<script src=\"js/popper.min.js\"></script>\n<script src=\"js/bootstrap.min.js\"></script>\n\n\n\n"
+        }
+      ]
+    }
+  ],
+  "ConcreteAction": [
+    {
+      "AbstractID": "WA17lh1qf181529283320",
+      "ConcreteID": "WC1tdnx7w2c7640589145",
+      "actionId": "ACuji1gu9f1943275436",
+      "WebHref": "/uis-web/logout",
+      "WebCssClasses": "[nav-link]",
+      "WebTagName": "a",
+      "Desc": "Left Click at 'a_logout'",
+      "WebOuterHTML": "<a id=\"header.link.logout\" title=\"Logout user\" class=\"nav-link\" href=\"/uis-web/logout\">Logout</a>",
+      "WebCssSelector": ""
+    },
+    {
+      "AbstractID": "WA17lh1qf181529283320",
+      "ConcreteID": "WC1tdnx7w2c7640589145",
+      "actionId": "ACvj0h4ma0961070356",
+      "WebHref": "/uis-web/logout",
+      "WebCssClasses": "[nav-link]",
+      "WebTagName": "a",
+      "Desc": "Left Click at 'a_logout'",
+      "WebOuterHTML": "<a id=\"header.link.logout\" title=\"Logout user\" class=\"nav-link\" href=\"/uis-web/logout\">Logout</a>",
+      "WebCssSelector": ""
+    }
+  ],
+  "ConcreteTransitions": [
+    {
+      "Source": "SA1txctmi3e72287611302",
+      "Target": "SA1ub8hc420f2378615080",
+      "ActionWA": "WA17lh1qf181529283320",
+      "ActionWC": "WC1tdnx7w2c7640589145",
+      "ActionId": "ACuji1gu9f1943275436"
+    },
+    {
+      "Source": "SA1wbzxim3752741160087",
+      "Target": "SA1ub8hc420f2378615080",
+      "ActionWA": "WA17lh1qf181529283320",
+      "ActionWC": "WC1tdnx7w2c7640589145",
+      "ActionId": "ACvj0h4ma0961070356"
+    }
+  ]
+}

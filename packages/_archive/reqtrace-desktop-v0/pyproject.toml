@@ -1,0 +1,19 @@
+[build-system]
+requires = ["uv_build>=0.11.3,<0.12"]
+build-backend = "uv_build"
+
+[project]
+name = "reqtrace-desktop"
+version = "0.1.0"
+description = "Desktop Tkinter interface for ReqTrace."
+requires-python = ">=3.14"
+dependencies = [
+  "reqtrace>=0.1.0",
+]
+
+[project.gui-scripts]
+reqtrace-desktop = "reqtrace_desktop.app:main"
+
+[tool.uv.sources]
+reqtrace = { workspace = true }
+

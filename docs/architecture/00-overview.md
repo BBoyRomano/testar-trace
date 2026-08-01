@@ -2,99 +2,55 @@
 
 ## Purpose
 
-This document is the entry point for the ReqTrace architecture set.
-
-It explains:
-
-- current system behavior
-- architectural layers and responsibilities
-- end-to-end data flow
-- canonical terminology
-
-## System summary
-
-ReqTrace ingests requirements and scriptless-testing evidence, maps them into canonical models, executes a traceability method, and exposes results via CLI, GUI, and JSON import/export.
+ReqTrace ingests requirements and testing evidence, executes a traceability method, and returns structured results.
 
 ## End-to-end flow
 
 ```text
 requirements/evidence inputs
--> ingestion loaders + normalization
--> domain mapping
--> application request snapshot
+-> adapter loaders + normalization
+-> core model snapshots
 -> traceability method execution
 -> result model
--> CLI/GUI rendering + JSON persistence
+-> interface adapters (CLI/API/Web)
 ```
 
-## Layers
+## Core layers (`packages/reqtrace/src/reqtrace/`)
 
-### Ingestion (`src/reqtrace/ingestion/`)
+### Models
 
-Owns source-specific parsing, normalization, validation, and mapping into canonical application/domain snapshots.
+Stable source-agnostic concepts for requirements, evidence, and traceability.
 
-### Domain (`src/reqtrace/domain/`)
+### Traceability
 
-Owns stable source-agnostic concepts for requirements, evidence, and traceability relationships.
+Method contracts, built-in methods, method registry, progress reporting, and analysis orchestration.
 
-### Application (`src/reqtrace/application/`)
+### Public API
 
-Owns request/result contracts, method selection/execution, async run execution, and run-history use-cases.
+Small root exports for common library use, with deeper modules available for advanced use.
 
-### Infrastructure (`src/reqtrace/infrastructure/`)
+## Adapter package (`packages/reqtrace-adapters/src/reqtrace_adapters/`)
 
-Owns persistence/serialization adapters (for example JSON result serialization and JSON-backed run-history storage).
+Source-specific parsing, validation, loading, and normalization into core `reqtrace` models.
 
-### Presentation (`src/reqtrace/presentation/`)
+## Interface apps (`apps/`)
 
-Owns CLI/GUI interaction, input collection, run orchestration wiring, and result rendering.
-
-## Current implementation status
-
-Current implementation is intentionally lightweight but complete for baseline thesis runs:
-
-- ingestion supports markdown/json requirements and TESTAR evidence
-- default selected method is baseline (`baseline`)
-- `candidate_match`, `flow_match`, and `hybrid_match` are available for direct comparison
-- run execution concurrency is handled by an application-level async executor
-- GUI run history is persisted locally (`.reqtrace/gui-history`)
+- `apps/cli` (`reqtrace-cli`)
+- `apps/api` (`reqtrace-api`)
+- `apps/web` (`reqtrace-web`)
 
 ## Repository map
 
 ```text
 docs/
-  architecture/
-    00-overview.md
-    01-domain-model.md
-    02-ingestion.md
-    03-trace-analysis.md
-    04-presentation.md
-    05-infrastructure.md
-    trace-methods/
-      baseline.md
-      candidate-match.md
-      flow-match.md
-      hybrid-match.md
-
-src/
-  reqtrace/
-    domain/
-    ingestion/
-    application/
-    infrastructure/
-    presentation/
+packages/reqtrace/
+packages/reqtrace-adapters/
+packages/_archive/
+apps/cli/
+apps/api/
+apps/web/
+packages/reqtrace/tests/
+packages/reqtrace-adapters/tests/
+apps/cli/tests/
 ```
 
-## Shared terminology
-
-| Term | Meaning |
-|---|---|
-| Normalized record | Shared ingestion-side shape before domain mapping |
-| Requirement artifact | Canonical requirement unit |
-| Requirement fragment | Traceable fragment within a requirement |
-| Requirement flow | Main/alternative structured flow |
-| Evidence artifact | Canonical evidence unit |
-| Trace link | Resolved requirement-to-evidence relation |
-| Coverage assessment | Coverage and confidence outcome |
-| Traceability method | Selected analysis approach for a run |
-| Run | One traceability execution or imported result |

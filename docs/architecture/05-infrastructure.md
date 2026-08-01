@@ -1,31 +1,36 @@
-# Infrastructure
+# I/O boundaries
 
 ## Purpose
 
-The infrastructure layer provides technical adapters for persistence and serialization.
+ReqTrace keeps canonical result JSON load/save in the core package (`reqtrace.io`).
 
-It keeps file-system and serialization concerns out of presentation and core method logic.
+Interface-app-specific persistence concerns live in interface apps, not in the
+core package.
 
 ## Current scope
 
-- JSON serialization/deserialization for `TraceabilityResult`
-- JSON-backed repository for persisted GUI run history
-- infrastructure-specific exception types for persistence/serialization failures
+- JSON serialization/deserialization for `TraceabilityResult` in `reqtrace.io`
+- app-local result history or workspace state in interface apps
 
 ## Package structure
 
+Core:
+
 ```text
-src/reqtrace/infrastructure/
-  exceptions.py
-  serialization/
-    traceability_report_json.py
-  persistence/
-    run_history_json.py
+src/reqtrace/io.py
+```
+
+Interface apps:
+
+```text
+apps/api/src/reqtrace_api/
+apps/web/src/
 ```
 
 ## Design rules
 
-- Keep adapters focused on I/O boundaries.
+- Keep adapters focused on I/O boundaries and persistence policy.
 - Use atomic write patterns where practical.
-- Raise infrastructure-specific exceptions and let upper layers decide UX messaging.
-- Avoid embedding application orchestration logic in infrastructure modules.
+- Raise public persistence errors from the core (`reqtrace.errors.PersistenceError`).
+- Avoid embedding application orchestration logic in persistence modules.
+

@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  python:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,5 +30,35 @@ jobs:
       - name: Lint
         run: uv run ruff check .
 
+      - name: Format
+        run: uv run ruff format --check .
+
+      - name: Typecheck
+        run: uv run ty check
+
       - name: Test
         run: uv run pytest --cov=reqtrace --cov-report=term-missing -q
+
+  web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup vp
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          cache: true
+
+      - name: Install dependencies
+        working-directory: apps/web
+        run: vp install
+
+      - name: Check
+        working-directory: apps/web
+        run: vp check
+
+      - name: Build
+        working-directory: apps/web
+        run: vp build

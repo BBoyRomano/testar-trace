@@ -7,7 +7,7 @@ This roadmap maps thesis goals to implementation phases.
 - markdown/json requirements ingestion
 - TESTAR evidence ingestion
 - baseline method execution path
-- CLI and local GUI execution
+- CLI and local desktop execution
 - JSON import/export for results
 
 ## Phase 1: ingestion extensibility (in progress)
@@ -28,10 +28,10 @@ Completed now:
 
 - application-level async run executor
 - concurrent run handling
-- persisted GUI run history
+- persisted desktop run history
 - richer in-flight per-requirement progress visibility
 - cancellation controls
-- process-isolated GUI execution to keep the interface responsive
+- process-isolated desktop execution to keep the interface responsive
 
 ## Phase 4: explainability and interaction (planned)
 
@@ -50,3 +50,4 @@ Planned next:
 
 - richer thesis-facing summary views and report templates
 - expanded global metric reporting for evaluation communication
+

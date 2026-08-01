@@ -8,7 +8,7 @@ It exists to validate the full ReqTrace pipeline before introducing advanced mat
 
 ## Current status
 
-- enabled by default in current CLI/GUI wiring
+- enabled by default in current CLI/desktop wiring
 - used as the stable control path for thesis baseline runs
 
 ## Current behavior
@@ -23,7 +23,8 @@ The baseline method:
 
 ## Why it exists
 
-- validates ingestion + domain + application + presentation integration
+- validates ingestion + domain + application + interface integration
 - validates request/result contracts
 - validates import/export interoperability
 - provides a control comparison point for experimental methods
+

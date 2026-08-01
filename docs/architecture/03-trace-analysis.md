@@ -11,7 +11,7 @@ This document describes traceability methods in the application layer and their 
 - `flow_match`: ordered flow/path alignment method
 - `hybrid_match`: ensemble method (flow-first with candidate fallback/enrichment)
 
-Default service wiring now exposes all methods for direct CLI/GUI comparison.
+Default service wiring now exposes all methods for direct CLI/desktop comparison.
 
 ## Method summary
 
@@ -65,3 +65,4 @@ Use traceability method as the standard term in docs and UI.
 - `trace-methods/candidate-match.md`
 - `trace-methods/flow-match.md`
 - `trace-methods/hybrid-match.md`
+

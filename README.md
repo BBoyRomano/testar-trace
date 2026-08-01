@@ -1,48 +1,41 @@
 # Requirements Traceability for Scriptless Testing (ReqTrace)
 
-ReqTrace is a Python thesis prototype for establishing requirements traceability between requirement artifacts and scriptless GUI-testing evidence, with an initial focus on TESTAR state-model exports.
+ReqTrace is a Python-first traceability toolkit for linking requirement artifacts to scriptless GUI-testing evidence (with initial focus on TESTAR evidence exports).
 
-This repository contains source code, tests, architecture docs, SUT bundles, and thesis materials.
+## Package model
 
-## Current implemented scope
+This repository is split into reusable Python packages and runnable interface apps:
 
-ReqTrace currently supports:
+- `reqtrace` (core library, distributed independently)
+- `reqtrace-adapters` (file-format and external-source adapters)
+- `reqtrace-cli` (CLI app)
+- `reqtrace-api` (HTTP API app)
+- `reqtrace-web` (Vite+ frontend app)
 
-- requirements ingestion from `markdown` and `json`
-- requirements input as one file, many files, or directory input
-- evidence ingestion for `testar` (state-model JSON and run-bundle style inputs)
-- baseline traceability execution (`baseline`) as the default production method
-- CLI and local GUI execution
+The core package contains canonical models, traceability methods, registries, and analysis orchestration. Input formats and external integrations live outside the core package.
+
+## Current scope
+
+- requirements adapter input formats: Markdown, JSON, and Gherkin feature files
+- evidence adapters for TESTAR evidence exports
+- traceability methods: `noop` and `sequence`
 - JSON import/export of traceability results
-- persisted GUI run history at `.reqtrace/gui-history/`
-- asynchronous multi-run execution via application-level run executor
-- process-isolated GUI run execution for responsive desktop interaction
-- live per-requirement GUI progress updates and cooperative cancellation
-
-## Method status
-
-- `baseline`: enabled by default in CLI/GUI and used as the stable control path
-- `candidate_match`: lexical retrieval comparator (step-level evidence matching)
-- `flow_match`: ordered flow alignment method (path-aware matching)
-- `hybrid_match`: primary ensemble candidate (combines `flow_match` + `candidate_match`)
+- API-backed browser workflow for loading, analysis, and result inspection
+- web dashboard under `apps/web/`
 
 ## Repository structure
 
-- [`src/reqtrace/`](src/reqtrace/) — source code
-- [`tests/`](tests/) — automated tests
-- [`docs/`](docs/) — architecture and planning docs (see [`docs/README.md`](docs/README.md))
-- [`packaging/`](packaging/) — executable/distribution build assets
-- [`suts/`](suts/) — per-SUT reproducibility bundles
-- [`papers/`](papers/) — thesis/proposal materials (Overleaf Git sync)
-- [`docs/archived-v0/`](docs/archived-v0/) — archived legacy material (non-authoritative)
+- [`packages/reqtrace/`](packages/reqtrace/) - core Python library package
+- [`packages/reqtrace-adapters/`](packages/reqtrace-adapters/) - adapter package for files, formats, and external sources
+- [`apps/cli/`](apps/cli/) - CLI package (`reqtrace-cli`)
+- [`apps/api/`](apps/api/) - API package (`reqtrace-api`)
+- [`apps/web/`](apps/web/) - frontend app (`reqtrace-web`)
+- [`packages/_archive/`](packages/_archive/) - archived legacy package code, kept temporarily
+- [`docs/`](docs/) - architecture and planning docs
 
 ## Setup
 
-### Devcontainer
-
-Use the provided devcontainer (`Python 3.14`) for a ready-to-run environment.
-
-### Local setup
+### Python workspace setup
 
 ```bash
 python -m pip install --upgrade pip
@@ -50,198 +43,73 @@ python -m pip install uv
 uv sync --group dev --locked
 ```
 
+### Interface install options
+
+Install only what you need:
+
+```bash
+pip install reqtrace
+pip install reqtrace-cli
+pip install reqtrace-api
+```
+
+### Web setup
+
+```bash
+cd apps/web
+vp install
+```
+
 ## Quality checks
 
 ```bash
 uv run ruff check .
+uv run ty check
 uv run pytest -q
 ```
 
-Optional local hook runner:
+Web checks:
 
 ```bash
-uv run pre-commit run --all-files
+cd apps/web
+vp check
+vp build
 ```
 
-Optional coverage report:
+## Usage
 
-```bash
-uv run pytest --cov=reqtrace --cov-report=term-missing
+Core package is import-first.
+
+Preferred stable import path:
+
+```python
+from reqtrace import analyze_traceability
+from reqtrace_adapters import load_evidence, load_requirements
 ```
 
-Optional typecheck:
+Advanced/internal modules remain available but are not the primary compatibility surface.
 
-```bash
-uv run ty check
-```
-
-## CLI usage
-
-Show help:
+CLI:
 
 ```bash
 reqtrace --help
-reqtrace run --help
-python -m reqtrace --help
-```
-
-List enabled methods in the default CLI wiring:
-
-```bash
 reqtrace methods
+reqtrace analyze --help
 ```
 
-Run with one requirements file:
+API:
 
 ```bash
-reqtrace run \
-  --requirements <path/to/requirements.md> \
-  --requirements-format markdown \
-  --evidence <path/to/testar-model.json> \
-  --evidence-format testar \
-  --method baseline
+reqtrace-api
 ```
-
-Run with multiple requirement paths:
-
-```bash
-reqtrace run \
-  --requirements <path/to/req-a.md> \
-  --requirements <path/to/req-b.md> \
-  --requirements-format markdown \
-  --evidence <path/to/testar-model.json> \
-  --evidence-format testar \
-  --method baseline
-```
-
-Run with a directory of JSON requirements:
-
-```bash
-reqtrace run \
-  --requirements <path/to/requirements-json-dir> \
-  --requirements-format json \
-  --evidence <path/to/testar-model.json> \
-  --evidence-format testar \
-  --method baseline
-```
-
-Render a saved result:
-
-```bash
-reqtrace show-result <path/to/result.json>
-```
-
-Launch GUI:
-
-```bash
-reqtrace ui
-reqtrace-gui
-```
-
-GUI runtime notes:
-
-- run preparation and analysis execution are both off the UI thread
-- analysis execution uses spawned worker processes, so the GUI remains responsive
-- multiple runs can be started while earlier runs are still executing
-
-Enable debug logging and persist logs to a rotating file:
-
-```bash
-reqtrace -vv --log-file .reqtrace/logs/reqtrace.log run \
-  --requirements <path/to/requirements.md> \
-  --evidence <path/to/testar-model.json>
-```
-
-Normal logging levels:
-
-- default: warnings/errors only
-- `-v`: run-level progress (`INFO`)
-- `-vv`: deep troubleshooting (`DEBUG`)
-- `--log-level <LEVEL>`: explicit override
-
-Notes:
-
-- If `--output` is omitted, results are rendered only.
-- If `--output` is set, the result JSON is also written to disk.
-- `--log-file` is optional. Without it, logs are written to the terminal stream only.
-
-GUI logging can be configured via environment variables:
-
-```bash
-REQTRACE_LOG_LEVEL=DEBUG REQTRACE_LOG_FILE=.reqtrace/logs/gui.log reqtrace ui
-```
-
-## Executable distribution (cross-platform)
-
-For users who should run ReqTrace without cloning this repository, build standalone
-executables with PyInstaller.
-
-Local build commands:
-
-```powershell
-python -m pip install --upgrade pip
-python -m pip install uv
-uv sync --group dev --group build --locked
-uv run pyinstaller packaging/pyinstaller/reqtrace-cli.spec
-uv run pyinstaller packaging/pyinstaller/reqtrace-gui.spec
-```
-
-Outputs:
-
-- Windows:
-  - `dist/reqtrace.exe`
-  - `dist/reqtrace-gui.exe`
-- macOS/Linux:
-  - `dist/reqtrace`
-  - `dist/reqtrace-gui`
-
-You can also run the manual GitHub Actions workflow
-`Build Executables` to generate downloadable artifacts for:
-
-- `windows-x64`
-- `macos`
-- `linux-x64`
-
-## SUT data strategy
-
-Data is organized per system-under-test under `suts/<sut-name>/`.
-
-Each bundle can contain:
-
-- requirements datasets (`canonical`, `execution`, `source`, `variants`)
-- TESTAR protocols and evidence bundles
-- curated evaluation outputs
-- optional local export area for ad-hoc runs
-
-See [`suts/README.md`](suts/README.md) for the authoritative structure policy.
 
 ## Documentation map
 
-- Documentation index: [`docs/README.md`](docs/README.md)
-- Roadmap: [`docs/roadmap.md`](docs/roadmap.md)
-- Test strategy: [`tests/README.md`](tests/README.md)
-- Contribution guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
-
-## README policy
-
-To avoid documentation bloat, README files are intentionally limited to these levels:
-
-- root `README.md`: setup, usage, and repository entry point
-- `docs/README.md`: design/planning map
-- `tests/README.md`: test strategy
-- `suts/README.md` + `suts/<sut>/README.md`: SUT data policy and per-SUT specifics
-
-## Reproducibility notes
-
-- Automated tests are intentionally SUT-agnostic.
-- Real evaluation bundles and pinned experiment outputs live under `suts/`.
-- Overleaf-synced thesis/proposal material lives under `papers/`.
-
-## Citation
-
-If you use this repository or its artifacts, cite the associated thesis.
-See [`CITATION.cff`](CITATION.cff).
+- [`docs/README.md`](docs/README.md)
+- [`docs/architecture/00-overview.md`](docs/architecture/00-overview.md)
 
 ## License
 
-MIT License — see [`LICENSE`](LICENSE).
+MIT. See [`LICENSE`](LICENSE).
+
+

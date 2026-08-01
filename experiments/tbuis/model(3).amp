@@ -1,0 +1,253 @@
+timeout 10.0
+external 'extern'
+
+def Left_Click_at_button_x_to_Student_s_View()
+  receive 'click', constraint: %(css == "" && text == "button_x")
+  send 'page_title', constraint: %(_title == "Student's View")
+end
+
+def Left_Click_at_button_unenroll_subject_to_Student_s_View()
+  receive 'click', constraint: %(css == "" && text == "button_unenroll_subject")
+  send 'page_title', constraint: %(_title == "Student's View")
+end
+
+def Set_Webdriver_select_list_script_to_set_into_ID_stu_mySubjects_unenrollSubjectModal_subjectSelect_164_to_Student_s_View()
+  receive 'click', constraint: %(css == "" && text == "")
+  send 'page_title', constraint: %(_title == "Student's View")
+end
+
+def Left_Click_at_button_cancel_to_Student_s_View()
+  receive 'click', constraint: %(css == "" && text == "button_cancel")
+  send 'page_title', constraint: %(_title == "Student's View")
+end
+
+process('testar') {
+
+  channel('extern') {
+    stimulus 'visit', '_url' => :string
+    stimulus 'click', 'css' => :string, 'text' => :string
+    stimulus 'fill_in', 'selector' => :string, 'value' => :string
+    response 'page_title', '_title' => :string, '_url' => :string
+  }
+
+  behavior('launch') {
+    receive 'visit',
+    constraint: "_url == initial_url"
+    send 'page_title',
+    constraint: %(_title == "Student's View")
+  }
+
+  behavior('Student's View - SAie2uzs6f5349116892', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SA1bhvyn86f73329552441' }
+    }
+  }
+
+  behavior('Student's View - SAglyl2t6fa3996957790', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SAdzwut56fc3749334063' }
+    }
+  }
+
+  behavior('Student's View - SAkxk2ap5da2580949080', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SAggo1896f53813160903', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SA19kh4vp6f7838065698' }
+    }
+  }
+
+  behavior('Student's View - SA1deknc06fc4228109584', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_cancel_to_Student_s_View(); behave_as 'Student's View - SA1g0mdlo6fa3443860833' }
+      o { Set_Webdriver_select_list_script_to_set_into_ID_stu_mySubjects_unenrollSubjectModal_subjectSelect_164_to_Student_s_View(); behave_as 'Student's View - SA1jfh4bj6fc1257986738' }
+    }
+  }
+
+  behavior('Student's View - SAuq0pvf6fa2315583859', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_cancel_to_Student_s_View(); behave_as 'Student's View - SAegq0jb6f84129501515' }
+    }
+  }
+
+  behavior('Student's View - SAeox3z46f6986148729', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SA1slmlgk6f83933586023' }
+    }
+  }
+
+  behavior('Student's View - SAbxpze95d41717955419', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SAkxk2ap5da2580949080' }
+    }
+  }
+
+  behavior('Student's View - SA1j0ng3d6661157259405', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SAelhjo966a3962489655' }
+    }
+  }
+
+  behavior('Student's View - SA1bhvyn86f73329552441', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_cancel_to_Student_s_View(); behave_as 'Student's View - SAie2uzs6f5349116892' }
+    }
+  }
+
+  behavior('Student's View - SAooqzyf6f9307034870', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1ld7o0o66a3594020782', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SAst1so76fc2473669294', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_cancel_to_Student_s_View(); behave_as 'Student's View - SAvf3ixv6fa2721563359' }
+    }
+  }
+
+  behavior('Student's View - SA1pmt5sg6f93288249264', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SA1wf8le46fb3951045918' }
+    }
+  }
+
+  behavior('Student's View - SA1lxzkvr6fa2042832640', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SA1jbxum36fc1216730993' }
+    }
+  }
+
+  behavior('Student's View - SA19jsa0l6f82943220237', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SA1pt2zcp6fa3544959541' }
+    }
+  }
+
+  behavior('Student's View - SA1jfh4bj6fc1257986738', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1pt2zcp6fa3544959541', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1wf8le46fb3951045918', :non_terminating) {
+    repeat {
+      o { Set_Webdriver_select_list_script_to_set_into_ID_stu_mySubjects_unenrollSubjectModal_subjectSelect_164_to_Student_s_View(); behave_as 'Student's View - SA158858e6fa1808488775' }
+    }
+  }
+
+  behavior('Student's View - SAdzwut56fc3749334063', :non_terminating) {
+    repeat {
+      o { Set_Webdriver_select_list_script_to_set_into_ID_stu_mySubjects_unenrollSubjectModal_subjectSelect_164_to_Student_s_View(); behave_as 'Student's View - SAgd1lbj6fc3065332713' }
+    }
+  }
+
+  behavior('Student's View - SA1rl3ngl6fa3147734134', :non_terminating) {
+    repeat {
+      o { Set_Webdriver_select_list_script_to_set_into_ID_stu_mySubjects_unenrollSubjectModal_subjectSelect_164_to_Student_s_View(); behave_as 'Student's View - SAooqzyf6f9307034870' }
+    }
+  }
+
+  behavior('Student's View - SA1g0mdlo6fa3443860833', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SA1deknc06fc4228109584' }
+    }
+  }
+
+  behavior('Student's View - SA19kh4vp6f7838065698', :non_terminating) {
+    repeat {
+      o { Set_Webdriver_select_list_script_to_set_into_ID_stu_mySubjects_unenrollSubjectModal_subjectSelect_164_to_Student_s_View(); behave_as 'Student's View - SAy8zz1b6f71753353217' }
+    }
+  }
+
+  behavior('Student's View - SA1hu09qb6fc3282930246', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SAelhjo966a3962489655', :non_terminating) {
+    repeat {
+      o { Set_Webdriver_select_list_script_to_set_into_ID_stu_mySubjects_unenrollSubjectModal_subjectSelect_164_to_Student_s_View(); behave_as 'Student's View - SA1ld7o0o66a3594020782' }
+      o { Left_Click_at_button_cancel_to_Student_s_View(); behave_as 'Student's View - SA1j0ng3d6661157259405' }
+    }
+  }
+
+  behavior('Student's View - SA1bbsy4h6f83350768718', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SA1rl3ngl6fa3147734134' }
+    }
+  }
+
+  behavior('Student's View - SAvf3ixv6fa2721563359', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SAst1so76fc2473669294' }
+    }
+  }
+
+  behavior('Student's View - SA1slmlgk6f83933586023', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SAm9lvds6fa421668270', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SAjnk5446fc677696991' }
+    }
+  }
+
+  behavior('Student's View - SAegq0jb6f84129501515', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SAuq0pvf6fa2315583859' }
+    }
+  }
+
+  behavior('Student's View - SAjnk5446fc677696991', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1kg1zzz6fa4075518519', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_x_to_Student_s_View(); behave_as 'Student's View - SA1hu09qb6fc3282930246' }
+    }
+  }
+
+  behavior('Student's View - SAgd1lbj6fc3065332713', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1jbxum36fc1216730993', :non_terminating) {
+    repeat {
+      o { Left_Click_at_button_cancel_to_Student_s_View(); behave_as 'Student's View - SA1lxzkvr6fa2042832640' }
+    }
+  }
+
+  behavior('Student's View - SAy8zz1b6f71753353217', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA158858e6fa1808488775', :non_terminating) {
+    repeat {
+    }
+  }
+
+  var 'initial_url', :string, "http://10.102.0.39:8080/uis-web/student-view/mySubjects"
+
+  call 'launch'
+
+  behave_as 'Student's View - SAegq0jb6f84129501515'
+
+}

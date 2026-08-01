@@ -6,3 +6,4 @@
 *.pdf binary
 *.war binary
 *.amp binary
+suts/tbuis/results/tbuis-sequence.json filter=lfs diff=lfs merge=lfs -text

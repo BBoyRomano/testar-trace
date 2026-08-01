@@ -14,7 +14,7 @@ It answers:
 
 - implemented in code
 - treated as experimental in current architecture
-- available in default CLI/GUI service wiring for comparison runs
+- available in default CLI/desktop service wiring for comparison runs
 
 ## Inputs
 
@@ -50,3 +50,4 @@ The method produces:
 - ordered end-to-end path realization for full use cases
 - complete branch/alternate-flow realization proof
 - strict precondition/postcondition context proof
+

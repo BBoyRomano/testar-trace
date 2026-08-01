@@ -1,0 +1,196 @@
+timeout 10.0
+external 'extern'
+
+def Type_Updated_into_label_last_name_to_Student_s_View()
+  receive 'fill_in', constraint: %(selector == "" && value == "Updated")
+  send 'page_title', constraint: %(_title == "Student's View")
+end
+
+def Left_Click_at_button_update_to_Student_s_View()
+  receive 'click', constraint: %(css == "" && text == "button_update")
+  send 'page_title', constraint: %(_title == "Student's View")
+end
+
+def Type_a_b_co_into_label_email_to_Teacher_s_View()
+  receive 'fill_in', constraint: %(selector == "" && value == "a@b.co")
+  send 'page_title', constraint: %(_title == "Teacher's View")
+end
+
+def Type_Teacher_into_label_first_name_to_Teacher_s_View()
+  receive 'fill_in', constraint: %(selector == "" && value == "Teacher")
+  send 'page_title', constraint: %(_title == "Teacher's View")
+end
+
+def Type_Updated_into_label_last_name_to_Teacher_s_View()
+  receive 'fill_in', constraint: %(selector == "" && value == "Updated")
+  send 'page_title', constraint: %(_title == "Teacher's View")
+end
+
+def Left_Click_at_button_update_to_Teacher_s_View()
+  receive 'click', constraint: %(css == "" && text == "button_update")
+  send 'page_title', constraint: %(_title == "Teacher's View")
+end
+
+def Type_a_b_co_into_label_email_to_Student_s_View()
+  receive 'fill_in', constraint: %(selector == "" && value == "a@b.co")
+  send 'page_title', constraint: %(_title == "Student's View")
+end
+
+def Type_Teacher_into_label_first_name_to_Student_s_View()
+  receive 'fill_in', constraint: %(selector == "" && value == "Teacher")
+  send 'page_title', constraint: %(_title == "Student's View")
+end
+
+process('testar') {
+
+  channel('extern') {
+    stimulus 'visit', '_url' => :string
+    stimulus 'click', 'css' => :string, 'text' => :string
+    stimulus 'fill_in', 'selector' => :string, 'value' => :string
+    response 'page_title', '_title' => :string, '_url' => :string
+  }
+
+  behavior('launch') {
+    receive 'visit',
+    constraint: "_url == initial_url"
+    send 'page_title',
+    constraint: %(_title == "Teacher's View")
+  }
+
+  behavior('Student's View - SA1dj5wwg373965689568', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA18mj61m3752211830829', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Teacher's View - SAyo07zp3e83404181461', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1v3gvh63743276938943', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Teacher's View - SAo239u93e82154633832', :non_terminating) {
+    repeat {
+      o { Type_Updated_into_label_last_name_to_Teacher_s_View(); behave_as 'Teacher's View - SA826jbw3e8291520487' }
+    }
+  }
+
+  behavior('Teacher's View - SA826jbw3e8291520487', :non_terminating) {
+    repeat {
+      o { Type_a_b_co_into_label_email_to_Teacher_s_View(); behave_as 'Teacher's View - SAwzwe43ea2405909936' }
+    }
+  }
+
+  behavior('Student's View - SA1rhcch53762938420267', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Teacher's View - SAv3e6853e93653466740', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1u9rdlk373734113839', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Teacher's View - SAwzwe43ea2405909936', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1x3201c3752453400890', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1uye2hd375959816411', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Teacher's View - SA1elodx93e8437238445', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1ew6srt375484751842', :non_terminating) {
+    repeat {
+      o { Type_Updated_into_label_last_name_to_Student_s_View(); behave_as 'Student's View - SA1e28ft83731778286594' }
+    }
+  }
+
+  behavior('Teacher's View - SA1m7ajn93e91062588621', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Teacher's View - SA5zuy843e7146799615', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Teacher's View - SA1txctmi3e72287611302', :non_terminating) {
+    repeat {
+      o { Type_a_b_co_into_label_email_to_Teacher_s_View(); behave_as 'Teacher's View - SA1elodx93e8437238445' }
+      o { Type_Teacher_into_label_first_name_to_Teacher_s_View(); behave_as 'Teacher's View - SAo239u93e82154633832' }
+      o { Type_a_b_co_into_label_email_to_Teacher_s_View(); behave_as 'Teacher's View - SA1m7ajn93e91062588621' }
+      o { Type_a_b_co_into_label_email_to_Teacher_s_View(); behave_as 'Teacher's View - SAyo07zp3e83404181461' }
+      o { Type_Updated_into_label_last_name_to_Teacher_s_View(); behave_as 'Teacher's View - SA5zuy843e7146799615' }
+      o { Type_Updated_into_label_last_name_to_Teacher_s_View(); behave_as 'Teacher's View - SAv3e6853e93653466740' }
+      o { Type_Teacher_into_label_first_name_to_Teacher_s_View(); behave_as 'Teacher's View - SArjbw5e3e82035853923' }
+      o { Type_Teacher_into_label_first_name_to_Teacher_s_View(); behave_as 'Teacher's View - SAli2qgv3e72913788692' }
+    }
+  }
+
+  behavior('Student's View - SA1wbzxim3752741160087', :non_terminating) {
+    repeat {
+      o { Type_a_b_co_into_label_email_to_Student_s_View(); behave_as 'Student's View - SAc00zfm374330959815' }
+      o { Type_Teacher_into_label_first_name_to_Student_s_View(); behave_as 'Student's View - SA1ew6srt375484751842' }
+      o { Type_a_b_co_into_label_email_to_Student_s_View(); behave_as 'Student's View - SA1x3201c3752453400890' }
+      o { Type_a_b_co_into_label_email_to_Student_s_View(); behave_as 'Student's View - SA1v3gvh63743276938943' }
+      o { Type_Updated_into_label_last_name_to_Student_s_View(); behave_as 'Student's View - SA1dj5wwg373965689568' }
+      o { Type_Updated_into_label_last_name_to_Student_s_View(); behave_as 'Student's View - SA1uye2hd375959816411' }
+      o { Type_Teacher_into_label_first_name_to_Student_s_View(); behave_as 'Student's View - SA1rhcch53762938420267' }
+      o { Type_Teacher_into_label_first_name_to_Student_s_View(); behave_as 'Student's View - SA18mj61m3752211830829' }
+    }
+  }
+
+  behavior('Teacher's View - SAli2qgv3e72913788692', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Teacher's View - SArjbw5e3e82035853923', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SAc00zfm374330959815', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1e28ft83731778286594', :non_terminating) {
+    repeat {
+      o { Type_a_b_co_into_label_email_to_Student_s_View(); behave_as 'Student's View - SA1u9rdlk373734113839' }
+    }
+  }
+
+  var 'initial_url', :string, "http://10.102.0.39:8080/uis-web/teacher-view/overview"
+
+  call 'launch'
+
+  behave_as 'Teacher's View - SA1txctmi3e72287611302'
+
+}

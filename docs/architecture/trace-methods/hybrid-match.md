@@ -10,7 +10,7 @@ It is intended as the current primary experimental method for thesis evaluation 
 
 - implemented in code
 - treated as experimental (still under calibration)
-- available in default CLI/GUI service wiring for direct comparison against other methods
+- available in default CLI/desktop service wiring for direct comparison against other methods
 
 ## Current behavior
 
@@ -26,5 +26,6 @@ The method currently:
 The method does not yet guarantee:
 
 - exhaustive graph-theoretic proof of all alternate branches
-- final confidence calibration for all noisy state-model patterns
+- final confidence calibration for all noisy evidence patterns
 - full explainability UX parity with planned interactive graph views
+

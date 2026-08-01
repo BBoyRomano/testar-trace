@@ -8,7 +8,7 @@ It is the boundary between source-specific formats and source-agnostic traceabil
 
 ## Current supported formats
 
-- requirements: `markdown`, `json`
+- requirements input formats: `markdown`, `json`
 - evidence: `testar`
 
 Requirements input can be one file, multiple files, or a directory.
@@ -26,34 +26,31 @@ Ingestion owns:
 Ingestion does not own:
 
 - method selection/scoring
-- presentation orchestration
+- interface orchestration
 - result rendering/persistence
 
 ## Package structure
 
 ```text
 src/reqtrace/ingestion/
-  common/
-    exceptions.py
-    interfaces.py
-    mapping.py
-    models.py
-    normalization.py
-    provenance.py
-    registry.py
-    validation.py
+  exceptions.py
+  input_resolution.py
+  mapping.py
+  normalization.py
+  ports.py
+  provenance.py
+  records.py
+  registry.py
+  validation.py
   requirements/
     adapter.py
     models.py
-    markdown/
-      loader.py
-    json/
-      loader.py
+    markdown_loader.py
+    json_loader.py
   evidence/
     adapter.py
     models.py
-    testar/
-      loader.py
+    testar_loader.py
 ```
 
 ## Ingestion flow

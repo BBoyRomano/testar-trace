@@ -10,7 +10,7 @@ It attempts to align requirement flow fragments with plausible ordered evidence 
 
 - implemented in code
 - treated as experimental in current architecture
-- available in default CLI/GUI service wiring for comparison runs
+- available in default CLI/desktop service wiring for comparison runs
 
 ## Current behavior
 
@@ -28,3 +28,4 @@ The method does not yet provide exhaustive graph-theoretic proof for:
 - complete branch reachability
 - exhaustive alternate-flow realization
 - globally optimal path selection under all noisy trace conditions
+

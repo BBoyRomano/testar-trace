@@ -1,0 +1,41 @@
+timeout 10.0
+external 'extern'
+
+def Left_Click_at_a_logout_to_Login_Page()
+  receive 'click', constraint: %(css == "" && text == "a_logout")
+  send 'page_title', constraint: %(_title == "Login Page")
+end
+
+process('testar') {
+
+  channel('extern') {
+    stimulus 'visit', '_url' => :string
+    stimulus 'click', 'css' => :string, 'text' => :string
+    stimulus 'fill_in', 'selector' => :string, 'value' => :string
+    response 'page_title', '_title' => :string, '_url' => :string
+  }
+
+  behavior('launch') {
+    receive 'visit',
+    constraint: "_url == initial_url"
+    send 'page_title',
+    constraint: %(_title == "Teacher's View")
+  }
+
+  behavior('Teacher's View - SA1txctmi3e72287611302', :non_terminating) {
+    repeat {
+    }
+  }
+
+  behavior('Student's View - SA1wbzxim3752741160087', :non_terminating) {
+    repeat {
+    }
+  }
+
+  var 'initial_url', :string, "http://10.102.0.39:8080/uis-web/teacher-view/overview"
+
+  call 'launch'
+
+  behave_as 'Teacher's View - SA1txctmi3e72287611302'
+
+}

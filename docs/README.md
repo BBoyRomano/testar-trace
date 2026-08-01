@@ -15,9 +15,10 @@ This directory holds project-level documentation for ReqTrace.
 2. `architecture/01-domain-model.md`
 3. `architecture/02-ingestion.md`
 4. `architecture/03-trace-analysis.md`
-5. `architecture/04-presentation.md`
+5. `architecture/04-interfaces.md`
 6. `architecture/05-infrastructure.md`
-7. `architecture/trace-methods/*.md` (method-specific details)
+7. `architecture/06-repository-structure.md`
+8. `architecture/trace-methods/*.md` (method-specific details)
 
 ## Scope rule
 
@@ -26,4 +27,4 @@ Do not duplicate folder-level operational notes that already belong in:
 
 - root `README.md` (setup + usage)
 - `suts/README.md` and `suts/<sut>/README.md` (dataset/evidence policy)
-- `tests/README.md` (test strategy)
+- package-local test directories (test strategy and fixtures)
