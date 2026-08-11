@@ -1,0 +1,36 @@
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13"]
+build-backend = "uv_build"
+
+[project]
+name = "testar-trace-adapters"
+version = "0.1.0"
+description = "Adapters for converting external requirement formats and TESTAR-generated state models into TESTAR Trace core models."
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Romano van de Wetering" }]
+keywords = [
+  "requirements traceability",
+  "requirements completeness",
+  "scriptless GUI testing",
+  "GUI state models",
+  "TESTAR",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Testing",
+  "Typing :: Typed",
+]
+dependencies = ["testar-trace>=0.1.0,<0.2.0"]
+import-names = ["testar_trace_adapters"]
+
+[project.urls]
+Repository = "https://github.com/BBoyRomano/testar-requirements-traceability"

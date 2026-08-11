@@ -1,20 +1,41 @@
 {
-  "name": "reqtrace-web",
+  "name": "testar-trace-web",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vp dev",
-    "build": "tsc && vp build",
+    "prepare:python": "node scripts/prepare-python.mjs",
+    "dev": "node scripts/prepare-python.mjs && vp dev",
+    "build": "node scripts/prepare-python.mjs && tsc && vp build",
+    "check:bundle": "node scripts/check-bundle-size.mjs",
+    "deploy": "wrangler deploy",
+    "deploy:check": "wrangler deploy --dry-run",
+    "test": "vp test run",
+    "test:coverage": "vp test run --coverage",
+    "test:e2e": "vp run build && playwright test",
+    "test:e2e:prepared": "playwright test",
     "preview": "vp preview"
   },
   "dependencies": {
-    "cytoscape": "^3.33.2"
+    "cytoscape": "^3.34.0",
+    "lucide": "^1.28.0",
+    "pyodide": "^314.0.3"
   },
   "devDependencies": {
-    "typescript": "~6.0.2",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.18",
-    "vite-plus": "0.1.18"
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.2.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "typescript": "~6.0.3",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.7",
+    "vite-plus": "catalog:",
+    "wrangler": "^4.120.0"
   },
-  "packageManager": "pnpm@10.33.0"
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.18.0",
+      "onFail": "download"
+    }
+  }
 }
