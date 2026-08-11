@@ -48,10 +48,15 @@ security headers are versioned in
 
 The deployment workflow requires a GitHub `production` environment containing:
 
-- `CLOUDFLARE_ACCOUNT_ID` as an environment secret;
+- `CLOUDFLARE_ACCOUNT_ID` as an environment variable;
 - `CLOUDFLARE_API_TOKEN` as a least-privilege environment secret;
 - repository variable `CLOUDFLARE_DEPLOY_ENABLED=true` after the first manual
   deployment has been verified.
+
+The canonical production URL is
+<https://testar-trace.bboyromano.workers.dev/>. Preview URLs remain excluded
+from search indexing; the production hostname explicitly removes that preview
+header in [`../apps/web/public/_headers`](../apps/web/public/_headers).
 
 Before enabling automatic deployment, run from `apps/web`:
 

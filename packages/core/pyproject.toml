@@ -33,4 +33,4 @@ dependencies = []
 import-names = ["testar_trace"]
 
 [project.urls]
-Repository = "https://github.com/BBoyRomano/testar-requirements-traceability"
+Repository = "https://github.com/BBoyRomano/testar-trace"
