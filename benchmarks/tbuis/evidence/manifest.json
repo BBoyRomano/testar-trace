@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "artifacts": [
+    {
+      "requirement_id": "uc-01",
+      "amp": {
+        "path": "uc-01.amp",
+        "bytes": 4750,
+        "sha256": "60eea7a01a6934d95d6c38a7cb2c396c47161d351c1ad06684960da0aa5dc24a"
+      },
+      "state_model": {
+        "path": "uc-01.json",
+        "bytes": 93644,
+        "sha256": "fb8a7ee745f64bcf1080e6f1d092424f469e4ef09b86f77014f351e1330d5297"
+      }
+    },
+    {
+      "requirement_id": "uc-02",
+      "amp": {
+        "path": "uc-02.amp",
+        "bytes": 996,
+        "sha256": "131153124930ca74f66de0258753c13f04fd8b34a6369511b045afc43b8d099e"
+      },
+      "state_model": {
+        "path": "uc-02.json",
+        "bytes": 18237,
+        "sha256": "8ec62e994a12956c4e88b2ef4a1d63fe8f02f3ca3f2275d28af8e5bff83cc8cd"
+      }
+    },
+    {
+      "requirement_id": "uc-03",
+      "amp": {
+        "path": "uc-03.amp",
+        "bytes": 6659,
+        "sha256": "0cf21bff974da4816e25ebf8da7ddc2bcc856300da86d096b93abab802953179"
+      },
+      "state_model": {
+        "path": "uc-03.json",
+        "bytes": 189888,
+        "sha256": "3dac83c09a31f0fe72f581da5ef6bbcb1c6b6e410d03b0a17392848ebd58c072"
+      }
+    },
+    {
+      "requirement_id": "uc-04",
+      "amp": {
+        "path": "uc-04.amp",
+        "bytes": 8372,
+        "sha256": "f30641ef83cec28cf70a20efc04821a82aa625d3d28e540b76ae2eb01a6ef9a3"
+      },
+      "state_model": {
+        "path": "uc-04.json",
+        "bytes": 482520,
+        "sha256": "c9d004c45b3d548534842e07cd6faccf4deb9cdc38336c15f4c3a29b50ff74b1"
+      }
+    }
+  ]
+}

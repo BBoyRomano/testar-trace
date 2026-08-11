@@ -1,4 +1,4 @@
-# OS and editors
+# Operating systems and editors
 .DS_Store
 Thumbs.db
 .vscode/
@@ -7,62 +7,39 @@ Thumbs.db
 # Python
 __pycache__/
 *.py[cod]
+*.egg-info/
 .venv/
 .venv-host/
-venv/
-.python-version
 .pytest_cache/
-.mypy_cache/
 .ruff_cache/
-.hypothesis/
-.tox/
-.nox/
+.ty_cache/
 .coverage
 .coverage.*
 coverage.xml
 htmlcov/
-*.egg-info/
-.eggs/
-pip-wheel-metadata/
 
-# Build artifacts
+# uv
+.uv/
+
+# Python build artifacts
 build/
 dist/
-target/
+
+# Web
 node_modules/
 .pnpm-store/
-
-# LaTeX
-*.aux
-*.bbl
-*.bcf
-*.blg
-*.fdb_latexmk
-*.fls
-*.lof
-*.log
-*.lot
-*.nav
-*.out
-*.run.xml
-*.snm
-*.synctex.gz
-*.toc
-*.vrb
-*.xdv
-
-# Java
-*.class
-hs_err_pid*
-replay_pid*
-
-# Local generated outputs
-.reqtrace/
-exports/
-suts/*/exports/*.json
-suts/*/evidence/runs/*/output/
-suts/*/app/*.war
+apps/web/dist/
+apps/web/.vite/
+*.tsbuildinfo
 
 # Local environment files
 .env
 .env.*
+!.env.example
+
+# Project-local outputs
+.testar-trace/
+
+# Temporary files
+*.log
+*.tmp

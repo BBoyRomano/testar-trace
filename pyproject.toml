@@ -1,89 +1,47 @@
-[dependency-groups]
-dev = [
-  "pre-commit>=4.5,<5",
-  "pytest>=9,<10",
-  "pytest-cov>=7,<8",
-  "ruff>=0.15,<1",
-  "ty>=0.0.29,<1",
-]
+[project]
+name = "testar-trace-workspace"
+version = "0.0.0"
+requires-python = ">=3.13"
+
+[tool.uv]
+package = false
+required-version = ">=0.12.1,<0.13"
+preview-features = ["audit-command", "check-command", "format-command"]
 
 [tool.uv.workspace]
-members = [
-  "packages/reqtrace",
-  "packages/reqtrace-adapters",
-  "apps/cli",
-  "apps/api",
-]
+members = ["packages/core", "packages/adapters", "apps/cli"]
 
 [tool.uv.sources]
-reqtrace = { workspace = true }
-reqtrace-adapters = { workspace = true }
-reqtrace-api = { workspace = true }
-reqtrace-cli = { workspace = true }
+testar-trace = { workspace = true }
+testar-trace-adapters = { workspace = true }
 
-[tool.pytest.ini_options]
-minversion = "9.0"
-addopts = ["-ra"]
-testpaths = [
-  "packages/reqtrace/tests",
-  "packages/reqtrace-adapters/tests",
-  "apps/cli/tests",
-  "apps/api/tests",
-]
+[dependency-groups]
+dev = ["pytest>=9.1.1,<10", "pytest-cov>=7.1,<8", "ruff>=0.16.1,<0.17", "ty>=0.0.65,<0.1"]
+
+[tool.pytest]
+minversion = "9.1"
+addopts = ["-ra", "--import-mode=importlib"]
+strict = true
+testpaths = ["packages/core/tests", "packages/adapters/tests", "apps/cli/tests"]
 
 [tool.ruff]
-extend-exclude = [
-  "apps/api/**",
-  "packages/_archive/**",
-]
+src = ["packages/core/src", "packages/adapters/src", "apps/cli/src"]
+extend-exclude = ["benchmarks", "_archive"]
 
 [tool.ruff.lint]
-select = ["ALL"]
-ignore = [
-  "ANN001",
-  "ANN201",
-  "ANN202",
-  "ANN401",
-  "C901",
-  "COM812",
-  "D203",
-  "D213",
-  "D105",
-  "D107",
-  "EM101",
-  "EM102",
-  "PERF401",
-  "PLC0415",
-  "PLR0911",
-  "PLR0912",
-  "PLR0913",
-  "PLR2004",
-  "RET504",
-  "TC001",
-  "TC002",
-  "TC003",
-  "TRY003",
-]
-
-[tool.ruff.lint.per-file-ignores]
-"packages/**/tests/*.py" = ["D100", "D103", "INP001", "S101"]
-"apps/**/tests/*.py" = ["D100", "D103", "INP001", "S101"]
-"apps/cli/src/reqtrace_cli/main.py" = ["T201"]
-"apps/api/src/reqtrace_api/server.py" = ["T201"]
+extend-select = ["I", "UP", "B", "SIM", "RUF"]
 
 [tool.ty.src]
-exclude = [
-  "apps/api/**",
-  "packages/_archive/**",
-]
-
-[tool.ty.rules]
-all = "error"
+exclude = ["benchmarks/**", "_archive/**"]
 
 [tool.ty.environment]
-root = [
-  "./packages/reqtrace/src",
-  "./packages/reqtrace-adapters/src",
-  "./apps/cli/src",
-  "./apps/api/src",
-]
+root = ["./packages/core/src", "./packages/adapters/src", "./apps/cli/src"]
+
+[tool.coverage.run]
+branch = true
+source = ["packages/core/src", "packages/adapters/src", "apps/cli/src"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = true

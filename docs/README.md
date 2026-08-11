@@ -1,30 +1,32 @@
-# Documentation
+# TESTAR Trace Documentation
 
-This directory holds project-level documentation for ReqTrace.
+This directory contains current cross-cutting documentation for TESTAR Trace.
+Product usage belongs in the application and package READMEs; benchmark-specific
+provenance belongs with the benchmark.
 
-## What lives here
+## Structure
 
-- `architecture/`: current architecture and layer responsibilities
-- `roadmap.md`: implementation roadmap by thesis phase
-- `planning.md`: high-level DSRM timeline
-- `archived-v0/`: legacy material kept only for historical context
+```text
+docs/
+  architecture/    Current system design and traceability methods
+  evaluation/      Evaluation methodology and metrics
+  formats/         Versioned external and benchmark formats
+  operations.md    Repository governance and production deployment
+  terminology.md   Canonical project and domain terminology
+```
 
-## Reading order
+The authoritative system overview is
+[`architecture/overview.md`](architecture/overview.md). Architecture history is
+available through Git and is not duplicated in the active documentation tree.
 
-1. `architecture/00-overview.md`
-2. `architecture/01-domain-model.md`
-3. `architecture/02-ingestion.md`
-4. `architecture/03-trace-analysis.md`
-5. `architecture/04-interfaces.md`
-6. `architecture/05-infrastructure.md`
-7. `architecture/06-repository-structure.md`
-8. `architecture/trace-methods/*.md` (method-specific details)
+Use the most specific documentation location:
 
-## Scope rule
+- project purpose and setup: [`README.md`](../README.md);
+- package behavior: the package's `README.md`;
+- application behavior: the application's `README.md`;
+- benchmark policy and provenance: [`benchmarks/`](../benchmarks/);
+- contributor workflow: [`CONTRIBUTING.md`](../CONTRIBUTING.md);
+- architecture, terminology, formats, evaluation, and operations: this directory.
 
-Keep this folder focused on design and project-level planning.
-Do not duplicate folder-level operational notes that already belong in:
-
-- root `README.md` (setup + usage)
-- `suts/README.md` and `suts/<sut>/README.md` (dataset/evidence policy)
-- package-local test directories (test strategy and fixtures)
+Documentation must describe current behavior. Removed designs and methods
+should be deleted rather than retained as an in-tree archive.
