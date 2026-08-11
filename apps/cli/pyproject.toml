@@ -42,4 +42,4 @@ import-names = ["testar_trace_cli"]
 testar-trace = "testar_trace_cli.main:main"
 
 [project.urls]
-Repository = "https://github.com/BBoyRomano/testar-requirements-traceability"
+Repository = "https://github.com/BBoyRomano/testar-trace"

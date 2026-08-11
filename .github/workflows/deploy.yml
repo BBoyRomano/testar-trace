@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
+      url: https://testar-trace.bboyromano.workers.dev/
 
     steps:
       - name: Checkout validated revision
@@ -62,12 +63,12 @@ jobs:
         working-directory: apps/web
         run: vp run deploy:check
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Deploy to Cloudflare Workers Static Assets
         working-directory: apps/web
         run: vp run deploy
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

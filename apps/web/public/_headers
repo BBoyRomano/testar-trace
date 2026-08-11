@@ -7,3 +7,6 @@
 
 https://:version.:subdomain.workers.dev/*
   X-Robots-Tag: noindex
+
+https://testar-trace.bboyromano.workers.dev/*
+  ! X-Robots-Tag
