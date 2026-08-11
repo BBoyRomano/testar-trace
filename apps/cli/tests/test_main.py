@@ -1,5 +1,6 @@
 import importlib
 import json
+import re
 from collections.abc import Mapping
 from pathlib import Path
 from typing import cast
@@ -34,6 +35,13 @@ from testar_trace_cli.main import app
 runner = CliRunner()
 cli_main = importlib.import_module("testar_trace_cli.main")
 
+ANSI_ESCAPE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+
+
+def compact_console_output(value: str) -> str:
+    """Normalize terminal styling and wrapping for portable CLI assertions."""
+    return "".join(ANSI_ESCAPE.sub("", value).split())
+
 
 def test_help_presents_the_complete_command_surface() -> None:
     result = runner.invoke(app, ["--no-color", "--help"])
@@ -42,7 +50,7 @@ def test_help_presents_the_complete_command_surface() -> None:
     assert "Establish requirements completeness" in result.stdout
     for command in ("analyze", "compare", "validate", "requirements", "report"):
         assert command in result.stdout
-    assert "--install-completion" in result.stdout
+    assert "--install-completion" in compact_console_output(result.stdout)
 
 
 def test_version_reports_the_installed_cli_version() -> None:
@@ -157,7 +165,7 @@ def test_cli_rejects_removed_compatibility_options(
     result = runner.invoke(app, resolved_arguments)
 
     assert result.exit_code == 2
-    assert obsolete_option in result.stderr
+    assert obsolete_option in compact_console_output(result.stderr)
 
 
 @pytest.mark.parametrize("command", ["show-requirements", "show-report"])
